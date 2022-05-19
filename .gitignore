@@ -19,3 +19,5 @@ errorCode
 # PyCharm IDE
 .idea
 venv
+win32/.vscode/tasks.json
+*.code-workspace
