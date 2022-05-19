@@ -413,6 +413,16 @@ FriendInviterFriendSaidNoNewFriends = "%s isn't looking for new friends right no
 FriendInviterOtherTooMany = '%s has too many friends already!'
 FriendInviterMaybe = '%s was unable to answer.'
 FriendInviterDown = 'Cannot make friends now.'
+FriendInviterCogDeclineResponse = [
+       'says, \"We both know there are no good intentions here, Toon.\"',
+       'says, \"Hand over your gags and laff and we have a deal.\"',
+       'points to their watch, saying, \"I don\'t have time for this nonsense.\"',
+       'said yes! ...Not really though, unfortunately...',
+       'stares blankly at you.\n\"No.\"',
+       'says, \"I\'ll bring it up in the next meeting.\"',
+       'says, \"I\'d rather volunteer to visit the chop shop.\"',
+       'says, \"We\'re just not meant to be, Toon.\"'
+]
 TalkGuild = 'G'
 TalkParty = 'P'
 TalkPVP = 'PVP'
