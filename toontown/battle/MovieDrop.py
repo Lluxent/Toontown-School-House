@@ -248,8 +248,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     node.setFinal(1)
     died = target['died']
     soundTrack = __getSoundTrack(level, delay, hitSuit, toon, died or not lastDrop)
-    if not repeatNPC:
-        toonTrack, buttonTrack = MovieUtil.createButtonInterval(battle, delay, origHpr, suitPos, toon)
+    toonTrack, buttonTrack = MovieUtil.createButtonInterval(battle, delay, origHpr, suitPos, toon)
     objectTrack = Sequence()
 
     def posObject(object, miss):
