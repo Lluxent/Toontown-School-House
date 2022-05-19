@@ -83,6 +83,10 @@ def createNPC(air, npcId, desc, zoneId, posIndex = 0, questCallback = None):
     import DistributedNPCSpecialQuestGiverAI
     import DistributedNPCFlippyInToonHallAI
     import DistributedNPCScientistAI
+    #print('NewNPC')
+    #print('zoneId', zoneId)
+    #print('posIndex', posIndex)
+    #print('npcId', npcId)
     canonicalZoneId, name, dnaType, gender, protected, type = desc
     if type == NPC_REGULAR:
         npc = DistributedNPCToonAI.DistributedNPCToonAI(air, npcId, questCallback=questCallback)
@@ -11505,6 +11509,25 @@ NPCToonDict = {20000: (-1,
          6),
         'm',
         0,
+        NPC_REGULAR),
+ 7777: (2000,
+        lnames[7777],
+        ('rsl',
+         'ss',
+         's',
+         'f',
+         26,
+         0,
+         26,
+         26,
+         0,
+         26,
+         0,
+         26,
+         0,
+         26),
+        'f',
+        1,
         NPC_REGULAR)}
 try:
     config = simbase.config
