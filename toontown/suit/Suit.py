@@ -350,6 +350,7 @@ class Suit(Avatar.Avatar):
         self.healthCondition = 0
         self.isDisguised = 0
         self.isWaiter = 0
+        self.isExecutive = 0
         self.isRental = 0
         return
 
@@ -723,6 +724,24 @@ class Suit(Avatar.Avatar):
                 self.nametagJoint = self.find('**/def_nameTag')
         else:
             __doItTheOldWay__()
+
+    def makeExecutive(self, modelRoot = None):
+        if not modelRoot:
+            modelRoot = self
+        self.isExecutive = 1
+        torsoTex = loader.loadTexture('phase_3.5/maps/e_blazer_' + self.style.dept + '.png')
+        torsoTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        torsoTex.setMagfilter(Texture.FTNearest)
+        legTex = loader.loadTexture('phase_3.5/maps/e_leg_' + self.style.dept + '.png')
+        legTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        legTex.setMagfilter(Texture.FTNearest)
+        armTex = loader.loadTexture('phase_3.5/maps/e_sleeve_' + self.style.dept + '.png')
+        armTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        armTex.setMagfilter(Texture.FTNearest)
+        modelRoot.find('**/torso').setTexture(torsoTex, 1)
+        modelRoot.find('**/arms').setTexture(armTex, 1)
+        modelRoot.find('**/legs').setTexture(legTex, 1)
+        modelRoot.find('**/hands').setColor(self.handColor)
 
     def makeWaiter(self, modelRoot = None):
         if not modelRoot:

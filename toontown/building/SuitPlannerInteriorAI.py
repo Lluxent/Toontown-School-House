@@ -4,6 +4,7 @@ from toontown.suit import SuitDNA
 from direct.directnotify import DirectNotifyGlobal
 from toontown.suit import DistributedSuitAI
 import SuitBuildingGlobals, types
+from toontown.toonbase import ToontownBattleGlobals
 
 class SuitPlannerInteriorAI:
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitPlannerInteriorAI')
@@ -135,6 +136,8 @@ class SuitPlannerInteriorAI:
         suit.dna = dna
         self.notify.debug('Creating suit type ' + suit.dna.name + ' of level ' + str(suitLevel) + ' from type ' + str(suitType) + ' and track ' + str(bldgTrack))
         suit.setLevel(suitLevel)
+        if random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE:
+            suit.setExecutive(1)
         return skeleton
 
     def __genSuitObject(self, suitZone, suitType, bldgTrack, suitLevel, revives=0):

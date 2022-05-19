@@ -55,6 +55,7 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
         self.loop('neutral')
         self.skeleRevives = 0
         self.maxSkeleRevives = 0
+        self.executive = 0
         self.sillySurgeText = False
         self.interactivePropTrackBonus = -1
         return
@@ -65,23 +66,43 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
     def getVirtual(self):
         return 0
 
+    def setExecutive(self, executive):
+        self.executive = executive
+        if self.executive:
+            self.processExecutive()
+
+    def getExecutive(self):
+        return self.executive
+
+    def processExecutive(self):
+        self.maxHP = int(self.maxHP * ToontownBattleGlobals.EXECUTIVE_HP_MULT)
+        self.currHP = self.maxHP
+        self.makeExecutive()
+        nameInfo = self.createNameInfo()
+        self.setDisplayName(nameInfo)
+
     def setSkeleRevives(self, num):
         if num == None:
             num = 0
         self.skeleRevives = num
         if num > self.maxSkeleRevives:
             self.maxSkeleRevives = num
-        if self.getSkeleRevives() > 0:
-            nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
-             'dept': self.getStyleDept(),
-             'level': '%s%s' % (self.getActualLevel(), TTLocalizer.SkeleRevivePostFix)}
-            self.setDisplayName(nameInfo)
-        else:
-            nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
-             'dept': self.getStyleDept(),
-             'level': self.getActualLevel()}
-            self.setDisplayName(nameInfo)
+        nameInfo = self.createNameInfo()
+        self.setDisplayName(nameInfo)
         return
+
+    def createNameInfo(self):
+        name = self._name
+        dept = self.getStyleDept()
+        level = str(self.getActualLevel())
+        if self.getExecutive():
+            level += TTLocalizer.ExecutivePostFix
+        if self.getSkeleRevives() > 0:
+            level += TTLocalizer.SkeleRevivePostFix
+        nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': name,
+            'dept': dept,
+            'level': level}
+        return nameInfo
 
     def getSkeleRevives(self):
         return self.skeleRevives

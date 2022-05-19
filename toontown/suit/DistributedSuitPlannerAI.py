@@ -407,6 +407,8 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             newSuit.setSkelecog(skelecog)
         if revives:
             newSuit.setSkeleRevives(revives)
+        if random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE:
+            newSuit.setExecutive(1)
         newSuit.generateWithRequired(newSuit.zoneId)
         newSuit.moveToNextLeg(None)
         self.suitList.append(newSuit)

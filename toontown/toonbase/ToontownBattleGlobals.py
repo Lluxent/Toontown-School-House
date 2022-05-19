@@ -469,6 +469,9 @@ DLF_CFO = 8
 DLF_SUPERVISOR = 16
 DLF_VIRTUAL = 32
 DLF_REVIVES = 64
+EXECUTIVE_HP_MULT = 1.5
+EXECUTIVE_DMG_MULT = 1.2
+EXECUTIVE_BASE_CHANCE = 30
 pieNames = ['tart',
  'fruitpie-slice',
  'creampie-slice',
