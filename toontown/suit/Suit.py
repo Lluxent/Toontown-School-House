@@ -927,7 +927,7 @@ class Suit(Avatar.Avatar):
         self.healthCondition = 0
         return
 
-    def getLoseActor(self):
+    def getLoseActor(self, headless = 0):
         if base.config.GetBool('want-new-cogs', 0):
             if self.find('**/body'):
                 return self
@@ -938,11 +938,14 @@ class Suit(Avatar.Avatar):
                 loseAnim = 'phase_' + str(phase) + filePrefix + 'lose'
                 self.loseActor = Actor.Actor(loseModel, {'lose': loseAnim})
                 loseNeck = self.loseActor.find('**/joint_head')
-                for part in self.headParts:
-                    part.instanceTo(loseNeck)
+                if headless is False:
+                    for part in self.headParts:
+                        part.instanceTo(loseNeck)
 
                 if self.isWaiter:
                     self.makeWaiter(self.loseActor)
+                elif self.isExecutive:
+                    self.makeExecutive(self.loseActor)
                 else:
                     self.setSuitClothes(self.loseActor)
             else:
@@ -951,6 +954,7 @@ class Suit(Avatar.Avatar):
                 loseAnim = 'phase_' + str(phase) + filePrefix + 'lose'
                 self.loseActor = Actor.Actor(loseModel, {'lose': loseAnim})
                 self.generateCorporateTie(self.loseActor)
+                self.setExecutiveColor(self.loseActor)
         self.loseActor.setScale(self.scale)
         self.loseActor.setPos(self.getPos())
         self.loseActor.setHpr(self.getHpr())
@@ -1026,3 +1030,16 @@ class Suit(Avatar.Avatar):
             return SkelSuitDialogArray
         else:
             return SuitDialogArray
+
+    def setExecutiveColor(self, modelRoot = None):
+            if not modelRoot:
+                modelRoot = self
+            if self.isExecutive:
+                if self.dna.dept == 'c':
+                    modelRoot.setColor(SuitDNA.corpPolyColor)
+                if self.dna.dept == 's':
+                    modelRoot.setColor(SuitDNA.salesPolyColor)
+                if self.dna.dept == 'l':
+                    modelRoot.setColor(SuitDNA.legalPolyColor)
+                if self.dna.dept == 'm':
+                    modelRoot.setColor(SuitDNA.moneyPolyColor) 

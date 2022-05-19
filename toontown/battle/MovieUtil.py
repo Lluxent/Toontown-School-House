@@ -251,55 +251,26 @@ def createTrainTrackAppearTrack(dyingSuit, toon, battle, npcs):
 def createSuitReviveTrack(suit, toon, battle, npcs = []):
     suitTrack = Sequence()
     suitPos, suitHpr = battle.getActorPosHpr(suit)
-    if hasattr(suit, 'battleTrapProp') and suit.battleTrapProp and suit.battleTrapProp.getName() == 'traintrack' and not suit.battleTrapProp.isHidden():
-        suitTrack.append(createTrainTrackAppearTrack(suit, toon, battle, npcs))
+    removeTrainTrack(suit, battle, suitTrack)
     deathSuit = suit.getLoseActor()
-    suitTrack.append(Func(notify.debug, 'before insertDeathSuit'))
     suitTrack.append(Func(insertReviveSuit, suit, deathSuit, battle, suitPos, suitHpr))
-    suitTrack.append(Func(notify.debug, 'before actorInterval lose'))
     suitTrack.append(ActorInterval(deathSuit, 'lose', duration=SUIT_LOSE_DURATION))
-    suitTrack.append(Func(notify.debug, 'before removeDeathSuit'))
     suitTrack.append(Func(removeReviveSuit, suit, deathSuit, name='remove-death-suit'))
-    suitTrack.append(Func(notify.debug, 'after removeDeathSuit'))
+    suitTrack.append(ActorInterval(suit, 'slip-forward'))
     suitTrack.append(Func(suit.loop, 'neutral'))
-    spinningSound = base.loader.loadSfx('phase_3.5/audio/sfx/Cog_Death.ogg')
-    deathSound = base.loader.loadSfx('phase_3.5/audio/sfx/ENC_cogfall_apart.ogg')
-    deathSoundTrack = Sequence(Wait(0.8), SoundInterval(spinningSound, duration=1.2, startTime=1.5, volume=0.2, node=suit), SoundInterval(spinningSound, duration=3.0, startTime=0.6, volume=0.8, node=suit), SoundInterval(deathSound, volume=0.32, node=suit))
-    BattleParticles.loadParticles()
-    smallGears = BattleParticles.createParticleEffect(file='gearExplosionSmall')
-    singleGear = BattleParticles.createParticleEffect('GearExplosion', numParticles=1)
-    smallGearExplosion = BattleParticles.createParticleEffect('GearExplosion', numParticles=10)
-    bigGearExplosion = BattleParticles.createParticleEffect('BigGearExplosion', numParticles=30)
-    gearPoint = Point3(suitPos.getX(), suitPos.getY(), suitPos.getZ() + suit.height - 0.2)
-    smallGears.setPos(gearPoint)
-    singleGear.setPos(gearPoint)
-    smallGears.setDepthWrite(False)
-    singleGear.setDepthWrite(False)
-    smallGearExplosion.setPos(gearPoint)
-    bigGearExplosion.setPos(gearPoint)
-    smallGearExplosion.setDepthWrite(False)
-    bigGearExplosion.setDepthWrite(False)
-    explosionTrack = Sequence()
-    explosionTrack.append(Wait(5.4))
-    explosionTrack.append(createKapowExplosionTrack(battle, explosionPoint=gearPoint))
-    gears1Track = Sequence(Wait(2.1), ParticleInterval(smallGears, battle, worldRelative=0, duration=4.3, cleanup=True), name='gears1Track')
-    gears2MTrack = Track((0.0, explosionTrack), (0.7, ParticleInterval(singleGear, battle, worldRelative=0, duration=5.7, cleanup=True)), (5.2, ParticleInterval(smallGearExplosion, battle, worldRelative=0, duration=1.2, cleanup=True)), (5.4, ParticleInterval(bigGearExplosion, battle, worldRelative=0, duration=1.0, cleanup=True)), name='gears2MTrack')
-    toonMTrack = Parallel(name='toonMTrack')
-    for mtoon in battle.toons:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
-
-    for mtoon in npcs:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
+    suitTrack.append(Func(suit.setHP, suit.maxHP))
+    deathSoundTrack = getDeathSound(deathSuit)
+    gears1Track, gears2MTrack = deathParticleTracks(suit, battle, suitPos)
+    toonMTrack = toonDuckTracks(battle, npcs)
 
     return Parallel(suitTrack, deathSoundTrack, gears1Track, gears2MTrack, toonMTrack)
 
 
-def createSuitDeathTrack(suit, toon, battle, npcs = []):
+def createSuitDeathTrack(suit, toon, battle, npcs = [], headless = False):
     suitTrack = Sequence()
     suitPos, suitHpr = battle.getActorPosHpr(suit)
-    if hasattr(suit, 'battleTrapProp') and suit.battleTrapProp and suit.battleTrapProp.getName() == 'traintrack' and not suit.battleTrapProp.isHidden():
-        suitTrack.append(createTrainTrackAppearTrack(suit, toon, battle, npcs))
-    deathSuit = suit.getLoseActor()
+    removeTrainTrack(suit, battle, suitTrack)
+    deathSuit = suit.getLoseActor(headless=headless)
     suitTrack.append(Func(notify.debug, 'before insertDeathSuit'))
     suitTrack.append(Func(insertDeathSuit, suit, deathSuit, battle, suitPos, suitHpr))
     suitTrack.append(Func(notify.debug, 'before actorInterval lose'))
@@ -307,37 +278,88 @@ def createSuitDeathTrack(suit, toon, battle, npcs = []):
     suitTrack.append(Func(notify.debug, 'before removeDeathSuit'))
     suitTrack.append(Func(removeDeathSuit, suit, deathSuit, name='remove-death-suit'))
     suitTrack.append(Func(notify.debug, 'after removeDeathSuit'))
+    deathSoundtrack = getDeathSound(deathSuit)
+    gears1Track, gears2MTrack = deathParticleTracks(suit, battle, suitPos)    
+    toonMTrack = toonDuckTracks(battle, npcs)
+
+    return Parallel(suitTrack, deathSoundtrack, gears1Track, gears2MTrack, toonMTrack)
+
+def removeTrainTrack(suit, battle, suitTrack):
+    if hasattr(suit, 'battleTrapProp') and suit.battleTrapProp and suit.battleTrapProp.getName() == 'traintrack' and not suit.battleTrapProp.isHidden():
+        suitTrack.append(createTrainTrackAppearTrack(suit, None, battle, None))
+
+def getDeathSound(deathSuit):
     spinningSound = base.loader.loadSfx('phase_3.5/audio/sfx/Cog_Death.ogg')
     deathSound = base.loader.loadSfx('phase_3.5/audio/sfx/ENC_cogfall_apart.ogg')
-    deathSoundTrack = Sequence(Wait(0.8), SoundInterval(spinningSound, duration=1.2, startTime=1.5, volume=0.2, node=deathSuit), SoundInterval(spinningSound, duration=3.0, startTime=0.6, volume=0.8, node=deathSuit), SoundInterval(deathSound, volume=0.32, node=deathSuit))
+    deathSoundTrack = Sequence(Wait(0.8),SoundInterval(spinningSound, duration=1.2, startTime=1.5, volume=0.2, node=deathSuit),SoundInterval(spinningSound, duration=3.0, startTime=0.6, volume=0.8, node=deathSuit),SoundInterval(deathSound, volume=0.32, node=deathSuit))
+    return deathSoundTrack
+
+def deathParticleTracks(suit, battle, suitPos, explosionDelay = 5.4):
     BattleParticles.loadParticles()
-    smallGears = BattleParticles.createParticleEffect(file='gearExplosionSmall')
-    singleGear = BattleParticles.createParticleEffect('GearExplosion', numParticles=1)
-    smallGearExplosion = BattleParticles.createParticleEffect('GearExplosion', numParticles=10)
-    bigGearExplosion = BattleParticles.createParticleEffect('BigGearExplosion', numParticles=30)
     gearPoint = Point3(suitPos.getX(), suitPos.getY(), suitPos.getZ() + suit.height - 0.2)
+    smallGears = BattleParticles.createParticleEffect(file='gearExplosionSmall')
     smallGears.setPos(gearPoint)
-    singleGear.setPos(gearPoint)
     smallGears.setDepthWrite(False)
-    singleGear.setDepthWrite(False)
-    smallGearExplosion.setPos(gearPoint)
-    bigGearExplosion.setPos(gearPoint)
-    smallGearExplosion.setDepthWrite(False)
-    bigGearExplosion.setDepthWrite(False)
+    gears1Track = Sequence(Wait(2.1), ParticleInterval(smallGears, battle, worldRelative=False,duration=4.3, cleanup=True), name='gears1Track')
     explosionTrack = Sequence()
-    explosionTrack.append(Wait(5.4))
+    explosionTrack.append(Wait(explosionDelay))
     explosionTrack.append(createKapowExplosionTrack(battle, explosionPoint=gearPoint))
-    gears1Track = Sequence(Wait(2.1), ParticleInterval(smallGears, battle, worldRelative=0, duration=4.3, cleanup=True), name='gears1Track')
-    gears2MTrack = Track((0.0, explosionTrack), (0.7, ParticleInterval(singleGear, battle, worldRelative=0, duration=5.7, cleanup=True)), (5.2, ParticleInterval(smallGearExplosion, battle, worldRelative=0, duration=1.2, cleanup=True)), (5.4, ParticleInterval(bigGearExplosion, battle, worldRelative=0, duration=1.0, cleanup=True)), name='gears2MTrack')
+    bigGearExplosion, singleGear, smallGearExplosion = getExplosionGears(gearPoint)
+    gears2MTrack = Track((0.0, explosionTrack),(0.7, ParticleInterval(singleGear, battle, worldRelative=False,duration=5.7, cleanup=True)),(5.2, ParticleInterval(smallGearExplosion, battle, worldRelative=False,duration=1.2, cleanup=True)),(5.4, ParticleInterval(bigGearExplosion, battle, worldRelative=False,duration=1.0, cleanup=True)),name='gears2MTrack')
+    return gears1Track, gears2MTrack
+
+def spawnHeadExplosion(suit, battle):
+    headParts = suit.getHeadParts()
+    suitTrack = Sequence()
+    suitPos, suitHpr = battle.getActorPosHpr(suit)
+    suitTrack.append(Wait(0.15))
+    explodeTrack = Parallel()
+    for part in headParts:
+        explodeTrack.append(Func(part.detachNode))
+    suitTrack.append(explodeTrack)
+    deathSound = base.loader.loadSfx('phase_3.5/audio/sfx/ENC_cogfall_apart.ogg')
+    deathSoundTrack = Sequence(SoundInterval(deathSound, volume=0.8))
+    BattleParticles.loadParticles()
+    gearPoint = Point3(suitPos.getX(), suitPos.getY(), suitPos.getZ() + suit.height + 1)
+    smallGears = BattleParticles.createParticleEffect(file='gearExplosionSmall')
+    smallGears.setPos(gearPoint)
+    smallGears.setDepthWrite(False)
+    gears1Track = Sequence(Wait(0.5),ParticleInterval(smallGears, battle, worldRelative=False, duration=1.0, cleanup=True),name='gears1Track')
+    explosionTrack = Sequence()
+    explosionTrack.append(createKapowExplosionTrack(battle, explosionPoint=gearPoint))
+    bigGearExplosion, singleGear, smallGearExplosion = getExplosionGears(gearPoint)
+    gears2MTrack = createShortExplosionInterval(battle, bigGearExplosion, singleGear, smallGearExplosion)
+
+    return Parallel(suitTrack, explosionTrack, deathSoundTrack, gears1Track, gears2MTrack)
+
+def getExplosionGears(gearPoint):
+    singleGear = BattleParticles.createParticleEffect('GearExplosion', numParticles=1)
+    singleGear.setPos(gearPoint)
+    singleGear.setDepthWrite(False)
+    smallGearExplosion = BattleParticles.createParticleEffect('GearExplosion', numParticles=10)
+    smallGearExplosion.setPos(gearPoint)
+    smallGearExplosion.setDepthWrite(False)
+    bigGearExplosion = BattleParticles.createParticleEffect('BigGearExplosion', numParticles=30)
+    bigGearExplosion.setPos(gearPoint)
+    bigGearExplosion.setDepthWrite(False)
+    return bigGearExplosion, singleGear, smallGearExplosion
+
+def createShortExplosionInterval(battle, bigGearExplosion, singleGear, smallGearExplosion):
+    gears2MTrack = Track(
+        (0.1, ParticleInterval(singleGear, battle, worldRelative=False, duration=0.4, cleanup=True)),
+        (0.5, ParticleInterval(smallGearExplosion, battle, worldRelative=False, duration=0.5, cleanup=True)),
+        (0.9, ParticleInterval(bigGearExplosion, battle, worldRelative=False, duration=2.0, cleanup=True)),
+        name='gears2MTrack'
+    )
+    return gears2MTrack
+
+def toonDuckTracks(battle, npcToons):
     toonMTrack = Parallel(name='toonMTrack')
-    for mtoon in battle.toons:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
-
-    for mtoon in npcs:
-        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(mtoon, 'duck'), ActorInterval(mtoon, 'duck', startTime=1.8), Func(mtoon.loop, 'neutral')))
-
-    return Parallel(suitTrack, deathSoundTrack, gears1Track, gears2MTrack, toonMTrack)
-
+    for toon in battle.toons:
+        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(toon, 'duck'), ActorInterval(toon, 'duck', startTime=1.8),Func(toon.loop, 'neutral')))
+    for toon in npcToons:
+        toonMTrack.append(Sequence(Wait(1.0), ActorInterval(toon, 'duck'), ActorInterval(toon, 'duck', startTime=1.8),Func(toon.loop, 'neutral')))
+    return toonMTrack
 
 def createSuitDodgeMultitrack(tDodge, suit, leftSuits, rightSuits):
     suitTracks = Parallel()
@@ -564,6 +586,23 @@ def startSparksIval(tntProp):
 def indicateMissed(actor, duration = 1.1, scale = 0.7):
     actor.showHpString(TTLocalizer.AttackMissed, duration=duration, scale=scale)
 
+def createButtonInterval(battle, delay, originHpr, suitPos, toon):
+    button = globalPropPool.getProp('button')
+    button2 = copyProp(button)
+    buttons = [button, button2]
+    hands = toon.getLeftHands()
+    toonTrack = Sequence(Wait(delay),
+                         Func(toon.headsUp, battle, suitPos),
+                         ActorInterval(toon, 'pushbutton'),
+                         Func(toon.loop, 'neutral'),
+                         Func(toon.setHpr, battle, originHpr))
+    buttonTrack = Sequence(Wait(delay),
+                           Func(showProps, buttons, hands),
+                           LerpScaleInterval(button, 1.0, button.getScale(), startScale=Point3(0.01, 0.01, 0.01)),
+                           Wait(2.5),
+                           LerpScaleInterval(button, 1.0, Point3(0.01, 0.01, 0.01), startScale=button.getScale()),
+                           Func(removeProps, buttons))
+    return toonTrack, buttonTrack
 
 def createKapowExplosionTrack(parent, explosionPoint = None, scale = 1.0):
     explosionTrack = Sequence()
@@ -595,7 +634,7 @@ def calcAvgSuitPos(throw):
     battle = throw['battle']
     avgSuitPos = Point3(0, 0, 0)
     numTargets = len(throw['target'])
-    for i in xrange(numTargets):
+    for i in range(numTargets):
         suit = throw['target'][i]['suit']
         avgSuitPos += suit.getPos(battle)
 

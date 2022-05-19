@@ -520,6 +520,7 @@ EmoteFuncDict = {'Wave': 0,
  'Sing Note E': 30,
  'Sing Note F': 31,
  'Sing Note G2': 32}
+SuitNoHead = 'So, no head?'
 SuitBrushOffs = {'f': ["I'm late for a meeting."],
  'p': ['Push off.'],
  'ym': ['Yes Man says NO.'],

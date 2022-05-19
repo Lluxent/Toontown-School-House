@@ -8,9 +8,12 @@ import MovieUtil
 import MovieNPCSOS
 from MovieUtil import calcAvgSuitPos
 from direct.showutil import Effects
+from otp.otpbase import OTPLocalizerEnglish
+from libotp import *
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieDrop')
 hitSoundFiles = ('AA_drop_flowerpot.ogg', 'AA_drop_sandbag.ogg', 'AA_drop_anvil.ogg', 'AA_drop_bigweight.ogg', 'AA_drop_safe.ogg', 'AA_drop_piano.ogg', 'AA_drop_boat.ogg')
 missSoundFiles = ('AA_drop_flowerpot_miss.ogg', 'AA_drop_sandbag_miss.ogg', 'AA_drop_anvil_miss.ogg', 'AA_drop_bigweight_miss.ogg', 'AA_drop_safe_miss.ogg', 'AA_drop_piano_miss.ogg', 'AA_drop_boat_miss.ogg')
+crashSounds = ('cogbldg_land.ogg', 'TL_train_cog.ogg')
 tDropShadow = 1.3
 tSuitDodges = 2.45 + tDropShadow
 tObjectAppears = 3.0 + tDropShadow
@@ -91,7 +94,7 @@ def doDrops(drops):
     return (dropTrack, camTrack)
 
 
-def __getSoundTrack(level, hitSuit, node = None):
+def __getSoundTrack(level, delay, hitSuit, node = None, partial = 0):
     if hitSuit:
         soundEffect = globalBattleSoundCache.getSound(hitSoundFiles[level])
     else:
@@ -104,12 +107,15 @@ def __getSoundTrack(level, hitSuit, node = None):
         fallingDuration = 1.5
         if not level == UBER_GAG_LEVEL_INDEX:
             fallingSound = globalBattleSoundCache.getSound('incoming_whistleALT.ogg')
-        soundTrack.append(Wait(buttonDelay))
+        soundTrack.append(Wait(buttonDelay + delay))
         soundTrack.append(SoundInterval(buttonSound, duration=0.67, node=node))
         if fallingSound:
             soundTrack.append(SoundInterval(fallingSound, duration=fallingDuration, node=node))
         if not level == UBER_GAG_LEVEL_INDEX:
-            soundTrack.append(SoundInterval(soundEffect, node=node))
+            if hitSuit and partial and level > 3:
+                soundTrack.append(SoundInterval(soundEffect, duration=2.6, node=node))
+            else:
+                soundTrack.append(SoundInterval(soundEffect, node=node))
         if level == UBER_GAG_LEVEL_INDEX:
             if hitSuit:
                 uberDelay = tButtonPressed
@@ -137,7 +143,8 @@ def __doSuitDrops(dropTargetPairs, npcs, npcDrops):
         level = drop['level']
         objName = objects[level]
         target = dropTargetPair[1]
-        track = __dropObjectForSingle(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops)
+        lastDrop = dropTargetPairs.index(dropTargetPair) == len(dropTargetPairs) - 1
+        track = __dropObjectForSingle(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops, lastDrop)
         if track:
             toonTracks.append(track)
             delay += TOON_DROP_DELAY
@@ -164,7 +171,7 @@ def __doGroupDrops(groupDrops):
         numTargets = len(targets)
         closestTarget = -1
         nearestDistance = 100000.0
-        for i in xrange(numTargets):
+        for i in range(numTargets):
             suit = drop['target'][i]['suit']
             suitPos = suit.getPos(battle)
             displacement = Vec3(centerPos)
@@ -174,7 +181,8 @@ def __doGroupDrops(groupDrops):
                 closestTarget = i
                 nearestDistance = distance
 
-        track = __dropGroupObject(drop, delay, closestTarget, alreadyDodged, alreadyTeased)
+        lastDrop = groupDrops.index(drop) == len(groupDrops) - 1
+        track = __dropGroupObject(drop, delay, closestTarget, alreadyDodged, alreadyTeased, lastDrop)
         if track:
             toonTracks.append(track)
             delay = delay + TOON_DROP_SUIT_DELAY
@@ -188,32 +196,31 @@ def __doGroupDrops(groupDrops):
     return toonTracks
 
 
-def __dropGroupObject(drop, delay, closestTarget, alreadyDodged, alreadyTeased):
+def __dropGroupObject(drop, delay, closestTarget, alreadyDodged, alreadyTeased, lastDrop=0):
     level = drop['level']
     objName = objects[level]
     target = drop['target'][closestTarget]
-    suit = drop['target'][closestTarget]['suit']
     npcDrops = {}
     npcs = []
-    returnedParallel = __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops)
-    for i in xrange(len(drop['target'])):
+    returnedParallel = __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops, lastDrop)
+    for i in range(len(drop['target'])):
         target = drop['target'][i]
-        suitTrack = __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs)
+        suitTrack = __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs, lastDrop)
         if suitTrack:
             returnedParallel.append(suitTrack)
 
     return returnedParallel
 
 
-def __dropObjectForSingle(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops):
-    singleDropParallel = __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops)
-    suitTrack = __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs)
+def __dropObjectForSingle(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops, lastDrop=0):
+    singleDropParallel = __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops, lastDrop)
+    suitTrack = __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs, lastDrop)
     if suitTrack:
         singleDropParallel.append(suitTrack)
     return singleDropParallel
 
 
-def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops):
+def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs, target, npcDrops, lastDrop):
     toon = drop['toon']
     repeatNPC = 0
     battle = drop['battle']
@@ -226,24 +233,12 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
         origHpr = Vec3(0, 0, 0)
     else:
         origHpr = toon.getHpr(battle)
-    hpbonus = drop['hpbonus']
     suit = target['suit']
     hp = target['hp']
     hitSuit = hp > 0
-    died = target['died']
-    leftSuits = target['leftSuits']
-    rightSuits = target['rightSuits']
-    kbbonus = target['kbbonus']
     suitPos = suit.getPos(battle)
     majorObject = level >= 3
-    if repeatNPC == 0:
-        button = globalPropPool.getProp('button')
-        buttonType = globalPropPool.getPropType('button')
-        button2 = MovieUtil.copyProp(button)
-        buttons = [button, button2]
-        hands = toon.getLeftHands()
     object = globalPropPool.getProp(objName)
-    objectType = globalPropPool.getPropType(objName)
     if objName == 'weight':
         object.setScale(object.getScale() * 0.75)
     elif objName == 'safe':
@@ -251,41 +246,24 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     node = object.node()
     node.setBounds(OmniBoundingVolume())
     node.setFinal(1)
-    soundTrack = __getSoundTrack(level, hitSuit, toon)
-    toonTrack = Sequence()
-    if repeatNPC == 0:
-        toonFace = Func(toon.headsUp, battle, suitPos)
-        toonTrack.append(Wait(delay))
-        toonTrack.append(toonFace)
-        toonTrack.append(ActorInterval(toon, 'pushbutton'))
-        toonTrack.append(Func(toon.loop, 'neutral'))
-        toonTrack.append(Func(toon.setHpr, battle, origHpr))
-    buttonTrack = Sequence()
-    if repeatNPC == 0:
-        buttonShow = Func(MovieUtil.showProps, buttons, hands)
-        buttonScaleUp = LerpScaleInterval(button, 1.0, button.getScale(), startScale=Point3(0.01, 0.01, 0.01))
-        buttonScaleDown = LerpScaleInterval(button, 1.0, Point3(0.01, 0.01, 0.01), startScale=button.getScale())
-        buttonHide = Func(MovieUtil.removeProps, buttons)
-        buttonTrack.append(Wait(delay))
-        buttonTrack.append(buttonShow)
-        buttonTrack.append(buttonScaleUp)
-        buttonTrack.append(Wait(2.5))
-        buttonTrack.append(buttonScaleDown)
-        buttonTrack.append(buttonHide)
+    died = target['died']
+    soundTrack = __getSoundTrack(level, delay, hitSuit, toon, died or not lastDrop)
+    if not repeatNPC:
+        toonTrack, buttonTrack = MovieUtil.createButtonInterval(battle, delay, origHpr, suitPos, toon)
     objectTrack = Sequence()
 
-    def posObject(object, suit, level, majorObject, miss, battle = battle):
+    def posObject(object, miss):
         object.reparentTo(battle)
         if battle.isSuitLured(suit):
             suitPos, suitHpr = battle.getActorPosHpr(suit)
             object.setPos(suitPos)
             object.setHpr(suitHpr)
-            if level >= 3:
+            if majorObject:
                 object.setY(object.getY() + 2)
         else:
             object.setPos(suit.getPos(battle))
             object.setHpr(suit.getHpr(battle))
-            if miss and level >= 3:
+            if miss and majorObject:
                 object.setY(object.getY(battle) + 5)
         if not majorObject:
             if not miss:
@@ -294,10 +272,10 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
         object.setZ(object.getPos(battle)[2] + objZOffsets[level])
 
     objectTrack.append(Func(battle.movie.needRestoreRenderProp, object))
-    objInit = Func(posObject, object, suit, level, majorObject, hp <= 0)
+    objInit = Func(posObject, object, hp <= 0)
     objectTrack.append(Wait(delay + tObjectAppears))
     objectTrack.append(objInit)
-    if hp > 0 or level == 1 or level == 2:
+    if (hp > 0 and (not died and lastDrop)) or 0 < level < 4:
         if hasattr(object, 'getAnimControls'):
             animProp = ActorInterval(object, objName)
             shrinkProp = LerpScaleInterval(object, dShrink, Point3(0.01, 0.01, 0.01), startScale=object.getScale())
@@ -306,7 +284,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
         else:
             startingScale = objStartingScales[level]
             object2 = MovieUtil.copyProp(object)
-            posObject(object2, suit, level, majorObject, hp <= 0)
+            posObject(object2, hp <= 0)
             endingPos = object2.getPos()
             startPos = Point3(endingPos[0], endingPos[1], endingPos[2] + 5)
             startHpr = object2.getHpr()
@@ -333,7 +311,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     else:
         startingScale = objStartingScales[level]
         object2 = MovieUtil.copyProp(object)
-        posObject(object2, suit, level, majorObject, hp <= 0)
+        posObject(object2, hp <= 0)
         endingPos = object2.getPos()
         startPos = Point3(endingPos[0], endingPos[1], endingPos[2] + 5)
         startHpr = object2.getHpr()
@@ -377,7 +355,7 @@ def __dropObject(drop, delay, objName, level, alreadyDodged, alreadyTeased, npcs
     return Parallel(toonTrack, soundTrack, buttonTrack, objectTrack, shadowTrack)
 
 
-def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs):
+def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, npcs, lastDrop = 0):
     toon = drop['toon']
     if 'npc' in drop:
         toon = drop['npc']
@@ -392,6 +370,7 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
     rightSuits = target['rightSuits']
     kbbonus = target['kbbonus']
     hpbonus = drop['hpbonus']
+    headless = False
     if hp > 0:
         suitTrack = Sequence()
         showDamage = Func(suit.showHpText, -hp, openEnded=0)
@@ -400,7 +379,12 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
             anim = 'flatten'
         else:
             anim = 'drop-react'
-        suitReact = ActorInterval(suit, anim)
+        if died and lastDrop and majorObject:
+            suitReact = ActorInterval(suit, anim, endTime=0.55)
+        elif not lastDrop:
+            suitReact = ActorInterval(suit, anim, endTime=TOON_DROP_DELAY)
+        else:
+            suitReact = ActorInterval(suit, anim)
         suitTrack.append(Wait(delay + tObjectAppears))
         suitTrack.append(showDamage)
         suitTrack.append(updateHealthBar)
@@ -408,6 +392,16 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
         if level == UBER_GAG_LEVEL_INDEX:
             gotHitSound = globalBattleSoundCache.getSound('AA_drop_boat_cog.ogg')
             suitGettingHit.append(SoundInterval(gotHitSound, node=toon))
+        if died and lastDrop:
+            if majorObject:
+                suitGettingHit.append(suitCrashTrack(suit))
+                suitTrack.append(suitGettingHit)
+                return suitTrack
+            elif not suit.getSkelecog():
+                headless = True
+                sequence = Sequence(Wait(random.uniform(0.25, 2.0)), Func(suit.setChatAbsolute, OTPLocalizerEnglish.SuitNoHead, CFSpeech | CFTimeout))
+                thing = Parallel(sequence, MovieUtil.spawnHeadExplosion(suit, battle))
+                suitGettingHit.append(thing)
         suitTrack.append(suitGettingHit)
         bonusTrack = None
         if hpbonus > 0:
@@ -415,7 +409,7 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
         if revived != 0:
             suitTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
         elif died != 0:
-            suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
+            suitTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs, headless))
         else:
             suitTrack.append(Func(suit.loop, 'neutral'))
         if bonusTrack != None:
@@ -425,7 +419,7 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
     else:
         if alreadyDodged > 0:
             return
-        if level >= 3:
+        if majorObject:
             if alreadyTeased > 0:
                 return
             else:
@@ -433,3 +427,24 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
         else:
             suitTrack = MovieUtil.createSuitDodgeMultitrack(delay + tSuitDodges, suit, leftSuits, rightSuits)
     return suitTrack
+
+def suitCrashTrack(suit):
+    suitScale = suit.getScale()
+    suitPos = suit.getPos()
+    hitTime = 0.1
+    shrinkStartDelay = 2.0
+    crashSoundEffects = []
+    for sound in crashSounds:
+        crashSoundEffects.append(globalBattleSoundCache.getSound(sound))
+    suitTrack = Sequence(Wait(hitTime),
+                         Func(suit.setScale, Point3(suitScale[0], suitScale[1], suitScale[2] * 0.0001)),
+                         Func(suit.setPos, Point3(suitPos[0], suitPos[1], suitPos[2] + 0.02)),
+                         Func(suit.setColorScale, Vec4(0.0, 0.0, 0.0, 1)),
+                         Func(suit.deleteNametag3d),
+                         Func(suit.deleteDropShadow),
+                         Wait(shrinkStartDelay),
+                         LerpScaleInterval(suit, 0.8, Point3(0.0001, 0.0001, 0.0001), blendType='easeIn'),
+                         Func(suit.hide))
+    soundTrack = Parallel(SoundInterval(crashSoundEffects[0], node=suit),
+                          SoundInterval(crashSoundEffects[1], node=suit))
+    return Parallel(suitTrack, soundTrack)
