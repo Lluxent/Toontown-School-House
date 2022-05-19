@@ -2840,6 +2840,7 @@ AvatarPanelStopIgnore = 'Stop Ignoring'
 AvatarPanelEndIgnore = 'End Ignore'
 AvatarPanelTrade = 'Trade'
 AvatarPanelCogLevel = 'Level: %s'
+AvatarPanelCogHealth = 'HP: %s/%s'
 AvatarPanelCogDetailClose = lClose
 TeleportPanelOK = lOK
 TeleportPanelCancel = lCancel

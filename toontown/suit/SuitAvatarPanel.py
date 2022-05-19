@@ -33,11 +33,14 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         d = p2 - p1
         biggest = max(d[0], d[1], d[2])
         s = 0.3 / biggest
-        self.head.setPosHprScale(0, 0, 0, 180, 0, 0, s, s, s)
+        self.head.setPosHprScale(0, 0, 0.025, 180, 0, 0, s, s, s)
         self.nameLabel = DirectLabel(parent=self.frame, pos=(0.0125, 0, 0.36), relief=None, text=self.avName, text_font=avatar.getFont(), text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.047, text_wordwrap=7.5, text_shadow=(1, 1, 1, 1))
         level = avatar.getActualLevel()
+        health = avatar.getCurrentHealth()
+        maxHealth = avatar.getMaxHealth()
         dept = SuitDNA.getSuitDeptFullname(avatar.dna.name)
-        self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.1), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
+        self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.0475), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
+        self.healthLabel = DirectLabel(parent=self.frame, pos= (0, 0, -0.0975), relief=None, text = TTLocalizer.AvatarPanelCogHealth % (health, maxHealth), text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
         corpIcon = avatar.corpMedallion.copyTo(hidden)
         corpIcon.setPosHprScale(0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.corpIcon = DirectLabel(parent=self.frame, geom=corpIcon, geom_scale=0.13, pos=(0, 0, -0.175), relief=None)
