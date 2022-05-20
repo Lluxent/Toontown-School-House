@@ -107,10 +107,10 @@ GlobalStreetNames = {20000: ('to', 'on', 'Tutorial Terrace'),
  9200: ('to', 'on', 'Pajama Place'),
  10000: ('to', 'in', 'Bossbot HQ Country Club'),
  10100: ('to the', 'in the', 'Bossbot HQ Lobby'),
- 10200: ('to the', 'in the', 'The Clubhouse'),
- 10500: ('to the', 'in the', 'The Front Three'),
- 10600: ('to the', 'in the', 'The Middle Six'),
- 10700: ('to the', 'in the', 'The Back Nine'),
+ 10200: ('to', 'in', 'The Clubhouse'),
+ 10500: ('to', 'in', 'The Front Three'),
+ 10600: ('to', 'in', 'The Middle Six'),
+ 10700: ('to', 'in', 'The Back Nine'),
  11000: ('to the', 'in the', 'Sellbot HQ Courtyard'),
  11100: ('to the', 'in the', 'Sellbot HQ Lobby'),
  11200: ('to the', 'in the', 'Sellbot Factory'),
@@ -328,6 +328,15 @@ QuestsMintQuestSCString = 'I need to defeat %(objective)s%(location)s.'
 QuestsMintQuestDesc = 'a Cog Mint'
 QuestsMintQuestDescC = '%(count)s Cog Mints'
 QuestsMintQuestDescI = 'some Cog Mints'
+QuestCGCQuestCGC = 'Cog Golf Course'
+QuestsCGCQuestCGCs = 'Cog Golf Courses'
+QuestsCGCQuestHeadline = 'INFILTRATE'
+QuestsCGCQuestProgressString = '%(progress)s of %(num)s defeated'
+QuestsCGCQuestString = 'Infiltrate %s'
+QuestsCGCQuestSCString = 'I need to infiltrate %(objective)s%(location)s.'
+QuestsCGCQuestDesc = 'a Cog Golf Course'
+QuestsCGCQuestDescC = '%(count)s Cog Golf Courses'
+QuestsCGCQuestDescI = 'some Cog Golf Courses'
 QuestsRescueQuestProgress = '%(progress)s of %(numToons)s rescued'
 QuestsRescueQuestHeadline = 'RESCUE'
 QuestsRescueQuestSCStringS = 'I need to rescue a Toon%(toonLoc)s.'
@@ -442,7 +451,7 @@ QuestsStreetLocationThisStreet = 'on this street'
 QuestsStreetLocationNamedPlayground = 'in the %s playground'
 QuestsStreetLocationNamedStreet = 'on %(toStreetName)s in %(toHoodName)s'
 QuestsLocationString = '%(string)s%(location)s'
-QuestsLocationBuilding = "%s's building is called"
+QuestsLocationBuilding = "%s's at"
 QuestsLocationBuildingVerb = 'which is'
 QuestsLocationParagraph = '\x07%(building)s "%(buildingName)s"...\x07...%(buildingVerb)s %(street)s.'
 QuestsGenericFinishSCString = 'I need to finish a ToonTask.'
@@ -454,121 +463,13 @@ QuestsLargeBag = 'Large Bag'
 QuestsSmallBackpack = 'Small Backpack'
 QuestsMediumBackpack = 'Medium Backpack'
 QuestsLargeBackpack = 'Large Backpack'
-QuestsItemDict = {1: ['Pair of Glasses', 'Pairs of Glasses', 'a '],
- 2: ['Key', 'Keys', 'a '],
- 3: ['Blackboard', 'Blackboards', 'a '],
- 4: ['Book', 'Books', 'a '],
- 5: ['Candy Bar', 'Candy Bars', 'a '],
- 6: ['Piece of Chalk', 'Pieces of Chalk', 'a '],
- 7: ['Recipe', 'Recipes', 'a '],
- 8: ['Note', 'Notes', 'a '],
- 9: ['Adding machine', 'Adding machines', 'an '],
- 10: ['Clown car tire', 'Clown car tires', 'a '],
- 11: ['Air pump', 'Air pumps', 'an '],
- 12: ['Octopus ink', 'Octopus inks', 'some '],
- 13: ['Package', 'Package', 'a '],
- 14: ['Goldfish receipt', 'Goldfish receipts', 'a '],
- 15: ['Goldfish', 'Goldfish', 'a '],
- 16: ['Oil', 'Oils', 'some '],
- 17: ['Grease', 'Greases', 'some '],
- 18: ['Water', 'Waters', 'some '],
- 19: ['Gear report', 'Gear reports', 'a '],
- 20: ['Blackboard Eraser', 'Blackboard Erasers', 'a '],
- 110: ['TIP Clothing Ticket', 'Clothing Tickets', 'a '],
- 1000: ['Clothing Ticket', 'Clothing Tickets', 'a '],
- 2001: ['Inner Tube', 'Inner Tubes', 'an '],
- 2002: ['Monocle Prescription', 'Monocle Prescriptions', 'a '],
- 2003: ['Eyeglass Frames', 'Eyeglass Frames', 'some '],
- 2004: ['Monocle', 'Monocles', 'a '],
- 2005: ['Big White Wig', 'Big White Wigs', 'a '],
- 2006: ['Bushel of Ballast', 'Bushels of Ballast', 'a '],
- 2007: ['Cog Gear', 'Cog Gears', 'a '],
- 2008: ['Sea Chart', 'Sea Charts', 'a '],
- 2009: ['Cruddy Clovis', 'Cruddy Clovi', 'a '],
- 2010: ['Clean Clovis', 'Clean Clovi', 'a '],
- 2011: ['Clock Spring', 'Clock Springs', 'a '],
- 2012: ['Counter Weight', 'Counter Weights', 'a '],
- 4001: ["Tina's Inventory", "Tina's Inventories", ''],
- 4002: ["Yuki's Inventory", "Yuki's Inventories", ''],
- 4003: ['Inventory Form', 'Inventory Forms', 'an '],
- 4004: ["Fifi's Inventory", "Fifi's Inventories", ''],
- 4005: ["Lumber Jack's Ticket", "Lumber Jack's Tickets", ''],
- 4006: ["Tabitha's Ticket", "Tabitha's Tickets", ''],
- 4007: ["Barry's Ticket", "Barry's Tickets", ''],
- 4008: ['Cloudy Castanet', 'Cloudy Castanets', ''],
- 4009: ['Blue Squid Ink', 'Blue Squid Ink', 'some '],
- 4010: ['Clear Castanet', 'Clear Castanets', 'a '],
- 4011: ["Leo's Lyrics", "Leo's Lyrics", ''],
- 5001: ['Silk necktie', 'Silk neckties', 'a '],
- 5002: ['Pinstripe Suit', 'Pinstripe Suits', 'a '],
- 5003: ['Pair of Scissors', 'Pairs of Scissors', 'a '],
- 5004: ['Postcard', 'Postcards', 'a '],
- 5005: ['Pen', 'Pens', 'a '],
- 5006: ['Inkwell', 'Inkwells', 'an '],
- 5007: ['Notepad', 'Notepads', 'a '],
- 5008: ['Office Lockbox', 'Office Lockboxes', 'an '],
- 5009: ['Bag of Bird Seed', 'Bags of Bird Seed', 'a '],
- 5010: ['Sprocket', 'Sprockets', 'a '],
- 5011: ['Salad', 'Salads', 'a '],
- 5012: ['Key to ' + lDaisyGardens, 'Keys to ' + lDaisyGardens, 'a '],
- 5013: [lSellbotHQ + ' Blueprints', lSellbotHQ + ' HQ Blueprints', 'some '],
- 5014: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
- 5015: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
- 5016: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
- 5017: [lSellbotHQ + ' Memo', lSellbotHQ + ' Memos', 'a '],
- 3001: ['Soccer ball', 'Soccer balls', 'a '],
- 3002: ['Toboggan', 'Toboggans', 'a '],
- 3003: ['Ice cube', 'Ice cubes', 'an '],
- 3004: ['Love letter', 'Love letters', 'a '],
- 3005: ['Wiener dog', 'Wiener dogs', 'a '],
- 3006: ['Engagement ring', 'Engagement rings', 'an '],
- 3007: ['Sardine whiskers', 'Sardine whiskers', 'some '],
- 3008: ['Calming potion', 'Calming potion', 'a '],
- 3009: ['Broken tooth', 'Broken teeth', 'a '],
- 3010: ['Gold tooth', 'Gold teeth', 'a '],
- 3011: ['Pine cone bread', 'Pine cone breads', 'a '],
- 3012: ['Lumpy cheese', 'Lumpy cheeses', 'some '],
- 3013: ['Simple spoon', 'Simple spoons', 'a '],
- 3014: ['Talking toad', 'Talking toad', 'a '],
- 3015: ['Ice cream cone', 'Ice cream cones', 'an '],
- 3016: ['Wig powder', 'Wig powders', 'some '],
- 3017: ['Rubber ducky', 'Rubber duckies', 'a '],
- 3018: ['Fuzzy dice', 'Fuzzy dice', 'some '],
- 3019: ['Microphone', 'Microphones', 'a '],
- 3020: ['Electric keyboard', 'Electric keyboards', 'an '],
- 3021: ['Platform shoes', 'Platform shoes', 'some '],
- 3022: ['Caviar', 'Caviar', 'some '],
- 3023: ['Make-up powder', 'Make-up powders', 'some '],
- 3024: ['Yarn', 'Yarn', 'some '],
- 3025: ['Knitting Needle', 'Knitting Needles', 'a '],
- 3026: ['Alibi', 'Alibis', 'an '],
- 3027: ['External Temperature Sensor', 'External Temperature Sensors', 'an '],
- 6001: ['Cashbot HQ Plans', 'Cashbot HQ Plans', 'some '],
- 6002: ['Rod', 'Rods', 'a '],
- 6003: ['Drive Belt', 'Drive Belts', 'a '],
- 6004: ['Pair of Pincers', 'Pairs of Pincers', 'a '],
- 6005: ['Reading Lamp', 'Reading Lamps', 'a '],
- 6006: ['Zither', 'Zithers', 'a '],
- 6007: ['Zamboni', 'Zambonis', 'a '],
- 6008: ['Zebra Zabuton', 'Zebra Zabutons', 'a '],
- 6009: ['Zinnias', 'Zinnias', 'some '],
- 6010: ['Zydeco Records', 'Zydeco Records', 'some '],
- 6011: ['Zucchini', 'Zucchinis', 'a '],
- 6012: ['Zoot Suit', 'Zoot Suits', 'a '],
- 7001: ['Plain Bed', 'Plain Beds', 'a '],
- 7002: ['Fancy Bed', 'Fancy Beds', 'a '],
- 7003: ['Blue Bedspread', 'Blue Bedspreads', 'a '],
- 7004: ['Paisley Bedspread', 'Paisley Bedspreads', 'a '],
- 7005: ['Pillows', 'Pillows', 'some '],
- 7006: ['Hard Pillows', 'Hard Pillows', 'some '],
- 7007: ['Pajamas', 'Pajamas', 'a pair of '],
- 7008: ['Footie Pajamas', 'Footie Pajamas', 'a pair of '],
- 7009: ['Puce Footie Pajamas', 'Puce Footie Pajamas', 'a pair of '],
- 7010: ['Fuchsia Footie Pajamas', 'Fuchsia Footie Pajamas', 'a pair of '],
- 7011: ['Cauliflower Coral', 'Cauliflower Coral', 'some '],
- 7012: ['Slimy Kelp', 'Slimy Kelp', 'some '],
- 7013: ['Pestle', 'Pestles', 'a '],
- 7014: ['Jar of Wrinkle Cream', 'Jars of Wrinkle Cream', 'a ']}
+QuestsItemDict = {
+  1: ['Note', 'Notes', 'some '],
+  2: ['Actual Note', 'Actual Notes', 'some '],
+  3: ['Microphone', 'Microphones', 'some '],
+  4: ['Set of Sound Equipment', 'Sets of Sound Equipment', 'a '],
+  5: ['Sound Mixer', 'Sound Mixers', 'a ']
+}
 QuestsHQOfficerFillin = lHQOfficerM
 QuestsHQWhereFillin = ''
 QuestsHQBuildingNameFillin = lToonHQ
@@ -598,15 +499,303 @@ TheBrrrghTrackQuestDict = {GREETING: '',
 QuestDialog_3225 = {QUEST: "Oh, thanks for coming, _avName_!\x07The Cogs in the neighborhood frightened away my delivery person.\x07I don't have anyone to deliver this salad to _toNpcName_!\x07Can you do it for me? Thanks so much!_where_"}
 QuestDialog_2910 = {QUEST: 'Back so soon?\x07Great job on the spring.\x07The final item is a counter weight.\x07Stop by and see _toNpcName_ and bring back whatever you can get._where_'}
 QuestDialogDict = {
-       175: 
-              {
-                     GREETING: '',
-                     QUEST: "",
-                     INCOMPLETE_PROGRESS: '',
-                     COMPLETE: 'Welcome to Toontown!\x07Here\'s a full set of Gags and a boosted Laff Meter to get you started!\x07Keep doing ToonTasks to get more rewards!',
-                     LEAVING: QuestsDefaultLeaving
-              }
-       }
+      110: 
+            {
+                    GREETING: '',
+                    QUEST: "",
+                    INCOMPLETE_PROGRESS: '',
+                    COMPLETE: 'Welcome to Toontown!\x07Do more ToonTasks to get more rewards!',
+                    LEAVING: QuestsDefaultLeaving
+            },
+      190: # the flippy quest
+            {
+                    GREETING: '200 greet',
+                    QUEST: "Hi there, _avName_!\x07Looking to get your hands on some Gags?\x07I think _toNpcName_ has some ideas on what to do._where_",
+                    INCOMPLETE_PROGRESS: '200 incomplete',
+                    COMPLETE: '200 complete',
+                    LEAVING: QuestsDefaultLeaving
+            },  
+      191:
+            {
+                    GREETING: 'Oh, welcome!\x07It\'s good to see you, _avName_.',
+                    QUEST: "Hey, _avName_!\x07Gags?\x07You should talk to _toNpcName_.\x07I know for a fact he has some extra pies laying around._where_",
+                    INCOMPLETE_PROGRESS: '200 incomplete',
+                    COMPLETE: 'For a toon in Toontown, you sure look like you could use some of these.',
+                    LEAVING: QuestsDefaultLeaving
+            },  
+      200: # the meatballs quest
+            {
+                    GREETING: '200 greet',
+                    QUEST: "Hi there, _avName_!\x07_toNpcName_\'s been talking about getting some lunch.\x07Maybe you can help her out?_where_",
+                    INCOMPLETE_PROGRESS: '200 incomplete',
+                    COMPLETE: '200 complete',
+                    LEAVING: QuestsDefaultLeaving
+            },     
+      201: 
+            {
+                    GREETING: '201 greet',
+                    QUEST: "Oh, hey there, _avName_.\x07You ever just wake up craving some meatballs?\x07Me too.\x07Would you be a good friend for me and get me some?\x07I\'ve heard _toNpcName_ has the best ones in all of Toontown._where_",
+                    INCOMPLETE_PROGRESS: '201 incomplete',
+                    COMPLETE: '201 complete',
+                    LEAVING: QuestsDefaultLeaving
+            } ,
+      202: 
+            {
+                    GREETING: '202 greet',
+                    QUEST: "Hi, _avName_! What can I get for you?\x07A thousand meatballs? NOW?!\x07Sorry! A request like that will need some time, I hope you understand.\x07In the meantime, can you clear some of those Cogs out there?\x07They\'ve been such an annoyance recently.\x07Thanks!",
+                    INCOMPLETE_PROGRESS: '202 incomplete',
+                    COMPLETE: '202 complete',
+                    LEAVING: QuestsDefaultLeaving
+            },
+      203: 
+            {
+                    GREETING: '203 greet',
+                    QUEST: "Alrighty!\x07I\'ve got your meatballs right here!",
+                    INCOMPLETE_PROGRESS: '203 incomplete',
+                    COMPLETE: '203 complete',
+                    LEAVING: QuestsDefaultLeaving
+            },
+      204: 
+            {
+                    GREETING: 'Hi, again!',
+                    QUEST: "Owoooo!\x07Those meatballs really do wonders for me.\x07...\x07You\'re still here?\x07Oh, right! Your reward.\x07Uh... I forgot what it was.\x07Go get a Flunky for me or something while I figure it out.",
+                    INCOMPLETE_PROGRESS: 'Nooooo! Where are my meatballs!',
+                    COMPLETE: 'Already back?\x07Well, thanks again for the meatballs!',
+                    LEAVING: QuestsDefaultLeaving
+            },
+  210:  # the drop quest
+  {
+    GREETING: '210 greeting',
+    QUEST:    'Hi there, _avName_!\x07Drop gags?\x07Owoooo! Those are some of the heaviest gags in all of Toontown.\x07If anyone knows where to get some of those, it\'s gonna be _toNpcName_._where_',
+    INCOMPLETE_PROGRESS:  '210 inc',
+    COMPLETE: '210 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  211:
+  {
+    GREETING: '210 greeting',
+    QUEST:    'What\'s up, _avName_?\x07You want Drop gags?\x07Hmm, can\'t really say I know where to get my hands on those.\x07Huh?\x07Who told you that? I have no idea where to get Drop gags!\x07Hmm...\x07Well, I know someone who MIGHT know.\x07Her name is _toNpcName_ but she\'s ALLLLLL the way in The Brrrgh.\x07It\'s WAY too cold for me over there, so uh...\x07This one\'s all you, _avName_.\x07Good luck out there! Bring a sweater._where_',
+    INCOMPLETE_PROGRESS:  '210 inc',
+    COMPLETE: '210 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  212:
+  {
+    GREETING: '211 greeting',
+    QUEST:    'Welcome to Dropping Degrees Diner! What can I get for you?\x07Huh, Drop gags?\x07What does this look like?! This is a DINER!\x07What?\x07Just because my diner has the word \'Drop\' in it doesn\'t mean I have any of what you\'re looking for.\x07Haven\'t had a customer in weeks because of all the Lawbots out there.\x07Tell you what, clear some of them out and I\'ll tell you where you can get some Drop Gags.',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: '211 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  213:
+  {
+    GREETING: '211 greeting',
+    QUEST:    'Thanks for that, seriously.\x07Hopefully now I can get some ACTUAL customers around here.\x07No offense.\x07ANYWAYS, I think you should try asking _toNpcName_.\x07She\'s sure knowledgable when it comes to the hefty stuff, so she probably knows where to get some Drop Gags._where_',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: '211 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  214:
+  {
+    GREETING: '211 greeting',
+    QUEST:    'Drop gags?\x07Why would I know anything about that?\x07...!\x07Are you really saying what I think you\'re saying...?\x07Just because I\'m BIG doesn\'t mean anything!\x07...\x07However, luckily for you, I DO know someone who knows where to get Drop gags.\x07But you made me angry, so please leave.',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: '211 complete',
+    LEAVING:  '',
+  },
+  215:
+  {
+    GREETING: '211 greeting',
+    QUEST:    'Heyyyyy, _avName_.\x07Got those Drop gags?\x07...no?\x07She got mad? Why?\x07Oh.\x07BWAH HAH HAH!\x07EVERYONE knows you don\'t bring up being BIG to BIG Mama!\x07Here, I\'ll apologize to her for you.\x07You can go back to her now, she\'ll probably still be angry, but at least she\'ll listen to you._where_',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: '211 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  216:
+  {
+    GREETING: '211 greeting',
+    QUEST:    'Oh. It\'s you.\x07Yeah, yeah, you\'re sorry.\x07I don\'t believe you quite yet, you\'ll have to prove it.\x07You think I\'m so big? How about defeating some of the biggest Cogs out there?\x07That\'ll teach you what\'s really big.',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: '211 complete',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  217:
+  {
+    GREETING: 'Yo yo! What\'s up!',
+    QUEST:    'Alright. I believe you.\x07Apology accepted!\x07Now, about those Drop gags.\x07I need you to keep a secret.\x07This, uh, \'Drop gag\' business of his is on the \'Down-Low\' if you know what I mean.\x07You\'re going to want to talk to _toNpcName_.\x07No one ever suspects the cat._where_',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: 'Yeah, yeah! I got those Drop gags right here!\x07Oops.\x07Okay, don\'t look at me like that.\x07I might be out here, but my pal _toNpcName_ ALWAYS has some.\x07He\'s right next door, can\'t miss him!_where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },  
+  218:
+  {
+    GREETING: 'Yo yo! What\'s up!',
+    QUEST:    'Yeah, yeah! I got those Drop gags right here!\x07Oops, I\'m actually out...\x07Okay, don\'t look at me like that.\x07I might be out here, but my pal _toNpcName_ ALWAYS has some.\x07He\'s right next door, can\'t miss him!_where_',
+    INCOMPLETE_PROGRESS:  '211 inc',
+    COMPLETE: 'Drop gags?\x07Why are you the first toon in WEEKS to come to ME for Drop gags?\x07No one appreciates the little guy anymore...\x07They only care about Bessie or Franz these days.\x07It\'s so unfair! I always...\x07Oh.\x07Sorry, I got a bit carried away.\x07Here, use these Drop gags and show them what the little guys are capable of.',
+    LEAVING:  QuestsDefaultLeaving,
+  },  
+# the trap quest
+  220:
+  {
+    QUEST:    'Trap gags?\x07_toNpcName_ definitely has some, I saw her flinging them around a few minutes ago.\x07Why not go on over and she what she says?_where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  221:
+  {
+    QUEST:    'What\'s up, _avName_?\x07Looking for some Trap gags?\x07I\'ve got some extra, if you wouldn\'t mind helping me out with something.\x07Two of my buddies have been struggling with debt recently.\x07Could you go give them a hand?\x07The first is my friend _toNpcName_.\x07Be easy on him, won\'t you?_where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  222:
+  {
+    QUEST:    'Oh, thank goodness you\'re finally here!\x07I don\'t know what to do anymore, this debt is KILLING me.\x07I thought the Cashbots were bad, but that _toNpcName_ has it out for me.\x07Can you talk to him for me please?\x07Maybe if you talk to him, he\'ll lessen my debt.\x07Please, you\'re my last hope!_where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  223:
+  {
+    QUEST:    'Why, hello there, Toon!\x07I don\'t think we\'ve met, and I do not believe I have an outstanding balance for you at my Bank.\x07Care to open an account? Take out a loan?\x07No?\x07Then what business do you care to hold here, Toon?\x07Debt forgiveness?\x07Hah! That toon is so far into his debt that his grandchildren will be paying the interest.\x07Hmm...\x07Those Cashbots have been getting into my businesses lately, trying to instill their money standard of Cogbucks.\x07Say, how about you take care of some of the most important ones, see if you can disrupt their plans a bit?\x07Do that, and I\'ll see what I can do about your friend\'s little problem.',
+    LEAVING:  '',
+  },
+  224:
+  {
+    QUEST:    'Thanks for that, Toon.\x07That\'ll buy me some time to get my foot in the area over there.\x07Anyways, where were we...?\x07Oh right, the debt.\x07Ehh... it\'s pocket change what that Toon owes.\x07Consider it forgiven.\x07If there\'s nothing else I can help you with, Toon, that\'ll be all.',
+    LEAVING:  '',
+  },
+  225:
+  {
+    QUEST:    'What?!\x07Debt totally forgiven?!\x07That\'s crazy! How\'d you pull that one off, _avName_?\x07Tell me later, _toNpcName_ is next, and gee whiz, he\'s been making it seem like that debt is HORRENDOUS.\x07Good luck, _avName_, I believe in you!_where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  226:
+  {
+    QUEST:    'I don\'t have your money, yet! Don\'t hurt me!\x07Oh...?\x07You\'re here to help me?\x07Oh my goodness, thank you, thank you, thank you!\x07Please, I need to get out of this debt as fast as possible, I can\'t afford to pay it off with how few customers I\'ve been having since the Cogs took over.\x07Please help deal with my debt!',
+    LEAVING:  '',
+  },
+  227:
+  {
+    QUEST:    'Back again, Toon?\x07More debt forgiveness?\x07I\'m afraid I won\'t be so lenient this time, Toon.\x07Oh... wait a minute.\x07That Toon you speak of has no business at my bank.\x07Ha ha, you had me excited, Toon.\x07Away with you, now.',
+    LEAVING:  '',
+  },
+  228:
+  {
+    QUEST:    'Huh?\x07No account at Banker Bob\'s?\x07No, no, no! I don\'t have an account there! My account is over at _toNpcName_\'s!\x07Please, hurry!_where_',
+    LEAVING:  '',
+  },
+  229:
+  {
+    QUEST:    'Welcome to Lotsa Lute! How can I help you?\x07Solve a debt?\x07What do you think this is? You aren\'t even the account owner here!\x07Not to mention the debt that Toon has accrued...\x07I have a business to run here! You think I don\'t have bills, too?\x07Hmm...\x07If you manage to get me some extra money, I can forgive this debt.\x07You\'re gonna have to catch one of those stronger Cashbots off guard, though.\x07Somewhere it wouldn\'t see it coming.\x07I\'ll be here when you get me my money.',
+    LEAVING:  '',
+  },
+  230:
+  {
+    QUEST:    'Hehe, thanks for that.\x07Money like this doesn\'t come by easily, you know?\x07Anyways, yeah, forget about the debt, because I already have.\x07If there\'s nothing else I can help you with, then have a nice one.',
+    LEAVING:  '',
+  },
+  231:
+  {
+    GREETING: 'Hey, _avName_!',
+    QUEST:    'Thank you, thank you, thank you so much!\x07You\'re a life saver, _avName_. Seriously.\x07If you had not been there, I don\'t know what I would\'ve done!\x07If you ever need any rakes, I\'m your Toon!\x07I\'ll go ahead and send some over to _toNpcName_ for you.\x07Go on over to her and pick them up!_where_',
+    COMPLETE: 'Just heard the good news, and thank you for all your help!\x07Don\'t know where we\'d be without you.\x07Jake just sent these over, enjoy!',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+# the sound quest
+  240:
+  {
+    QUEST:    'Hi, again, _avName_.\x07Sound gags?\x07You\'ll probably want to start by asking _toNpcName_.\x07I heard she could use an extra hand anyways._where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  241:
+  {
+    QUEST:    'A new student approaches!\x07_avName_, huh?\x07Nice to meet you, _avName_!\x07It seems like EVERYONE these days wants to get their paws on some Sound gags!\x07Let\'s get started immediately!\x07Oh no...\x07I seem to have misplaced my notes...\x07Could you help me look for them?\x07We\'ll get started right as soon as I find them...',
+    INCOMPLETE_PROGRESS:  '241 inc',
+    LEAVING:  '',
+  },  
+  242:
+  {
+    QUEST:    'Oh, thank you!\x07You found them!\x07No, wait...\x07These aren\'t my notes! These are just some recipes I was going to cook.\x07A mouse gets hungry you know!\x07Can you help me find the real ones?',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  },    
+  243:
+  {
+    QUEST:    'There they are!\x07Okay... on my notes, looks like it says we\'ll need a few more things to get started.\x07I actually don\'t have this equipment for me right now, it\'s being rented out by a friend of mine for a project.\x07Maybe she\'s done with it? She\'s probably at her studio right now._where_',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  },     
+  244:
+  {
+    QUEST:    'Hello! How can I help you?\x07Oh, sound equipment?\x07Sure! We just finished our project today, but...\x07I actually didn\'t bring back the equipment we used back here.\x07I was planning on picking it all up to return later today after I closed up shop.\x07If you need it, unfortunately you\'re going to need to get it yourself.\x07There are three items, the first which is a Sound Modulator.\x07If I recall correctly, we left it at my pal _toNpcName_\'s place._where_',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  }, 
+  245:
+  {
+    QUEST:    'Welcome!\x07A modulator?\x07Yes, actually, I have it for you right here!\x07Here you go!',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  QuestsDefaultLeaving,
+  },  
+  246:
+  {
+    QUEST:    'Back already?\x07Well, good! The next item on the list is a set of Microphones.\x07I remember leaving those with _toNpcName_ at his repair shop.\x07We ended up being a little... rough, with the microphones.\x07Heh.\x07Don\'t look at me like that!',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  },     
+  247:
+  {
+    QUEST:    'Hiya! Welcome to my repair shop!\x07Microphones? Ooh, you\'re here to pick them up, aren\'t you?\x07Unfortunately, a band of Sellbots came in and stole them all from me as soon as I fixed \'em all up.\x07Could you get them back for me?',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  QuestsDefaultLeaving,
+  },     
+  248:
+  {
+    QUEST:    'Thanks for getting those back!\x07If you ever need anything fixed, you know where to find me!',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  QuestsDefaultLeaving,
+  },       
+  249:
+  {
+    QUEST:    'Ooh, the microphones!\x07Huh, why do they smell like oil?\x07Anyways, one last thing on our list.\x07The last thing we\'ll need to get back is a Mixer.\x07I know for certain it\'ll be at _toNpcName_\'s place._where_',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  },   
+  250:
+  {
+    QUEST:    'A Sound Mixer?\x07Oh! I know just the one!\x07Uh... it isn\'t quite here...\x07It MAY have fallen into the pond when we were recording...\x07It wasn\'t my fault, though!\x07Don\'t stare at me like that...',
+    INCOMPLETE_PROGRESS:  '242 inc',
+    LEAVING:  '',
+  },     
+  251:
+  {
+    GREETING: 'Welcome back, _avName_!',
+    QUEST:    'There it is! The sound mixer.\x07I\'ll dry it off for you and then you can take it back.\x07Send _toNpcName_ my regards!',
+    COMPLETE: 'Why do you look so upset?\x07...and why does my equipment smell like butterflies, oil, and pond water...?\x07Never mind that, it\'s time to begin your training!\x07Okay, Sound gag training...\x07Step one:\x07Use it.\x07All the time.\x07That\'s it! You learned how to use Sound gags!\x07...\x07Why are you looking at me like that?',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  260:
+  {
+    QUEST:    'Hi there, _avName_.\x07Squirt gags?\x07There\'s only one Toon I know that knows all there is to know about those.\x07Head on over to _toNpcName_, she\'ll tell you what to do._where_',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  261:
+  {
+    QUEST:    '\"Let\'s use Squirt!\"\x07I bet that\'s what you were going to say, right?\x07Hehe, just a little joke Toons tell me from time to time.\x07Squirt gags?\x07Tell you what, I\'ll give you some Squirt gags if you help me with a little problem I\'ve been having.\x07See, the Toon Resistance thinks I\'m not contributing as much as I should, so...\x07Could you defeat some big Sellbots down the road?\x07It\'d really help me out.',
+    LEAVING:  '',
+  },  
+  262:
+  {
+    GREETING: 'Owoooo! That\'s how it\'s done, _avName_!',
+    QUEST:    'See, no biggie!\x07I doubt just one of those big Cogs will be enough, so...\x07Can you take care of some Cashbots, too?\x07It\'ll be down the road from Dreamland.',
+    COMPLETE: 'Knew you could do it, from the start!\x07As promised, I\'ll share with you the secret of my water...\x07... gag.',
+    LEAVING:  QuestsDefaultLeaving,
+  },
+  305:
+  {
+    GREETING: 'Welcome back, _avName_, bet that was fun, huh?',
+    QUEST:    'You really want Toon-Up gags?\x07Literally no one wants those.\x07You\'re joking, right?\x07No?\x07BWAH HAH HAH!\x07...\x07Oh, you really AREN\'T joking.\x07That\'s just sad, then.\x07Hmm... well I can\'t just give them to you.\x07Do a Front Three.\x07That\'s it.',
+    COMPLETE: 'Hope it was worth it.\x07Here you go.',
+    LEAVING:  '',
+  },
+         }
 ChatGarblerDog = ['woof', 'arf', 'rruff']
 ChatGarblerCat = ['meow', 'mew']
 ChatGarblerMouse = ['squeak', 'squeaky', 'squeakity']
@@ -3636,9 +3825,9 @@ InventoryPass = 'PASS'
 InventoryFire = 'FIRE'
 InventoryClickToAttack = 'Click a\ngag to\nattack'
 InventoryDamageBonus = '(+%d)'
-NPCForceAcknowledgeMessage = "You must ride the trolley before leaving.\n\n\n\n\n\n\n\n\nYou can find the trolley next to Goofy's Gag Shop."
+NPCForceAcknowledgeMessage = "You must talk to npc rabbit before leaving.\n\n\n\n\n\n\n\n\nYou can find her to the right of Loopy Lane."
 NPCForceAcknowledgeMessage2 = 'You must return to Toon Headquarters before leaving.\n\n\n\n\n\n\n\n\n\nToon Headquarters is located near the center of the playground.'
-NPCForceAcknowledgeMessage3 = "Remember to ride the trolley.\n\n\n\n\n\n\n\nYou can find the trolley next to Goofy's Gag Shop."
+NPCForceAcknowledgeMessage3 = "Remember to talk to npc rabbit.\n\n\n\n\n\n\n\nShe's to the right of the Loopy Lane tunnel."
 NPCForceAcknowledgeMessage4 = 'Congratulations!  You found and rode the trolley!\n\n\n\n\n\n\n\n\n\nNow report back to Toon Headquarters.'
 NPCForceAcknowledgeMessage5 = "Don't forget your ToonTask!\n\n\n\n\n\n\n\n\n\n\nYou can find Cogs to defeat on the other side of tunnels like this."
 NPCForceAcknowledgeMessage6 = 'Great job defeating those Cogs!\n\n\n\n\n\n\n\n\nHead back to Toon Headquarters as soon as possible.'

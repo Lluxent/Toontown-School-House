@@ -12,6 +12,7 @@ from toontown.toonbase import TTLocalizer
 from direct.showbase import PythonUtil
 import time, types, random
 notify = DirectNotifyGlobal.directNotify.newCategory('Quests')
+notify.setDebug(True)
 ItemDict = TTLocalizer.QuestsItemDict
 CompleteString = TTLocalizer.QuestsCompleteString
 NotChosenString = TTLocalizer.QuestsNotChosenString
@@ -254,6 +255,9 @@ class Quest:
 
     def checkNumMints(self, num):
         self.check(1, 'invalid num mints: %s' % num)
+
+    def checkNumCGCs(self, num):
+        self.check(1, 'invalid num cgcs: %s' % num)
 
     def checkNumCogParts(self, num):
         self.check(1, 'invalid num cog parts: %s' % num)
@@ -1273,6 +1277,60 @@ class MintQuest(LocationBasedQuest):
     def doesMintCount(self, avId, location, avList):
         return self.isLocationMatch(location)
 
+class CGCQuest(LocationBasedQuest):
+    def __init__(self, id, quest):
+        LocationBasedQuest.__init__(self, id, quest)
+        self.checkNumCGCs(self.quest[1])
+
+    def getNumQuestItems(self):
+        return self.getNumCGC()
+
+    def getNumCGC(self):
+        return self.quest[1]
+
+    def getCompletionStatus(self, av, questDesc, npc = None):
+        questId, fromNpcId, toNpcId, rewardId, toonProgress = questDesc
+        questComplete = toonProgress >= self.getNumCGC()
+        return getCompleteStatusWithNpc(questComplete, toNpcId, npc)
+
+    def getProgressString(self, avatar, questDesc):
+        if self.getCompletionStatus(avatar, questDesc) == COMPLETE:
+            return CompleteString
+        elif self.getNumCGC() == 1:
+            return ''
+        else:
+            return TTLocalizer.QuestsCGCQuestProgressString % {'progress': questDesc[4],
+             'num': self.getNumCGC()}
+
+    def getObjectiveStrings(self):
+        count = self.getNumCGC()
+        if count == 1:
+            text = TTLocalizer.QuestsCGCQuestDesc
+        else:
+            text = TTLocalizer.QuestsCGCQuestDescC % {'count': count}
+        return (text,)
+
+    def getString(self):
+        return TTLocalizer.QuestsCGCQuestString % self.getObjectiveStrings()[0]
+
+    def getSCStrings(self, toNpcId, progress):
+        if progress >= self.getNumCGC():
+            return getFinishToonTaskSCStrings(toNpcId)
+        count = self.getNumCGC()
+        if count == 1:
+            objective = TTLocalizer.QuestsCGCQuestDesc
+        else:
+            objective = TTLocalizer.QuestsCGCQuestDescI
+        location = self.getLocationName()
+        return TTLocalizer.QuestsCGCQuestSCString % {'objective': objective,
+         'location': location}
+
+    def getHeadlineString(self):
+        return TTLocalizer.QuestsCGCQuestHeadline
+
+    def doesCGCCount(self, avId, location, avList):
+        return self.isLocationMatch(location)
+
 
 class MintNewbieQuest(MintQuest, NewbieQuest):
     def __init__(self, id, quest):
@@ -2009,36 +2067,265 @@ NoRewardTierZeroQuests = ()
 RewardTierZeroQuests = ()
 PreClarabelleQuestIds = NoRewardTierZeroQuests + RewardTierZeroQuests
 QuestDict = {
-       101: [TT_TIER,
+101:   [TT_TIER,
        Start,
        (CogQuest, Anywhere, 1, 'f'),
        Any, ToonHQ, NA, 110,
        DefaultDialog],
-       110: [TT_TIER,
+110:   [TT_TIER,
        Cont,
        (VisitQuest,),
        Any, 7777, 100, NA,
-       TTLocalizer.QuestDialogDict[175]],
-       200: [ELDER_TIER,
+       TTLocalizer.QuestDialogDict[110]],
+# UNLOCK THROW
+190:   [TT_TIER + 1,    
        Start,
-       (CogQuest, Anywhere, 4, Any),
-       Any, 7777, Any, NA,
+       (VisitQuest,),
+       Any, 7777, NA, 191,
+       TTLocalizer.QuestDialogDict[190]],
+191:   [TT_TIER + 1,
+       Cont,
+       (VisitQuest,),
+       Same, 2001, 780, NA,
+       TTLocalizer.QuestDialogDict[191]],
+# npc rabbit wants meatballs - UNLOCK LURE
+200:   [TT_TIER + 2,    
+       Start,
+       (VisitQuest,),
+       Any, 7777, NA, 201,
+       TTLocalizer.QuestDialogDict[200]],
+201:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       7777, 2219, NA, 202, 
+       TTLocalizer.QuestDialogDict[201]],
+202:   [TT_TIER + 2,
+       Cont,
+       (CogQuest, ToontownGlobals.LoopyLane, 4, Any),
+       Same, Same, NA, 203,
+       TTLocalizer.QuestDialogDict[202]],   
+203:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       Same, 7777, NA, 204,
+       TTLocalizer.QuestDialogDict[203]],
+204:   [TT_TIER + 2,
+       Cont,
+       (CogQuest, ToontownGlobals.ToontownCentral, 1, 'f'),
+       Same, Same, 781, NA,
+       TTLocalizer.QuestDialogDict[204]],
+# UNLOCK DROP QUESTLINE
+210:   [TT_TIER + 2,
+       Start,
+       (VisitQuest, ),
+       Any, 7777, NA, 211,
+       TTLocalizer.QuestDialogDict[210]],
+211:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       7777, 3211, NA, 212,
+       TTLocalizer.QuestDialogDict[211]],
+212:   [TT_TIER + 2,
+       Cont,
+       (CogTrackQuest, Any, 1, 'l'),
+       Same, Same, NA, 213,
+       TTLocalizer.QuestDialogDict[212]],
+213:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       Same, 9102, NA, 214,
+       TTLocalizer.QuestDialogDict[213]],
+214:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       9102, 7777, NA, 215,
+       TTLocalizer.QuestDialogDict[214]],
+215:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       7777, 9102, NA, 216,
+       TTLocalizer.QuestDialogDict[215]],
+216:   [TT_TIER + 2,
+       Cont,
+       (CogLevelQuest, Any, 1, 12),
+       Same, Same, NA, 217,
+       TTLocalizer.QuestDialogDict[216]],
+217:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       9102, 4134, NA, 218,
+       TTLocalizer.QuestDialogDict[217]],
+218:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest,),
+       4134, 4140, 782, NA,
+       TTLocalizer.QuestDialogDict[218]],
+# UNLOCK TRAP QUESTLINE
+220:   [TT_TIER + 2, # go to rabbit
+       Start,
+       (VisitQuest, ),
+       Any, 7777, NA, 221,
+       TTLocalizer.QuestDialogDict[220]],
+221:   [TT_TIER + 2, # go to leif pyle
+       Cont,
+       (VisitQuest, ),
+       7777, 5122, NA, 222,
+       TTLocalizer.QuestDialogDict[221]],
+222:   [TT_TIER + 2, # go to banker bob
+       Cont,
+       (VisitQuest, ),
+       5122, 2002, NA, 223,
+       TTLocalizer.QuestDialogDict[222]],
+223:   [TT_TIER + 2,
+       Cont,
+       (CogTrackQuest, ToontownGlobals.CashbotHQ, 1, 'm'),
+       Same, Same, NA, 224,
+       TTLocalizer.QuestDialogDict[223]],
+224:   [TT_TIER + 2, # go to rabbit
+       Cont,
+       (VisitQuest, ),
+       2002, 7777, NA, 225,
+       TTLocalizer.QuestDialogDict[224]],
+225:   [TT_TIER + 2, # go to jake
+       Cont,
+       (VisitQuest, ),
+       7777, 5201, NA, 226,
+       TTLocalizer.QuestDialogDict[225]],
+226:   [TT_TIER + 2, # go to banker bob
+       Cont,
+       (VisitQuest, ),
+       5201, 2002, NA, 227,
+       TTLocalizer.QuestDialogDict[226]],
+227:   [TT_TIER + 2, # go to jake
+       Cont,
+       (VisitQuest, ),
+       2002, 5201, NA, 228,
+       TTLocalizer.QuestDialogDict[227]],
+228:   [TT_TIER + 2, # go to banker bran
+       Cont,
+       (VisitQuest, ),
+       5201, 4325, NA, 229,
+       TTLocalizer.QuestDialogDict[228]],
+229:   [TT_TIER + 2,
+       Cont,
+       (CogTrackQuest, ToontownGlobals.LawbotHQ, 1, 'm'),
+       Same, Same, NA, 230,
+       TTLocalizer.QuestDialogDict[229]],
+230:   [TT_TIER + 2, # go to jake
+       Cont,
+       (VisitQuest, ),
+       4325, 5201, NA, 231,
+       TTLocalizer.QuestDialogDict[230]],
+231:   [TT_TIER + 2, # go to rabbit
+       Cont,
+       (VisitQuest, ),
+       Any, 7777, 783, NA,
+       TTLocalizer.QuestDialogDict[231]],
+# SOUND QUEST LINE
+240:   [TT_TIER + 2,
+       Start,
+       (VisitQuest, ),
+       Any, 4319, NA, 241,
+       TTLocalizer.QuestDialogDict[240]],
+241:   [TT_TIER + 2,
+       Cont,
+       (RecoverItemQuest, ToontownGlobals.MinniesMelodyland, 3, 1, VeryEasy, Any),
+       Same, Same, NA, 242,
+       TTLocalizer.QuestDialogDict[241]],
+242:   [TT_TIER + 2,
+       Cont,
+       (RecoverItemQuest, ToontownGlobals.MinniesMelodyland, 3, 2, VeryEasy, Any),
+       Same, Same, NA, 243,
+       TTLocalizer.QuestDialogDict[242]],
+243:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       4319, 4213, NA, 244,
+       TTLocalizer.QuestDialogDict[243]],
+244:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       4213, 5104, NA, 245,
+       TTLocalizer.QuestDialogDict[244]],
+245:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       5104, 4213, NA, 246,
+       TTLocalizer.QuestDialogDict[245]],
+246:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       4213, 9130, NA, 247,
+       TTLocalizer.QuestDialogDict[246]],
+247:   [TT_TIER + 2,
+       Cont,
+       (RecoverItemQuest, ToontownGlobals.LullabyLane, 5, 3, VeryEasy, 's', 'track'),
+       Same, Same, NA, 248,
+       TTLocalizer.QuestDialogDict[247]],
+248:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       9130, 4213, NA, 249,
+       TTLocalizer.QuestDialogDict[248]],
+249:   [TT_TIER + 2,
+       Cont,
+       (VisitQuest, ),
+       4213, 1320, NA, 250,
+       TTLocalizer.QuestDialogDict[249]], 
+250:   [TT_TIER + 2,
+       Cont,
+       (RecoverItemQuest, ToontownGlobals.MinniesMelodyland, 1, 5, VeryEasy, AnyFish),
+       Same, Same, NA, 251,
+       TTLocalizer.QuestDialogDict[250]], 
+251:   [TT_TIER + 2,
+       Cont,
+       (DeliverItemQuest, 4),
+       1320, 4319, 784, NA,
+       TTLocalizer.QuestDialogDict[251]],
+
+# SQUIRT QUEST
+260:   [TT_TIER + 2,
+       Start,
+       (VisitQuest, ),
+       Any, 5207, NA, 261,
+       TTLocalizer.QuestDialogDict[260]],
+261:   [TT_TIER + 2,
+       Cont,
+       (CogTrackQuest, ToontownGlobals.SellbotHQ, 20, 's'),
+       Same, Same, NA, 262,
+       TTLocalizer.QuestDialogDict[261]],
+262:   [TT_TIER + 2,
+       Cont,
+       (CogTrackQuest, ToontownGlobals.CashbotHQ, 20, 'm'),
+       Same, Same, 786, NA,
+       TTLocalizer.QuestDialogDict[262]],
+# i am lazy, if you want toon up, fuck you, do a fucking front 3
+305:   [TT_TIER + 2,
+       Start,
+       (CGCQuest, ToontownGlobals.BossbotCountryClubIntA, 1),
+       Any, 2001, 785, NA,
+       TTLocalizer.QuestDialogDict[305]],
+
+400:   [TT_TIER + 2,
+       Start,
+       (CGCQuest, ToontownGlobals.BossbotCountryClubIntA, 1),
+       Any, ToonHQ, 790, NA,
        DefaultDialog],
-       202: [ELDER_TIER,
+401:   [TT_TIER + 2,
        Start,
-       (CogQuest, ToontownGlobals.ToontownCentral, 1, Any),
-       Any, 7777, Any, NA,
+       (CGCQuest, ToontownGlobals.BossbotCountryClubIntC, 1),
+       Any, ToonHQ, 791, NA,
        DefaultDialog],
-       203: [ELDER_TIER,
+410:   [TT_TIER + 2,
        Start,
-       (BuildingQuest, Anywhere, 1, Any, 1),
-       Any, 7777, Any, NA,
-       DefaultDialog],
-       204: [ELDER_TIER,
+       (CogQuest, Anywhere, 1, Any),
+       Any, ToonHQ, 760, NA,
+       DefaultDialog],   
+411:   [TT_TIER + 2,
        Start,
-       (CogNewbieQuest, Anywhere, 1, Any, 137),
-       Any, 7777, Any, NA,
-       DefaultDialog]    
+       (CogQuest, Anywhere, 1, Any),
+       Any, ToonHQ, 760, NA,
+       DefaultDialog], 
 }
 
 Tier2QuestsDict = {}
@@ -2641,6 +2928,165 @@ class MoneyReward(Reward):
         else:
             return TTLocalizer.QuestsMoneyRewardPosterPlural % amt
 
+# unlock track order - LURE > DROP > TRAP > SOUND > TOON-UP
+class UnlockLure(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[2] != 1:
+                     currentTracks[2] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Lure Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Lure Track"
+
+class UnlockDrop(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[6] != 1:
+                     currentTracks[6] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Drop Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Drop Track"
+
+class UnlockTrap(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[1] != 1:
+                     currentTracks[1] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+              # set xp to 20 just to let the avatar have rake at the least
+              av.experience.setExp('trap', av.experience.getExp('trap') + 20)
+              av.b_setExperience(av.experience.makeNetString())
+
+       def getString(self):
+              return "Congratulations! You now have access to the Trap Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Trap Track"
+
+class UnlockSound(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[3] != 1:
+                     currentTracks[3] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Sound Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Sound Track"
+
+class UnlockToonUp(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[0] != 1:
+                     currentTracks[0] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Toon-Up Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Toon-Up Track"
+
+class UnlockSquirt(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[5] != 1:
+                     currentTracks[5] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Squirt Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Squirt Track"
+
+class UnlockThrow(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              currentTracks = av.getTrackAccess()
+              if currentTracks[4] != 1:
+                     currentTracks[4] = 1
+              av.b_setTrackAccess(currentTracks)
+              av.b_setMaxCarry(av.getMaxCarry() + 10)
+
+       def getString(self):
+              return "Congratulations! You now have access to the Throw Track."
+
+       def getPosterString(self):
+              return "Reward: Unlock Throw Track"
+
+class SOSCardReward(Reward):
+       
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+       
+              self.idToStock = reward[0]
+              self.numToStock = reward[1]        
+
+              self.SOSName = NPCToons.getNPCName(self.idToStock)
+
+       def sendRewardAI(self, av):
+              currentSOSKind = av.getNPCFriendsDict().get(self.idToStock, 0)
+              av.NPCFriendsDict.update({self.idToStock: currentSOSKind + self.numToStock})
+              av.d_setNPCFriendsDict(av.NPCFriendsDict)
+
+       def getString(self):
+              return "You received {0} {1} SOS {2}.".format(self.numToStock, self.SOSName, 'Card' if self.numToStock == 1 else 'Cards')
+
+       def getPosterString(self):
+              return "Reward: {0} {1} SOS {2}".format(self.numToStock, self.SOSName, 'Card' if self.numToStock == 1 else 'Cards')
+
+class TrackEXPReward(Reward):
+       def __init__(self, id, reward):
+              Reward.__init__(self, id, reward)
+
+       def sendRewardAI(self, av):
+              for track in ['toon-up', 'trap', 'lure', 'sound', 'throw', 'squirt', 'drop']:
+                     av.experience.setExp(track, av.experience.getExp(track) + self.reward[0])
+              av.b_setExperience(av.experience.makeNetString())
+
+       def getString(self):
+              return "You received {0} Gag Experience on all Tracks.".format(self.reward[0])
+
+       def getPosterString(self):
+              return "Reward: {0} Gag Experience Points".format(self.reward[0])
+       
 
 class MaxToonReward(Reward):
        def __init__(self, id, reward):
@@ -2648,7 +3094,6 @@ class MaxToonReward(Reward):
 
        def sendRewardAI(self, av):
               av.b_setTrackAccess([1, 1, 1, 1, 1, 1, 1])
-              av.b_setMaxCarry(ToontownGlobals.MaxCarryLimit)
               
               from toontown.toon import Experience
 
@@ -2660,8 +3105,12 @@ class MaxToonReward(Reward):
               av.b_setExperience(experience.makeNetString())
 
               av.inventory.zeroInv()
-              av.inventory.maxOutInv(filterUberGags=0, filterPaidGags=0)
-              av.b_setInventory(av.inventory.makeNetString())
+              av.d_setInventory(av.inventory.makeNetString())
+              av.experience.zeroOutExp()
+              av.d_setExperience(av.experience.makeNetString())
+
+              av.b_setTrackAccess([0, 0, 0, 0, 0, 0, 0, 0])
+              av.b_setMaxCarry(0)
 
               av.b_setMaxMoney(2000)
               av.b_setMoney(av.getMaxMoney())
@@ -2698,7 +3147,7 @@ class MaxToonReward(Reward):
               for id in av.getQuests():
                      av.removeQuest(id)
               av.b_setQuestCarryLimit(ToontownGlobals.MaxQuestCarryLimit)
-              av.b_setRewardHistory(LOOPING_FINAL_TIER, av.getRewardHistory()[1])
+              av.b_setRewardHistory(TT_TIER + 1, av.getRewardHistory()[1])
 
               from toontown.fishing import FishGlobals
 
@@ -3085,8 +3534,6 @@ def getReward(id):
 def getNextRewards(numChoices, tier, av):
     rewardTier = list(getRewardsInTier(tier))
     optRewards = list(getOptionalRewardsInTier(tier))
-    if av.getGameAccess() == OTPGlobals.AccessFull and tier == TT_TIER + 3:
-        optRewards = []
     if isLoopingFinalTier(tier):
         rewardHistory = map(lambda questDesc: questDesc[3], av.quests)
         if notify.getDebug():
@@ -3225,6 +3672,18 @@ RewardDict = {100: (MaxToonReward, 1),
  706: (MaxMoneyReward, 200),
  707: (MaxMoneyReward, 250),
  777: (MaxToonReward, 1),
+ 780: (UnlockThrow, 1),
+ 781: (UnlockLure, 1),
+ 782: (UnlockDrop, 1),
+ 783: (UnlockTrap, 1),
+ 784: (UnlockSound, 1),
+ 785: (UnlockToonUp, 1),
+ 786: (UnlockSquirt, 1),
+ 790: (SOSCardReward, 7778, 1),
+ 791: (SOSCardReward, 7778, 2),
+ 760: (TrackEXPReward, 500),
+ 761: (TrackEXPReward, 750),
+ 762: (TrackEXPReward, 1000),
  801: (TrackProgressReward, None, 1),
  802: (TrackProgressReward, None, 2),
  803: (TrackProgressReward, None, 3),
@@ -3721,10 +4180,16 @@ def getRewardIdFromTrackId(trackId):
     return 401 + trackId
 
 
-RequiredRewardTrackDict = {TT_TIER: (777,),
- ELDER_TIER: (620, 621, 622, 623)}
+RequiredRewardTrackDict = {
+       TT_TIER:      (777,),
+       TT_TIER + 1:  (780, ),
+       TT_TIER + 2:  (781, 782, 783, 784, 785, 786, )
+}
 OptionalRewardTrackDict = {
-       ELDER_TIER: (620, 621, 622, 623)}
+       TT_TIER:      (),
+       TT_TIER + 1:  (790, 791, 760, 760, 760, 760),
+       TT_TIER + 2:  (790, 791, 760, 760, 760, 760, 760, 760, 761, 761, 761, 761, 762, 762)
+}
 
 def isRewardOptional(tier, rewardId):
     return tier in OptionalRewardTrackDict and rewardId in OptionalRewardTrackDict[tier]
@@ -3793,6 +4258,8 @@ def avatarWorkingOnRequiredRewards(av):
 def avatarHasAllRequiredRewards(av, tier):
     rewardHistory = list(av.getRewardHistory()[1])
     rewardList = getRewardsInTier(tier)
+    notify.debug('****************************************************************************************')
+    notify.debug('****************************************************************************************')
     notify.debug('checking avatarHasAllRequiredRewards: history: %s, tier: %s' % (rewardHistory, rewardList))
     for rewardId in rewardList:
         if rewardId == 900:

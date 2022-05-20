@@ -102,6 +102,15 @@ class QuestManagerAI:
     def toonDefeatedStage(self, toon, stageId, activeToonVictors):
         pass
 
+    def toonDefeatedCourse(self, toon, courseId, activeToonVictors):
+        for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
+            if isinstance(quest, Quests.CGCQuest):
+                for _ in xrange(quest.doesCGCCount(toon.getDoId(), courseId, activeToonVictors)):
+                    self.__incrementQuestProgress(toon.quests[index])
+
+        if toon.quests:
+            toon.d_setQuests(toon.getQuests())        
+
     def hasTailorClothingTicket(self, toon, npc):
         for index, quest in enumerate(self.__toonQuestsList2Quests(toon.quests)):
             isComplete = quest.getCompletionStatus(toon, toon.quests[index], npc)

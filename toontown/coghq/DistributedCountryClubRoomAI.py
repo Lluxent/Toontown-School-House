@@ -112,6 +112,9 @@ class DistributedCountryClubRoomAI(DistributedLevelAI.DistributedLevelAI, Countr
         for avId in activeVictorIds:
             self.air.writeServerEvent('mintDefeated', avId, description)
 
+        for toon in activeVictors:
+            simbase.air.questManager.toonDefeatedCourse(toon, self.countryClubId, activeVictors)
+
         return
 
     def b_setDefeated(self):

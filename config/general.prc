@@ -9,6 +9,7 @@ notify-level-collide warning
 notify-level-chan warning
 notify-level-gobj warning
 notify-level-loader warning
+notify-level-quests debug
 notify-integrate false
 notify-timestamp true
 default-directnotify-level info
