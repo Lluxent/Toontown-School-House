@@ -1181,6 +1181,8 @@ class BattleCalculatorAI:
                 result = atkInfo['hp']
                 if theSuit.getExecutive():
                     result = int(result * ToontownBattleGlobals.EXECUTIVE_DMG_MULT)
+                if theSuit.getMaxSkeleRevives() > 0 and theSuit.getSkeleRevives() == 0: # if the suit WAS ALREADY V2, AND IS NOW A SKELECOG
+                    result = int(result * ToontownBattleGlobals.V2_SKELECOG_DMG_MULT)
             targetIndex = self.battle.activeToons.index(toonId)
             attack[SUIT_HP_COL][targetIndex] = result
 

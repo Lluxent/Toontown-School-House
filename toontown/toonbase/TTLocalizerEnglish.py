@@ -3798,6 +3798,7 @@ EmoteAnnoyed = 'Annoyed'
 EmoteSleep = 'Sleepy'
 TIPPageTitle = 'TIP'
 SuitBaseNameWithLevel = '%(name)s\n%(dept)s\nLevel %(level)s'
+SuitBaseNameWithLevelExe = '%(name)s\n%(dept)s\nLevel %(level)s' + ExecutivePostFix
 HealthForceAcknowledgeMessage = 'You cannot leave the playground until your Laff meter is smiling!'
 InventoryTotalGags = 'Total gags\n%d / %d'
 InventroyPinkSlips = '%s Pink Slips'

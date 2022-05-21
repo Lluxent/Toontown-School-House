@@ -931,7 +931,7 @@ class Suit(Avatar.Avatar):
         self.healthCondition = 0
         return
 
-    def getLoseActor(self, headless = 0):
+    def getLoseActor(self, headless = False):
         if base.config.GetBool('want-new-cogs', 0):
             if self.find('**/body'):
                 return self
@@ -998,9 +998,15 @@ class Suit(Avatar.Avatar):
             bb.setTwoSided(1)
 
         self.setName(TTLocalizer.Skeleton)
-        nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
-         'dept': self.getStyleDept(),
-         'level': self.getActualLevel()}
+        if self.isExecutive:
+            nameInfo = TTLocalizer.SuitBaseNameWithLevelExe % {'name': self._name,
+            'dept': self.getStyleDept(),
+            'level': self.getActualLevel()}
+            self.setExecutiveColor()
+        else:
+            nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
+            'dept': self.getStyleDept(),
+            'level': self.getActualLevel()}
         self.setDisplayName(nameInfo)
         self.leftHand = self.find('**/joint_Lhold')
         self.rightHand = self.find('**/joint_Rhold')
