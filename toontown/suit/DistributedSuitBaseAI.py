@@ -46,6 +46,8 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
             self.level = lvl - attributes['level'] - 1
         else:
             self.level = SuitBattleGlobals.pickFromFreqList(attributes['freq'])
+        if lvl > attributes['level'] + len(attributes['hp']):
+            self.level = len(attributes['hp']) - 1
         self.notify.debug('Assigning level ' + str(lvl))
         if hasattr(self, 'doId'):
             self.d_setLevelDist(self.level)

@@ -24,6 +24,8 @@ def pickFromFreqList(freqList):
 def getActualFromRelativeLevel(name, relLevel):
     data = SuitAttributes[name]
     actualLevel = data['level'] + relLevel
+    if actualLevel > data['level'] + len(data['hp']):
+        actualLevel = len(data['hp']) - 1
     return actualLevel
 
 

@@ -1693,14 +1693,18 @@ class AbortGame(MagicWord):
 
 class SpawnCog(MagicWord):
     aliases = ["cog"]
-    desc = "Spawns a cog with the defined level"
+    desc = "Spawns a cog with the defined level, executive or not"
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", int, False, 0)]
+    arguments = [("suit", str, True), ("level", int, False, 1), ("specialSuit", str, False, '')]
 
     def handleWord(self, invoker, avId, toon, *args):
         name = args[0]
         level = args[1]
-        specialSuit = args[2]
+        exe = args[2]
+        if exe.lower() not in ["exe", "executive"]:
+            exe = False
+        else:
+            exe = True
         zoneId = invoker.getLocation()[1]
         if name not in SuitDNA.suitHeadTypes:
             return "Suit %s is not a valid suit!" % name
@@ -1711,8 +1715,8 @@ class SpawnCog(MagicWord):
         if not sp:
             return "Unable to spawn %s in current zone." % name
         pointmap = sp.streetPointList
-        sp.createNewSuit([], pointmap, suitName=name, suitLevel=level)
-        return "Spawned %s in current zone." % name
+        sp.createNewSuit([], pointmap, suitName=name, suitLevel=level, executive=exe)
+        return "Spawned %s%s in current zone." % ("Executive " if exe else "", name)
 
 
 class SpawnInvasion(MagicWord):
