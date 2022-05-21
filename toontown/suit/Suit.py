@@ -738,10 +738,13 @@ class Suit(Avatar.Avatar):
         armTex = loader.loadTexture('phase_3.5/maps/e_sleeve_' + self.style.dept + '.png')
         armTex.setMinfilter(Texture.FTNearestMipmapLinear)
         armTex.setMagfilter(Texture.FTNearest)
-        modelRoot.find('**/torso').setTexture(torsoTex, 1)
-        modelRoot.find('**/arms').setTexture(armTex, 1)
-        modelRoot.find('**/legs').setTexture(legTex, 1)
-        modelRoot.find('**/hands').setColor(self.handColor)
+        if not self.isSkeleton:
+            modelRoot.find('**/torso').setTexture(torsoTex, 1)
+            modelRoot.find('**/arms').setTexture(armTex, 1)
+            modelRoot.find('**/legs').setTexture(legTex, 1)
+            modelRoot.find('**/hands').setColor(self.handColor)
+        else:
+            self.setExecutiveColor(modelRoot)
 
     def makeWaiter(self, modelRoot = None):
         if not modelRoot:
@@ -756,9 +759,10 @@ class Suit(Avatar.Avatar):
         armTex = loader.loadTexture('phase_3.5/maps/waiter_m_sleeve.jpg')
         armTex.setMinfilter(Texture.FTLinearMipmapLinear)
         armTex.setMagfilter(Texture.FTLinear)
-        modelRoot.find('**/torso').setTexture(torsoTex, 1)
-        modelRoot.find('**/arms').setTexture(armTex, 1)
-        modelRoot.find('**/legs').setTexture(legTex, 1)
+        if not self.isSkeleton:
+            modelRoot.find('**/torso').setTexture(torsoTex, 1)
+            modelRoot.find('**/arms').setTexture(armTex, 1)
+            modelRoot.find('**/legs').setTexture(legTex, 1)
 
     def makeRentalSuit(self, suitType, modelRoot = None):
         if not modelRoot:

@@ -790,7 +790,7 @@ class InvasionStatus(MagicWord):
 
         invadingCog = invasionMgr.getInvadingCog()
         simbase.air.newsManager.sendUpdateToAvatarId(invoker.getDoId(), 'setInvasionStatus', [
-            ToontownGlobals.SuitInvasionUpdate, invadingCog[0], invasionMgr.numSuits, invadingCog[1]])
+            ToontownGlobals.SuitInvasionUpdate, invadingCog[0], invasionMgr.numSuits, invadingCog[1], invadingCog[2]])
 
 
 class RevealMap(MagicWord):
@@ -1720,16 +1720,27 @@ class SpawnCog(MagicWord):
 
 
 class SpawnInvasion(MagicWord):
-    aliases = ["invasion"]
+    aliases = ["invasion", "inv"]
     desc = "Spawn an invasion on the current AI if one doesn't exist."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
-    arguments = [("command", str, True), ("suit", str, False, "f"), ("amount", int, False, 1000), ("skelecog", bool, False, False)]
+    arguments = [("command", str, True), ("suit", str, False, "f"), ("amount", int, False, 1000), ("skelecog", str, False, "false"), ("executive", str, False, "false")]
 
     def handleWord(self, invoker, avId, toon, *args):
         cmd = args[0]
         name = args[1]
         num = args[2]
         skeleton = args[3]
+        executive = args[4]
+
+        if skeleton.lower() not in ("true", "1", "t"):
+            skeleton = False
+        else:
+            skeleton = True
+
+        if executive.lower() not in ("true", "1", "t"):
+            executive = False
+        else:
+            executive = True
 
         if not 10 <= num <= 25000:
             return "Can't the invasion amount to {}! Specify a value between 10 and 25,000.".format(num)
@@ -1740,13 +1751,25 @@ class SpawnInvasion(MagicWord):
                 return "There is already an invasion on the current AI!"
             if not name in SuitDNA.suitHeadTypes:
                 return "This cog does not exist!"
-            invMgr.startInvasion(name, num, skeleton)
+            invMgr.startInvasion(name, num, skeleton, executive)
+            string = "Starting "
+            if executive and skeleton:
+                string += "an Executive Skelecog "
+            elif executive and not skeleton:
+                string += "an Executive "
+            elif skeleton and not executive:
+                string += "a Skelecog "    
+            else:
+                string += "a "
+            string += SuitBattleGlobals.SuitAttributes[name]['name'] + " Invasion with " + str(num) + " Cogs."
+            return string
         elif cmd == 'stop':
             if not invMgr.getInvading():
                 return "There is no invasion on the current AI!"
             #elif invMgr.undergoingMegaInvasion:
             #    return "The current invasion is a mega invasion, you must stop the holiday to stop the invasion."
             invMgr.stopInvasion()
+            return "Ending current invasion."
         else:
             return "You didn't enter a valid command! Commands are ~invasion start or stop."
 

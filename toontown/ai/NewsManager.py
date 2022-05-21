@@ -58,19 +58,27 @@ class NewsManager(DistributedObject.DistributedObject):
     def sendSystemMessage(self, message, style):
         base.localAvatar.setSystemMessage(style, message)
 
-    def setInvasionStatus(self, msgType, cogType, numRemaining, skeleton):
-        self.notify.info('setInvasionStatus: msgType: %s cogType: %s, numRemaining: %s, skeleton: %s' % (msgType,
+    def setInvasionStatus(self, msgType, cogType, numRemaining, skeleton, executive):
+        self.notify.info('setInvasionStatus: msgType: %s cogType: %s, numRemaining: %s, skeleton: %s, executive: %s' % (msgType,
          cogType,
          numRemaining,
-         skeleton))
+         skeleton,
+         executive))
         cogName = SuitBattleGlobals.SuitAttributes[cogType]['name']
         cogNameP = SuitBattleGlobals.SuitAttributes[cogType]['pluralname']
-        if skeleton:
-            cogName = TTLocalizer.Skeleton
-            cogNameP = TTLocalizer.SkeletonP
         if msgType == ToontownGlobals.SuitInvasionBegin:
-            msg1 = TTLocalizer.SuitInvasionBegin1
-            msg2 = TTLocalizer.SuitInvasionBegin2 % cogNameP
+            if skeleton and executive:
+                msg1 = TTLocalizer.SuitInvasionBeginBoth
+                msg2 = TTLocalizer.SuitInvasionBulletinBoth % cogNameP   
+            elif skeleton and not executive:
+                msg1 = TTLocalizer.SuitInvasionBeginSkele
+                msg2 = TTLocalizer.SuitInvasionBulletinSkele % cogNameP   
+            elif executive and not skeleton:
+                msg1 = TTLocalizer.SuitInvasionBeginExec
+                msg2 = TTLocalizer.SuitInvasionBulletinExec % cogNameP   
+            else:
+                msg1 = TTLocalizer.SuitInvasionBegin1
+                msg2 = TTLocalizer.SuitInvasionBegin2 % cogNameP           
             self.invading = 1
         elif msgType == ToontownGlobals.SuitInvasionUpdate:
             msg1 = TTLocalizer.SuitInvasionUpdate1 % numRemaining
@@ -81,8 +89,15 @@ class NewsManager(DistributedObject.DistributedObject):
             msg2 = TTLocalizer.SuitInvasionEnd2
             self.invading = 0
         elif msgType == ToontownGlobals.SuitInvasionBulletin:
+            if skeleton and executive:
+                msg2 = TTLocalizer.SuitInvasionBulletinBoth % cogNameP   
+            elif skeleton and not executive:
+                msg2 = TTLocalizer.SuitInvasionBulletinSkele % cogNameP   
+            elif executive and not skeleton:
+                msg2 = TTLocalizer.SuitInvasionBulletinExec % cogNameP   
+            else: 
+                msg2 = TTLocalizer.SuitInvasionBulletin2 % cogNameP 
             msg1 = TTLocalizer.SuitInvasionBulletin1
-            msg2 = TTLocalizer.SuitInvasionBulletin2 % cogNameP
             self.invading = 1
         else:
             self.notify.warning('setInvasionStatus: invalid msgType: %s' % msgType)
