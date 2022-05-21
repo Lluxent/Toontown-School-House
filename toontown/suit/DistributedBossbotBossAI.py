@@ -21,10 +21,7 @@ from direct.distributed.ClockDelta import globalClockDelta
 class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBossbotBossAI')
     maxToonLevels = 77
-    toonUpLevels = [1,
-     2,
-     3,
-     4]
+    toonUpLevels = [3, 6, 9, 12]
 
     def __init__(self, air):
         DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'c')
@@ -341,8 +338,10 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
             else:
                 info = self.notDeadList[i]
                 suitType = info[2] - 4
-                suitLevel = info[2]
-                suit = self.__genSuitObject(self.zoneId, suitType, 'c', suitLevel, 1)
+                suitLevel = random.randint(info[2] - 1, info[2] + 3)
+                suit = self.__genSuitObject(self.zoneId, suitType, None, suitLevel, 1)
+                if random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE:
+                    suit.b_setExecutive(1)
             diners.append((suit, 100))
 
         active = []
@@ -351,8 +350,9 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
                 suit = self.__genSuitObject(self.zoneId, 2, 'c', 2, 0)
             else:
                 suitType = 8
-                suitLevel = 12
+                suitLevel = self.diffInfo[2] + 5
                 suit = self.__genSuitObject(self.zoneId, suitType, 'c', suitLevel, 1)
+                suit.b_setExecutive(1)
             active.append(suit)
 
         return {'activeSuits': active,
@@ -370,7 +370,13 @@ class DistributedBossbotBossAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FS
 
     def __setupSuitInfo(self, suit, bldgTrack, suitLevel, suitType):
         dna = SuitDNA.SuitDNA()
-        dna.newSuitRandom(suitType, bldgTrack)
+        if 9 <= suitType < 12:
+            suitType = random.randint(6, 8)
+        elif 12 <= suitType <= 15:
+            suitType = random.randint(7, 8)
+        else:
+            suitType = 8
+        dna.newSuitRandom(level=suitType, dept=bldgTrack)
         suit.dna = dna
         self.notify.debug('Creating suit type ' + suit.dna.name + ' of level ' + str(suitLevel) + ' from type ' + str(suitType) + ' and track ' + str(bldgTrack))
         suit.setLevel(suitLevel)

@@ -1545,36 +1545,14 @@ DinerBattleBPosHpr = (-20,
 BossbotBossMaxDamage = 500
 BossbotMaxSpeedDamage = 90
 BossbotSpeedRecoverRate = 20
-BossbotBossDifficultySettings = [(8,
-  4,
-  11,
-  3,
-  30,
-  25),
- (9,
-  5,
-  12,
-  6,
-  28,
-  26),
- (10,
-  6,
-  11,
-  7,
-  26,
-  27),
- (8,
-  8,
-  12,
-  8,
-  24,
-  28),
- (13,
-  5,
-  12,
-  9,
-  22,
-  29)]
+BossbotBossDifficultySettings = [
+  # number of tables, number of diners per table, diner level, unflatten time, hungry duration, eat duration
+  (8, 4,10,3,30,25),
+  (9, 5,11,6,28,26),
+  (10,6,12,7,26,27),
+  (8, 8,13,8,24,28),
+  (13,5,14,9,22,29)
+ ]
 BossbotRollSpeedMax = 22
 BossbotRollSpeedMin = 7.5
 BossbotTurnSpeedMax = 60
