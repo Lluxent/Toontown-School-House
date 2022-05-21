@@ -149,6 +149,9 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
         else:
             self.currHP = hp
         return None
+    
+    def setMHP(self, hitPoints):
+        self.maxHP = hitPoints
 
     def getDialogueArray(self, *args):
         return Suit.Suit.getDialogueArray(self, *args)
@@ -415,8 +418,10 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
                         self.sillySurgeText = True
                         if attackTrack in TTLocalizer.InteractivePropTrackBonusTerms:
                             self.HpTextGenerator.setText(str(number) + '\n' + TTLocalizer.InteractivePropTrackBonusTerms[attackTrack])
-                else:
+                elif type(number) in [int, float]:
                     self.HpTextGenerator.setText('+' + str(number))
+                else:
+                    self.HpTextGenerator.setText(str(number))
                 self.HpTextGenerator.clearShadow()
                 self.HpTextGenerator.setAlign(TextNode.ACenter)
                 if bonus == 1:
@@ -429,6 +434,18 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
                     g = 0.5
                     b = 0
                     a = 1
+                elif bonus == 3:    
+                    r = 0.6
+                    g = 0.2
+                    b = 0.8
+                    a = 1.0
+                    scale = 0.9
+                elif bonus == 4:    
+                    r = 0.93
+                    g = 0.51
+                    b = 0.93
+                    a = 1.0
+                    scale = 0.9
                 elif number < 0:
                     r = 0.9
                     g = 0

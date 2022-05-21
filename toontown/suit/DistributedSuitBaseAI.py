@@ -136,8 +136,13 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
 
     def useSkeleRevive(self):
         self.skeleRevives -= 1
-        self.currHP = self.maxHP
+        halfMaxHP = int(self.getMaxHealth() / 2)
+        self.b_setMaxHp(halfMaxHP)
+        self.b_setHP(halfMaxHP)
+        self.maxHP = halfMaxHP
+        self.currHP = halfMaxHP
         self.reviveFlag = 1
+        print('USED A SKELE REVIVE')
 
     def reviveCheckAndClear(self):
         returnValue = 0
@@ -155,6 +160,9 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         else:
             self.currHP = hp
         return None
+
+    def setMaxHp(self, maxHp):
+        self.maxHP = maxHp
 
     def b_setHP(self, hp):
         self.setHP(hp)

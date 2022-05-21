@@ -174,8 +174,10 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.HpTextGenerator.setFont(OTPGlobals.getSignFont())
                 if number < 0:
                     self.HpTextGenerator.setText(str(number))
-                else:
+                elif type(number) in [int, float]:
                     self.HpTextGenerator.setText('+' + str(number))
+                else:
+                    self.HpTextGenerator.setText(str(number))
                 self.HpTextGenerator.clearShadow()
                 self.HpTextGenerator.setAlign(TextNode.ACenter)
                 if bonus == 1:
@@ -188,6 +190,18 @@ class DistributedAvatar(DistributedActor, Avatar):
                     g = 0.5
                     b = 0
                     a = 1
+                elif bonus == 3:    
+                    r = 0.6
+                    g = 0.2
+                    b = 0.8
+                    a = 1.0
+                    scale = 0.9
+                elif bonus == 4:    
+                    r = 0.93
+                    g = 0.51
+                    b = 0.93
+                    a = 1.0
+                    scale = 0.9
                 elif number < 0:
                     r = 0.9
                     g = 0
@@ -205,7 +219,7 @@ class DistributedAvatar(DistributedActor, Avatar):
                 self.hpText.setBillboardPointEye()
                 self.hpText.setBin('fixed', 100)
                 self.hpText.setPos(0, 0, self.height / 2)
-                self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(0.85), self.hpText.colorInterval(0.1, Vec4(r, g, b, 0)), Func(self.hideHpText))
+                self.hpTextSeq = Sequence(self.hpText.posInterval(1.0, Point3(0, 0, self.height + 1.5), blendType='easeOut'), Wait(0.85), self.hpText.colorInterval(0.1, Vec4(r, g, b, 0)), Sequence(Wait(0.8),Func(self.hideHpText)))
                 self.hpTextSeq.start()
 
     def showHpString(self, text, duration = 0.85, scale = 0.7):
