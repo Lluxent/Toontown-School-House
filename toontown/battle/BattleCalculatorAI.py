@@ -1127,11 +1127,11 @@ class BattleCalculatorAI:
         atkType = self.battle.suitAttacks[attackIndex][SUIT_ATK_COL]
         atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
         atkAcc = atkInfo['acc']
-        suitAcc = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['acc'][theSuit.getLevel()]
+        #suitAcc = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['acc'][theSuit.getLevel()]
         acc = atkAcc
         randChoice = random.randint(0, 99)
         if self.notify.getDebug():
-            self.notify.debug('Suit attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc) + ' (attackAcc: ' + str(atkAcc) + ' suitAcc: ' + str(suitAcc) + ')')
+            self.notify.debug('Suit attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc) + ' (attackAcc: ' + str(atkAcc) + ' suitAcc: N\\A')
         if randChoice < acc:
             return 1
         return 0
