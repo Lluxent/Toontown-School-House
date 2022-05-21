@@ -143,7 +143,15 @@ def getSuitType(name):
 
 
 def getRandomSuitType(level, rng = random):
-    return random.randint(max(level - 4, 1), min(level, 8))
+    if (level - 4) < 8:
+        return random.randint(max(level - 4, 1), min(level, 8))
+    else:
+        if 9 <= level < 12:
+            return random.randint(6, 8)
+        elif 12 <= level <= 15:
+            return random.randint(7, 8)
+        else:
+            return 8
 
 
 def getRandomSuitByDept(dept):

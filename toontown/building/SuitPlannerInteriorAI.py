@@ -121,7 +121,7 @@ class SuitPlannerInteriorAI:
             bossLvlRange = bldgInfo[SuitBuildingGlobals.SUIT_BLDG_INFO_BOSS_LVLS]
             newLvl = random.randint(bossLvlRange[0], bossLvlRange[1])
             lvlList.append(newLvl)
-        lvlList.sort(cmp)
+        #lvlList.sort(cmp)
         self.notify.debug('LevelList: ' + repr(lvlList))
         return lvlList
 
