@@ -9,6 +9,7 @@ from toontown.building import DistributedCFOElevatorAI
 from toontown.suit import DistributedCashbotBossAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
+from toontown.toon import NPCToons
 
 class CashbotHQDataAI(HoodDataAI.HoodDataAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('CashbotHqDataAI')
@@ -38,6 +39,11 @@ class CashbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyElevator)
+        
+        npcs = NPCToons.createNpcsInZone(self.air, 12000)
+        for npc in npcs:
+            self.addDistObj(npc)
+
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.CashbotLobby)

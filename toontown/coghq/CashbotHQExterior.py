@@ -23,8 +23,12 @@ class CashbotHQExterior(CogHQExterior.CogHQExterior):
         self.elevatorDoneEvent = 'elevatorDone'
         self.trains = None
         self.fsm.addState(State.State('elevator', self.enterElevator, self.exitElevator, ['walk', 'stopped']))
+        self.fsm.addState(State.State('purchase', self.enterPurchase, self.exitPurchase, ['walk']))
+        self.fsm.addState(State.State('quest', self.enterQuest, self.exitQuest, ['walk']))
         state = self.fsm.getStateNamed('walk')
         state.addTransition('elevator')
+        state.addTransition('purchase')
+        state.addTransition('quest')
         state = self.fsm.getStateNamed('stopped')
         state.addTransition('elevator')
         state = self.fsm.getStateNamed('stickerBook')
