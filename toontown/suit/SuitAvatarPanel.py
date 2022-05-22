@@ -7,9 +7,15 @@ import SuitDNA
 from toontown.toonbase import TTLocalizer
 from otp.avatar import AvatarPanel
 from toontown.friends import FriendsListPanel
+from direct.task.Task import Task
+from direct.task.TaskManagerGlobal import taskMgr
+from toontown.battle import BattleProps
+from toontown.suit.Suit import Suit
 
 class SuitAvatarPanel(AvatarPanel.AvatarPanel):
     currentAvatarPanel = None
+    healthColors = Suit.healthColors
+    healthGlowColors = Suit.healthGlowColors
 
     def __init__(self, avatar):
         AvatarPanel.AvatarPanel.__init__(self, avatar, FriendsListPanel=FriendsListPanel)
@@ -44,6 +50,44 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         dept = SuitDNA.getSuitDeptFullname(avatar.dna.name)
         self.levelLabel = DirectLabel(parent=self.frame, pos=(0, 0, -0.0475), relief=None, text=TTLocalizer.AvatarPanelCogLevel % level, text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
         self.healthLabel = DirectLabel(parent=self.frame, pos= (0, 0, -0.0975), relief=None, text = TTLocalizer.AvatarPanelCogHealth % (health, maxHealth), text_font=avatar.getFont(), text_align=TextNode.ACenter, text_fg=Vec4(0, 0, 0, 1), text_pos=(0, 0), text_scale=0.05, text_wordwrap=8.0)
+
+        healthGui = loader.loadModel('phase_3.5/models/gui/matching_game_gui')
+        button = healthGui.find('**/minnieCircle')
+        button.setScale(0.5)
+        button.setH(180)
+        button.setColor(Vec4(0, 1, 0, 1))
+        self.healthNode = self.frame.attachNewNode('health')
+        self.healthNode.setPos(0, 0, -0.175)
+        button.reparentTo(self.healthNode)
+        glow = BattleProps.globalPropPool.getProp('glow')
+        glow.reparentTo(button)
+        glow.setScale(0.28)
+        glow.setPos(-0.005, 0.01, 0.015)
+        glow.setColor(Vec4(0.25, 1, 0.25, 0.5))
+        self.button = button
+        self.glow = glow
+
+        condition = avatar.healthCondition
+        if condition == 9:
+            self.blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task.pause(0.1))
+            taskMgr.add(self.blinkTask, self.frame.uniqueName('blink-task'))
+        elif condition == 10:
+            taskMgr.remove(self.frame.uniqueName('blink-task'))
+            blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.25), Task(self.__blinkGray), Task.pause(0.1))
+            taskMgr.add(blinkTask, self.frame.uniqueName('blink-task'))
+        else:
+            taskMgr.remove(self.frame.uniqueName('blink-task'))
+            if not self.button.isEmpty():
+                self.button.setColor(self.healthColors[condition], 1)
+
+            if not self.glow.isEmpty():
+                self.glow.setColor(self.healthGlowColors[condition], 1)
+        
+        # TODO: add conditional logic to prevent the button and glow from appearing on suits not in battle
+        #if ???:
+            #button.hide()
+            #glow.hide()
+
         corpIcon = avatar.corpMedallion.copyTo(hidden)
         corpIcon.setPosHprScale(0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.corpIcon = DirectLabel(parent=self.frame, geom=corpIcon, geom_scale=0.13, pos=(0, 0, -0.175), relief=None)
@@ -69,6 +113,24 @@ class SuitAvatarPanel(AvatarPanel.AvatarPanel):
         base.localAvatar.obscureFriendsListButton(-1)
         AvatarPanel.AvatarPanel.cleanup(self)
         return
+
+    def __blinkRed(self, task):
+        if not self.button.isEmpty():
+            self.button.setColor(self.healthColors[8], 1)
+
+        if not self.glow.isEmpty():
+            self.glow.setColor(self.healthGlowColors[8], 1)
+
+        return Task.done
+
+    def __blinkGray(self, task):
+        if not self.button.isEmpty():
+            self.button.setColor(self.healthColors[9], 1)
+
+        if not self.glow.isEmpty():
+            self.glow.setColor(self.healthGlowColors[9], 1)
+
+        return Task.done
 
     def __handleClose(self):
         self.cleanup()
