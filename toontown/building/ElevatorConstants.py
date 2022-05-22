@@ -81,7 +81,14 @@ ElevatorData = {ELEVATOR_NORMAL: {'openTime': 2.0,
                          'width': 5.875,
                          'countdown': bboard.get('elevatorCountdown', 5.0),
                          'sfxVolume': 1.0,
-                         'collRadius': 4}}
+                         'collRadius': 4},
+ ELEVATOR_CBM: {'openTime': 3.0,
+                'closeTime': 3.0,
+                'width': 8.166,
+                'countdown': bboard.get('elevatorCountdown', 5.0),
+                'sfxVolume': 0.7,
+                'collRadius': 7.5},
+                         }
 TOON_BOARD_ELEVATOR_TIME = 1.0
 TOON_EXIT_ELEVATOR_TIME = 1.0
 TOON_VICTORY_EXIT_TIME = 1.0

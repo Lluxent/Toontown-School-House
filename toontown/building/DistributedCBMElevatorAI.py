@@ -5,5 +5,5 @@ class DistributedCBMElevatorAI(DistributedBossElevatorAI.DistributedBossElevator
 
     def __init__(self, air, bldg, zone, antiShuffle = 0, minLaff = 0):
         DistributedBossElevatorAI.DistributedBossElevatorAI.__init__(self, air, bldg, zone, antiShuffle=antiShuffle, minLaff=minLaff)
-        self.type = ELEVATOR_CFO
-        self.countdownTime = ElevatorData[self.type]['countdown']
+        self.type = ELEVATOR_CBM
+        self.countdownTime = 8

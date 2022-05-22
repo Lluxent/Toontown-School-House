@@ -8,7 +8,7 @@ class DistributedCBMElevator(DistributedBossElevator.DistributedBossElevator):
 
     def __init__(self, cr):
         DistributedBossElevator.DistributedBossElevator.__init__(self, cr)
-        self.type = ELEVATOR_CFO
+        self.type = ELEVATOR_CBM
         self.countdownTime = 8
 
     def setupElevator(self):
@@ -21,4 +21,4 @@ class DistributedCBMElevator(DistributedBossElevator.DistributedBossElevator):
         DistributedElevator.DistributedElevator.setupElevator(self)
 
     def getDestName(self):
-        return TTLocalizer.ElevatorCashBotBoss
+        return TTLocalizer.ElevatorCashBotMiniBoss

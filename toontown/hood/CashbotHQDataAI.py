@@ -8,6 +8,7 @@ from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedCFOElevatorAI
 from toontown.building import DistributedCBMElevatorAI
 from toontown.suit import DistributedCashbotBossAI
+from toontown.suit import DistributedCashbotBossMiniAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
 from toontown.toon import NPCToons
@@ -37,12 +38,15 @@ class CashbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossAI.DistributedCashbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyMgr)
-        #self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
-        #self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
-        #self.addDistObj(self.lobbyElevator)
-        self.lobbyElevator = DistributedCBMElevatorAI.DistributedCBMElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=0)
+        self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyElevator)
+        self.miniMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossMiniAI.DistributedCashbotBossMiniAI)
+        self.miniMgr.generateWithRequired(ToontownGlobals.CashbotLobby)        
+        self.addDistObj(self.miniMgr)
+        self.miniElevator = DistributedCBMElevatorAI.DistributedCBMElevatorAI(self.air, self.miniMgr, ToontownGlobals.CashbotLobby, antiShuffle=0)
+        self.miniElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
+        self.addDistObj(self.miniElevator)
 
         npcs = NPCToons.createNpcsInZone(self.air, 12000)
         for npc in npcs:

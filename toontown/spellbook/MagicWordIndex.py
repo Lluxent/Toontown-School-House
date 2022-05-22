@@ -8,6 +8,7 @@ from libotp import NametagGroup, WhisperPopup
 
 from otp.otpbase import OTPLocalizer
 from otp.otpbase import OTPGlobals
+from otp.otpbase.PythonUtil import doc
 
 from toontown.battle import SuitBattleGlobals
 from toontown.char import CharDNA
@@ -1372,6 +1373,27 @@ class LeaveRace(MagicWord):
 
     def handleWord(self, invoker, avId, toon, *args):
         messenger.send('leaveRace')
+
+class SkipCMB(MagicWord):
+    desc = "Skips this miniboss."
+    aliases = ["skipcashminiboss"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    accessLevel = "MODERATOR"
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossMiniAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "Not in that fight."
+
+        boss.exitIntroduction()
+        boss.b_setState('Victory')
+        return "Skipped."
 
 
 class SkipCFO(MagicWord):
