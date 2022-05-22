@@ -6,6 +6,7 @@ from toontown.coghq import DistributedCogHQDoorAI
 from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedCFOElevatorAI
+from toontown.building import DistributedCBMElevatorAI
 from toontown.suit import DistributedCashbotBossAI
 from toontown.building import FADoorCodes
 from toontown.building import DistributedBoardingPartyAI
@@ -36,10 +37,13 @@ class CashbotHQDataAI(HoodDataAI.HoodDataAI):
         self.lobbyMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedCashbotBossAI.DistributedCashbotBossAI)
         self.lobbyMgr.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyMgr)
-        self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
+        #self.lobbyElevator = DistributedCFOElevatorAI.DistributedCFOElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=1)
+        #self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
+        #self.addDistObj(self.lobbyElevator)
+        self.lobbyElevator = DistributedCBMElevatorAI.DistributedCBMElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.CashbotLobby, antiShuffle=0)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.CashbotLobby)
         self.addDistObj(self.lobbyElevator)
-        
+
         npcs = NPCToons.createNpcsInZone(self.air, 12000)
         for npc in npcs:
             self.addDistObj(npc)
