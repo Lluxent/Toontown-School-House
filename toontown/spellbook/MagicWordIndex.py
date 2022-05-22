@@ -333,6 +333,7 @@ class MaxToon(MagicWord):
 
         toon.b_setGolfHistory([600] * (GolfGlobals.MaxHistoryIndex * 2))
 
+        toon.b_setEmoteAccess([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1])
         return "Maxed out {}'s stats.".format(toon.getName())
 
 
@@ -342,18 +343,7 @@ class UnlockEmotes(MagicWord):
     execLocation = MagicWordConfig.EXEC_LOC_SERVER
 
     def handleWord(self, invoker, avId, toon, *args):
-        emoteAccess = list(toon.getEmoteAccess())
-
-        # Old version of command made emote access list shorter. Let's fix that.
-        if len(emoteAccess) < len(OTPLocalizer.EmoteFuncDict):
-            emoteAccess = [0] * len(OTPLocalizer.EmoteFuncDict)
-
-        for emoteId in OTPLocalizer.EmoteFuncDict.values():
-            if emoteId > 25 or emoteId in [17, 18, 19]:
-                continue
-            emoteAccess[emoteId] = 1
-
-        toon.b_setEmoteAccess(emoteAccess)
+        toon.b_setEmoteAccess([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1])
         return "Unlocked all of {}'s emotes.".format(toon.getName())
 
 
