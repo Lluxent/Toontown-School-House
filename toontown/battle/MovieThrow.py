@@ -6,7 +6,7 @@ from BattleSounds import *
 from toontown.toon.ToonDNA import *
 from toontown.suit.SuitDNA import *
 from direct.directnotify import DirectNotifyGlobal
-import random
+import MovieNPCSOS
 import MovieCamera
 import MovieUtil
 from MovieUtil import calcAvgSuitPos
@@ -27,6 +27,7 @@ def addHit(dict, suitId, hitCount):
 
 
 def doThrows(throws):
+    npcArrivals, npcDepartures, npcs = MovieNPCSOS.doNPCTeleports(throws)
     if len(throws) == 0:
         return (None, None)
     suitThrowsDict = {}
@@ -81,12 +82,13 @@ def doThrows(throws):
     mtrack = Parallel()
     for st in suitThrows:
         if len(st) > 0:
-            ival = __doSuitThrows(st)
+            ival = __doSuitThrows(st, npcs)
             if ival:
                 mtrack.append(Sequence(Wait(delay), ival))
             delay = delay + TOON_THROW_SUIT_DELAY
 
     retTrack = Sequence()
+    retTrack.append(npcArrivals)
     retTrack.append(mtrack)
     groupThrowIvals = Parallel()
     groupThrows = []
@@ -96,18 +98,21 @@ def doThrows(throws):
 
     for throw in groupThrows:
         tracks = None
-        tracks = __throwGroupPie(throw, 0, groupHitDict)
+        tracks = __throwGroupPie(throw, 0, groupHitDict, npcs)
         if tracks:
             for track in tracks:
                 groupThrowIvals.append(track)
 
     retTrack.append(groupThrowIvals)
+    retTrack.append(npcDepartures)
     camDuration = retTrack.getDuration()
-    camTrack = MovieCamera.chooseThrowShot(throws, suitThrowsDict, camDuration)
+    enterDuration = npcArrivals.getDuration()
+    exitDuration = npcDepartures.getDuration()
+    camTrack = MovieCamera.chooseThrowShot(throws, suitThrowsDict, camDuration, enterDuration=enterDuration, exitDuration=exitDuration)
     return (retTrack, camTrack)
 
 
-def __doSuitThrows(throws):
+def __doSuitThrows(throws, npcs):
     toonTracks = Parallel()
     delay = 0.0
     hitCount = 0
@@ -118,7 +123,7 @@ def __doSuitThrows(throws):
             break
 
     for throw in throws:
-        tracks = __throwPie(throw, delay, hitCount)
+        tracks = __throwPie(throw, delay, hitCount, npcs)
         if tracks:
             for track in tracks:
                 toonTracks.append(track)
@@ -262,8 +267,10 @@ def __getSoundTrack(level, hitSuit, node = None):
         return throwTrack
 
 
-def __throwPie(throw, delay, hitCount):
+def __throwPie(throw, delay, hitCount, npcs):
     toon = throw['toon']
+    if 'npc' in throw:
+        toon = throw['npc']
     hpbonus = throw['hpbonus']
     target = throw['target']
     suit = target['suit']
@@ -300,7 +307,8 @@ def __throwPie(throw, delay, hitCount):
     toonTrack.append(toonFace)
     toonTrack.append(ActorInterval(toon, 'throw'))
     toonTrack.append(Func(toon.loop, 'neutral'))
-    toonTrack.append(Func(toon.setHpr, battle, origHpr))
+    if not 'npc' in throw:
+        toonTrack.append(Func(toon.setHpr, battle, origHpr))
     pieShow = Func(MovieUtil.showProps, pies, hands)
     pieAnim = Func(__animProp, pies, pieName, pieType)
     pieScale1 = LerpScaleInterval(pie, 1.0, pie.getScale(), startScale=MovieUtil.PNT3_NEARZERO)
@@ -371,9 +379,9 @@ def __throwPie(throw, delay, hitCount):
             bonusTrack.append(Wait(0.75))
             bonusTrack.append(Func(suit.showHpText, -hpbonus, 1, openEnded=0, attackTrack=THROW_TRACK))
         if revived != 0:
-            suitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle))
+            suitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
         elif died != 0:
-            suitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
+            suitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
         else:
             suitResponseTrack.append(Func(suit.loop, 'neutral'))
         suitResponseTrack = Parallel(suitResponseTrack, bonusTrack)
@@ -475,8 +483,10 @@ def __createWeddingCakeFlight(throw, groupHitDict, pie, pies):
     return groupPieTracks
 
 
-def __throwGroupPie(throw, delay, groupHitDict):
+def __throwGroupPie(throw, delay, groupHitDict, npcs):
     toon = throw['toon']
+    if 'npc' in throw:
+        toon = throw['npc']
     battle = throw['battle']
     level = throw['level']
     sidestep = throw['sidestep']
@@ -490,7 +500,8 @@ def __throwGroupPie(throw, delay, groupHitDict):
     toonTrack.append(toonFace)
     toonTrack.append(ActorInterval(toon, 'throw'))
     toonTrack.append(Func(toon.loop, 'neutral'))
-    toonTrack.append(Func(toon.setHpr, battle, origHpr))
+    if not 'npc' in throw:
+        toonTrack.append(Func(toon.setHpr, battle, origHpr))
     suits = []
     for i in xrange(numTargets):
         suits.append(throw['target'][i]['suit'])
@@ -508,10 +519,7 @@ def __throwGroupPie(throw, delay, groupHitDict):
     pieScale = Parallel(pieScale1, pieScale2)
     piePreflight = Func(__propPreflightGroup, pies, suits, toon, battle)
     pieTrack = Sequence(Wait(delay), pieShow, pieAnim, pieScale, Func(battle.movie.needRestoreRenderProp, pies[0]), Wait(tPieLeavesHand - 1.0), piePreflight)
-    if level == UBER_GAG_LEVEL_INDEX:
-        groupPieTracks = __createWeddingCakeFlight(throw, groupHitDict, pie, pies)
-    else:
-        notify.error('unhandled throw level %d' % level)
+    groupPieTracks = __createWeddingCakeFlight(throw, groupHitDict, pie, pies)
     pieTrack.append(groupPieTracks)
     didThrowHitAnyone = False
     for i in xrange(numTargets):
@@ -567,9 +575,9 @@ def __throwGroupPie(throw, delay, groupHitDict):
                 bonusTrack.append(Wait(0.75))
                 bonusTrack.append(Func(suit.showHpText, -hpbonus, 1, openEnded=0, attackTrack=THROW_TRACK))
             if revived != 0:
-                singleSuitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle))
+                singleSuitResponseTrack.append(MovieUtil.createSuitReviveTrack(suit, toon, battle, npcs))
             elif died != 0:
-                singleSuitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle))
+                singleSuitResponseTrack.append(MovieUtil.createSuitDeathTrack(suit, toon, battle, npcs))
             else:
                 singleSuitResponseTrack.append(Func(suit.loop, 'neutral'))
             singleSuitResponseTrack = Parallel(singleSuitResponseTrack, bonusTrack)
