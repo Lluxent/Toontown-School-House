@@ -38,7 +38,8 @@ suitHeadTypes = ['f',
  'ms',
  'tf',
  'm',
- 'mh']
+ 'mh',
+ 'cmb']
 suitATypes = ['ym',
  'hh',
  'tbc',
@@ -52,7 +53,8 @@ suitATypes = ['ym',
  'nd',
  'tf',
  'm',
- 'mh']
+ 'mh',
+ 'cmb']
 suitBTypes = ['p',
  'ds',
  'b',
@@ -119,6 +121,8 @@ def getSuitDept(name):
         return suitDepts[2]
     elif index < suitsPerDept * 4:
         return suitDepts[3]
+    elif name == 'cmb':
+        return suitDepts[1]
     else:
         print 'Unknown dept for suit name: ', name
         return None
@@ -139,7 +143,30 @@ def getSuitDeptFullname(name):
 
 def getSuitType(name):
     index = suitHeadTypes.index(name)
-    return index % suitsPerDept + 1
+    # FOR ANYONE THAT SEES THIS GARBAGE CODING, I AM SORRY, BUT MY LAZINESS IS MORE THAN MY SORROW
+    # get real
+    if index in [0, 8, 16, 24]:
+        index = 1
+    elif index in [1, 9, 17, 25]:
+        index = 2
+    elif index in [2, 10, 18, 26]:
+        index = 3
+    elif index in [3, 11, 19, 27]:
+        index = 4
+    elif index in [4, 12, 20, 28]:
+        index = 5
+    elif index in [5, 13, 21, 29]:
+        index = 6
+    elif index in [6, 14, 22, 30]:
+        index = 7
+    elif index in [7, 15, 23, 31]:
+        index = 8
+    elif index == 32:
+        index = 9
+    else:
+        print('FUCK FUCK FUCK FUCK FUCK')
+        index = 1
+    return index # GOD DAMN IT CALL ME YANDERE DEV WITH THIS SHIT
 
 
 def getRandomSuitType(level, rng = random):
@@ -238,7 +265,7 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         self.type = 's'
         if level == None:
             level = random.choice(xrange(1, len(suitsPerLevel)))
-        elif level < 0 or level > len(suitsPerLevel):
+        elif level < 0 or level > 9:
             notify.error('Invalid suit level: %d' % level)
         if dept == None:
             dept = random.choice(suitDepts)
@@ -246,13 +273,18 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         index = suitDepts.index(dept)
         base = index * suitsPerDept
         offset = 0
-        if level > 1:
+        if level > 1 and level < 9:
             for i in xrange(1, level):
                 offset = offset + suitsPerLevel[i - 1]
 
         bottom = base + offset
-        top = bottom + suitsPerLevel[level - 1]
-        self.name = suitHeadTypes[random.choice(xrange(bottom, top))]
+        if level < 9:
+            top = bottom + suitsPerLevel[level - 1]
+            self.name = suitHeadTypes[random.choice(xrange(bottom, top))]
+        else:
+            top = bottom
+            self.name = suitHeadTypes[-1]
+        
         self.body = getSuitBodyType(self.name)
         return
 

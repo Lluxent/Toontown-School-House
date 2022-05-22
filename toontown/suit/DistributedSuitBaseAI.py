@@ -42,18 +42,27 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
 
     def setLevel(self, lvl=None):
         attributes = SuitBattleGlobals.SuitAttributes[self.dna.name]
-        if lvl:
-            self.level = lvl - attributes['level'] - 1
+        if attributes['level'] < 8: # IF NORMAL COG
+            if lvl:
+                self.level = lvl - attributes['level'] - 1
+            else:
+                self.level = SuitBattleGlobals.pickFromFreqList(attributes['freq'])
+            if lvl > attributes['level'] + len(attributes['hp']):
+                self.level = len(attributes['hp']) - 1
+            self.notify.debug('Assigning level ' + str(lvl))
+            if hasattr(self, 'doId'):
+                self.d_setLevelDist(self.level)
+            hp = attributes['hp'][self.level]
+            self.maxHP = hp
+            self.currHP = hp
         else:
-            self.level = SuitBattleGlobals.pickFromFreqList(attributes['freq'])
-        if lvl > attributes['level'] + len(attributes['hp']):
-            self.level = len(attributes['hp']) - 1
-        self.notify.debug('Assigning level ' + str(lvl))
-        if hasattr(self, 'doId'):
-            self.d_setLevelDist(self.level)
-        hp = attributes['hp'][self.level]
-        self.maxHP = hp
-        self.currHP = hp
+            self.level = attributes['level'] # don't subtract 1, assume the level is as-is from battleglobals
+            self.notify.debug('Assigning level to non-normal cog ' + str(self.level))
+            if hasattr(self, 'doId'):
+                self.d_setLevelDist(self.level)      
+            hp = attributes['hp'][0]
+            self.maxHP = hp
+            self.currHP = hp     
 
     def getLevelDist(self):
         return self.getLevel()

@@ -244,7 +244,10 @@ class BattleCalculatorAI:
     def __targetDefense(self, suit, atkTrack):
         if atkTrack == HEAL:
             return 0
-        suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][suit.getLevel()]
+        if suit.getLevel() > 7:
+            suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][0]
+        else:
+            suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][suit.getLevel()]
         return -suitDef
 
     def __createToonTargetList(self, attackIndex):

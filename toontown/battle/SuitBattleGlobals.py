@@ -57,6 +57,8 @@ def getSuitVitals(name, level = -1):
 
 
 def pickSuitAttack(attacks, suitLevel):
+    if suitLevel > 7:   # if special cog
+        suitLevel = 0
     attackNum = None
     randNum = random.randint(0, 99)
     notify.debug('pickSuitAttack: rolled %d' % randNum)
@@ -94,6 +96,8 @@ def pickSuitAttack(attacks, suitLevel):
 
 
 def getSuitAttack(suitName, suitLevel, attackNum = -1):
+    if suitLevel > 7:   # if special cog
+        suitLevel = 0
     attackChoices = SuitAttributes[suitName]['attacks']
     if attackNum == -1:
         notify.debug('getSuitAttack: picking attacking for %s' % suitName)
@@ -969,7 +973,37 @@ SuitAttributes = {
                 ('FingerWag',
                     (13,15,17,19,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59),
                     (80,85,85,90,90,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95),
-                    (25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25)))}}
+                    (25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25)))},
+    'cmb': {
+        'name':         TTLocalizer.SuitCMB,
+        'singularname': TTLocalizer.SuitCMBS,
+        'pluralname':   TTLocalizer.SuitCMBP,
+        'level':    50,
+        'hp':   (4500,),
+        'def':  (80,),
+        'freq': (0,),
+        'acc':  (0,),
+        'attacks':
+        (
+            ('Synergy',
+            (40,),
+            (95,),
+            (25,)),
+            ('GlowerPower',
+            (35,),
+            (95,),
+            (25,)),
+            ('PowerTrip',
+            (42,),
+            (95,),
+            (25,)),
+            ('MarketCrash',
+            (48,),
+            (95,),
+            (25,)),
+        )
+    }                 
+}
 
 ATK_TGT_UNKNOWN = 1
 ATK_TGT_SINGLE = 2

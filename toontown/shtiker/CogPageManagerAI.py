@@ -32,8 +32,12 @@ class CogPageManagerAI:
             if toon.getDoId() in suit['activeToons']:
                 suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
                 suitDept = SuitDNA.suitDepts.index(suit['track'])
-                cogQuota = COG_QUOTAS[0][SuitDNA.getSuitType(suit['type']) - 1]
-                buildingQuota = COG_QUOTAS[1][SuitDNA.getSuitType(suit['type']) - 1]
+                if SuitDNA.getSuitType(suit['type']) > 7:
+                    cogQuota = COG_QUOTAS[0][7]
+                    buildingQuota = COG_QUOTAS[1][7]
+                else:
+                    cogQuota = COG_QUOTAS[0][SuitDNA.getSuitType(suit['type']) - 1]
+                    buildingQuota = COG_QUOTAS[1][SuitDNA.getSuitType(suit['type']) - 1]
                 cogRadar = toon.getCogRadar()
                 if cogRadar[suitDept] == 1:
                     continue

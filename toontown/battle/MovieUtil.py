@@ -41,7 +41,8 @@ largeSuits = ['f',
  'ms',
  'tf',
  'm',
- 'mh']
+ 'mh',
+ 'cmb']
 shotDirection = 'left'
 
 def avatarDodge(leftAvatars, rightAvatars, leftData, rightData):
@@ -574,6 +575,8 @@ def getSuitRakeOffset(suit):
         return 0.9
     elif suitName == 'mh':
         return 1.3
+    elif suitName == 'cmb':
+        return 1.4
     else:
         notify.warning('getSuitRakeOffset(suit) - Unknown suit name: %s' % suitName)
         return 0

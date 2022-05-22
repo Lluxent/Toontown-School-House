@@ -510,6 +510,12 @@ class Suit(Avatar.Avatar):
             self.generateBody()
             self.generateHead('bigwig')
             self.setHeight(8.69)
+        elif dna.name == 'cmb':
+            self.scale = 7.0 / aSize   
+            self.handColor = SuitDNA.legalPolyColor
+            self.generateBody()
+            self.generateHead('bigwig')
+            self.setHeight(8.69)
         elif dna.name == 'sc':
             self.scale = 3.6 / cSize
             self.handColor = SuitDNA.moneyPolyColor

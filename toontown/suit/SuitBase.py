@@ -46,14 +46,23 @@ class SuitBase:
     def setLevel(self, level):
         self.level = level
         attributes = SuitBattleGlobals.SuitAttributes[self.dna.name]
-        if level > attributes['level'] + len(attributes['hp']):
-            self.level = len(attributes['hp']) - 1
-        nameWLevel = TTLocalizer.SuitBaseNameWithLevel % {'name': self.name,
-         'dept': self.getStyleDept(),
-         'level': self.getActualLevel()}
-        self.setDisplayName(nameWLevel)
-        self.maxHP = attributes['hp'][self.level]
-        self.currHP = self.maxHP
+        if attributes['level'] < 8: # IF NORMAL COG
+            if level > attributes['level'] + len(attributes['hp']):
+                self.level = len(attributes['hp']) - 1
+            nameWLevel = TTLocalizer.SuitBaseNameWithLevel % {'name': self.name,
+            'dept': self.getStyleDept(),
+            'level': self.getActualLevel()}
+            self.setDisplayName(nameWLevel)
+            self.maxHP = attributes['hp'][self.level]
+            self.currHP = self.maxHP
+        else:
+            self.level = attributes['level']
+            nameWLevel = TTLocalizer.SuitBaseNameWithLevel % {'name': self.name,
+            'dept': self.getStyleDept(),
+            'level': self.getActualLevel()}
+            self.setDisplayName(nameWLevel)
+            self.maxHP = attributes['hp'][0]
+            self.currHP = self.maxHP
 
     def getSkelecog(self):
         return self.isSkelecog
@@ -68,11 +77,15 @@ class SuitBase:
         return self.maxHP
 
     def getActualLevel(self):
-        if hasattr(self, 'dna'):
-            return SuitBattleGlobals.getActualFromRelativeLevel(self.getStyleName(), self.level) + 1
+        attributes = SuitBattleGlobals.SuitAttributes[self.dna.name]
+        if attributes['level'] < 8:
+            if hasattr(self, 'dna'):
+                return SuitBattleGlobals.getActualFromRelativeLevel(self.getStyleName(), self.level) + 1
+            else:
+                self.notify.warning('called getActualLevel with no DNA, returning 1 for level')
+                return 1
         else:
-            self.notify.warning('called getActualLevel with no DNA, returning 1 for level')
-            return 1
+            return attributes['level']
 
     def setPath(self, path):
         self.path = path
