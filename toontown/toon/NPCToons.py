@@ -11534,7 +11534,15 @@ NPCToonDict = {20000: (-1,
         ('css','sd','s','f', 22, 0, 22, 22, 111, 30, 98, 30, 45, 30),
         'f',
         1,
-        NPC_REGULAR)}
+        NPC_REGULAR),
+ 7779: (-1,
+        lnames[7779],
+        ('css','ss','s','f', 10, 0, 10, 10, 3, 4, 3, 4, 0, 4),
+        'f',
+        1,
+        NPC_REGULAR),
+        
+}
 try:
     config = simbase.config
 except:
@@ -11667,6 +11675,10 @@ HQnpcFriends = {2001: (ToontownBattleGlobals.HEAL_TRACK,
         5,
         40,
         3),
+ 7779: (ToontownBattleGlobals.THROW_TRACK,
+        5,
+        270,
+        6),
  1116: (ToontownBattleGlobals.DROP_TRACK,
         5,
         170,

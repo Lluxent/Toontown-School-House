@@ -6528,7 +6528,9 @@ NPCToonNames = {20000: 'Tutorial Tom',
  7008: 'Ima Cagedtoon',
  7009: 'Jimmy Thelock',
  7777: 'rabbit npc',
- 7778: 'Rain'}
+ 7778: 'Rain',
+ 7779: 'Fruit Salad',
+}
 zone2TitleDict = {2000: (lToontownCentral + ' Playground', 'the '),
  2513: ('Toon Hall', ''),
  2514: ('Toontown Bank', ''),
