@@ -1062,6 +1062,8 @@ class BattleCalculatorAI:
             if self.notify.getDebug():
                 self.notify.debug('attack is a knockback')
             return 1
+        elif self.__getActualTrack(self.battle.toonAttacks[attackIndex]) in [THROW, SQUIRT]:
+            return 1
         return 0
 
     def __unlureAtk(self, attackIndex, toon=1):
