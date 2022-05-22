@@ -21,3 +21,6 @@ errorCode
 venv
 win32/.vscode/tasks.json
 *.code-workspace
+*.bam
+*.egg
+*.png
