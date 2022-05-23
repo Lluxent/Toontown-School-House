@@ -184,6 +184,16 @@ class SuitPlannerInteriorAI:
         suitHandles['reserveSuits'] = reserveSuits
         return suitHandles
 
+    def genSuitsForEmptyPlanner(self, specialCode):
+        suitHandles = {}
+        activeSuits = []
+        if specialCode == 'cmb':
+            miniboss = self.__genSuitObject(self.zoneId, 9, 'm', 50, 0)
+            activeSuits.append(miniboss)
+        suitHandles['activeSuits'] = activeSuits
+        suitHandles['reserveSuits'] = []
+        return suitHandles
+
     def genSuits(self):
         suitHandles = []
         for floor in xrange(len(self.suitInfos)):

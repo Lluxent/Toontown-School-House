@@ -8,16 +8,16 @@ from toontown.coghq import DistributedCashbotBossTreasureAI
 from toontown.battle import BattleExperienceAI
 from toontown.chat import ResistanceChat
 from direct.fsm import FSM
-import DistributedBossCogAI
+import DistributedMinibossAI
 import SuitDNA
 import random
 import math
 
-class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FSM.FSM):
+class DistributedCashbotBossMiniAI(DistributedMinibossAI.DistributedMinibossAI, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossMiniAI')
 
     def __init__(self, air):
-        DistributedBossCogAI.DistributedBossCogAI.__init__(self, air, 'm')
+        DistributedMinibossAI.DistributedMinibossAI.__init__(self, air, 'm')
         FSM.FSM.__init__(self, 'DistributedCashbotBossAI')
         self.rewardId = ResistanceChat.getRandomId()
         self.rewardedToons = []
@@ -32,7 +32,7 @@ class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FS
         return
 
     def generate(self):
-        DistributedBossCogAI.DistributedBossCogAI.generate(self)
+        DistributedMinibossAI.DistributedMinibossAI.generate(self)
         if __dev__:
             self.scene.reparentTo(self.getRender())
 
@@ -47,10 +47,9 @@ class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FS
         self.initializeBattles(1, ToontownGlobals.CashbotBossBattleOnePosHpr)
 
     def generateSuits(self, battleNumber):
-        cogs = self.invokeSuitPlanner(11, 0)
-        skelecogs = self.invokeSuitPlanner(12, 1)
-        activeSuits = cogs['activeSuits'] + skelecogs['activeSuits']
-        reserveSuits = cogs['reserveSuits'] + skelecogs['reserveSuits']
+        cogs = self.invokeEmptyPlanner(11, 'cmb')
+        activeSuits = cogs['activeSuits']
+        reserveSuits = cogs['reserveSuits']
         random.shuffle(activeSuits)
         while len(activeSuits) > 4:
             suit = activeSuits.pop()
@@ -64,7 +63,7 @@ class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FS
          'reserveSuits': reserveSuits}
 
     def removeToon(self, avId):
-        DistributedBossCogAI.DistributedBossCogAI.removeToon(self, avId)
+        DistributedMinibossAI.DistributedMinibossAI.removeToon(self, avId)
 
     def d_setRewardId(self, rewardId):
         self.sendUpdate('setRewardId', [rewardId])
@@ -78,17 +77,17 @@ class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FS
                 toon.doResistanceEffect(self.rewardId)
 
     def enterOff(self):
-        DistributedBossCogAI.DistributedBossCogAI.enterOff(self)
+        DistributedMinibossAI.DistributedMinibossAI.enterOff(self)
         self.rewardedToons = []
 
     def exitOff(self):
-        DistributedBossCogAI.DistributedBossCogAI.exitOff(self)
+        DistributedMinibossAI.DistributedMinibossAI.exitOff(self)
 
     def enterIntroduction(self):
-        DistributedBossCogAI.DistributedBossCogAI.enterIntroduction(self)
+        DistributedMinibossAI.DistributedMinibossAI.enterIntroduction(self)
 
     def exitIntroduction(self):
-        DistributedBossCogAI.DistributedBossCogAI.exitIntroduction(self)
+        DistributedMinibossAI.DistributedMinibossAI.exitIntroduction(self)
 
     def enterVictory(self):
         self.resetBattles()
@@ -119,5 +118,5 @@ class DistributedCashbotBossMiniAI(DistributedBossCogAI.DistributedBossCogAI, FS
         pass
 
     def enterEpilogue(self):
-        DistributedBossCogAI.DistributedBossCogAI.enterEpilogue(self)
+        DistributedMinibossAI.DistributedMinibossAI.enterEpilogue(self)
         self.d_setRewardId(self.rewardId)

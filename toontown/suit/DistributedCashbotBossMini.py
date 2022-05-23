@@ -1,8 +1,9 @@
 from direct.interval.IntervalGlobal import *
 from direct.task.TaskManagerGlobal import *
 from direct.directnotify import DirectNotifyGlobal
+from toontown.suit.DistributedMiniboss import DistributedMiniboss
 from toontown.toonbase import TTLocalizer
-import DistributedBossCog
+import DistributedMiniboss
 from direct.task.Task import Task
 import DistributedCashbotBossGoon
 import SuitDNA
@@ -27,11 +28,11 @@ import math
 OneBossCog = None
 TTL = TTLocalizer
 
-class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM):
+class DistributedCashbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FSM):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedCashbotBossMini')
 
     def __init__(self, cr):
-        DistributedBossCog.DistributedBossCog.__init__(self, cr)
+        DistributedMiniboss.DistributedMiniboss.__init__(self, cr)
         FSM.FSM.__init__(self, 'DistributedCashbotBoss')
         self.resistanceToon = None
         self.resistanceToonOnstage = 0
@@ -40,7 +41,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         return
 
     def announceGenerate(self):
-        DistributedBossCog.DistributedBossCog.announceGenerate(self)
+        DistributedMiniboss.DistributedMiniboss.announceGenerate(self)
         self.setName(TTLocalizer.CashbotBossName)
         nameInfo = TTLocalizer.BossCogNameWithDept % {'name': self._name,
          'dept': SuitDNA.getDeptFullname(self.style.dept)}
@@ -76,7 +77,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
 
     def disable(self):
         global OneBossCog
-        DistributedBossCog.DistributedBossCog.disable(self)
+        DistributedMiniboss.DistributedMiniboss.disable(self)
         self.demand('Off')
         self.unloadEnvironment()
         self.__cleanupResistanceToon()
@@ -133,7 +134,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
             self.resistanceToonOnstage = 0
 
     def loadEnvironment(self):
-        DistributedBossCog.DistributedBossCog.loadEnvironment(self)
+        DistributedMiniboss.DistributedMiniboss.loadEnvironment(self)
         self.midVault = loader.loadModel('phase_10/models/cogHQ/MidVault.bam')
         self.endVault = loader.loadModel('phase_10/models/cogHQ/EndVault.bam')
         self.lightning = loader.loadModel('phase_10/models/cogHQ/CBLightning.bam')
@@ -188,7 +189,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         self.geom.reparentTo(render)
 
     def unloadEnvironment(self):
-        DistributedBossCog.DistributedBossCog.unloadEnvironment(self)
+        DistributedMiniboss.DistributedMiniboss.unloadEnvironment(self)
         self.geom.removeNode()
 
     def replaceCollisionPolysWithPlanes(self, model):
@@ -282,7 +283,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
                             Func(self.setChatAbsolute, TTL.CashbotBossDiscoverToons2, CFSpeech),
                             Wait(4),
                             Func(self.clearChat),
-                            self.loseCogSuits(self.toonsA + self.toonsB, render, (113, -228, 10, 90, 0, 0)),
+                            self.loseCogSuits(self.toons, render, (113, -228, 10, 90, 0, 0)),
                             Wait(1),
                             Func(rToon.setHpr, 0, 0, 0),
                             self.loseCogSuits([rToon], render, (133, -243, 5, 143, 0, 0), True),
@@ -354,23 +355,23 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         return speech
 
     def enterOff(self):
-        DistributedBossCog.DistributedBossCog.enterOff(self)
+        DistributedMiniboss.DistributedMiniboss.enterOff(self)
         if self.resistanceToon:
             self.resistanceToon.clearChat()
 
     def enterWaitForToons(self):
-        DistributedBossCog.DistributedBossCog.enterWaitForToons(self)
+        DistributedMiniboss.DistributedMiniboss.enterWaitForToons(self)
         self.detachNode()
         self.geom.hide()
         self.resistanceToon.removeActive()
 
     def exitWaitForToons(self):
-        DistributedBossCog.DistributedBossCog.exitWaitForToons(self)
+        DistributedMiniboss.DistributedMiniboss.exitWaitForToons(self)
         self.geom.show()
         self.resistanceToon.addActive()
 
     def enterElevator(self):
-        DistributedBossCog.DistributedBossCog.enterElevator(self)
+        DistributedMiniboss.DistributedMiniboss.enterElevator(self)
         self.detachNode()
         self.resistanceToon.removeActive()
         self.endVault.stash()
@@ -378,7 +379,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         self.__showResistanceToon(True)
 
     def exitElevator(self):
-        DistributedBossCog.DistributedBossCog.exitElevator(self)
+        DistributedMiniboss.DistributedMiniboss.exitElevator(self)
         self.resistanceToon.addActive()
 
     def enterIntroduction(self):
@@ -389,14 +390,14 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         self.midVault.unstash()
         self.__showResistanceToon(True)
         base.playMusic(self.stingMusic, looping=1, volume=0.9)
-        DistributedBossCog.DistributedBossCog.enterIntroduction(self)
+        DistributedMiniboss.DistributedMiniboss.enterIntroduction(self)
 
     def exitIntroduction(self):
-        DistributedBossCog.DistributedBossCog.exitIntroduction(self)
+        DistributedMiniboss.DistributedMiniboss.exitIntroduction(self)
         self.stingMusic.stop()
 
     def enterBattleOne(self):
-        DistributedBossCog.DistributedBossCog.enterBattleOne(self)
+        DistributedMiniboss.DistributedMiniboss.enterBattleOne(self)
         self.reparentTo(render)
         self.setPosHpr(*ToontownGlobals.CashbotBossBattleOnePosHpr)
         self.show()
@@ -407,7 +408,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         self.__hideResistanceToon()
 
     def exitBattleOne(self):
-        DistributedBossCog.DistributedBossCog.exitBattleOne(self)
+        DistributedMiniboss.DistributedMiniboss.exitBattleOne(self)
 
     def enterVictory(self):
         self.cleanupIntervals()
@@ -551,7 +552,7 @@ class DistributedCashbotBossMini(DistributedBossCog.DistributedBossCog, FSM.FSM)
         self.epilogueMusic.stop()
 
     def enterFrolic(self):
-        DistributedBossCog.DistributedBossCog.enterFrolic(self)
+        DistributedMiniboss.DistributedMiniboss.enterFrolic(self)
         self.setPosHpr(*ToontownGlobals.CashbotBossBattleOnePosHpr)
         self.releaseToons()
         if self.hasLocalToon():
