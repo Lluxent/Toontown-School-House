@@ -194,6 +194,17 @@ class SuitPlannerInteriorAI:
         suitHandles['reserveSuits'] = []
         return suitHandles
 
+    def genReserveSuits(self, specialCode):
+        suitHandles = {}
+        reserveSuits = []
+        if specialCode == 'cmb':
+            # generate random cashbot from lv 12 to 20
+            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'm', random.randint(12, 20), 0)
+            reserveSuits.append(suit)
+
+        suitHandles['reserveSuits'] = reserveSuits
+        return suitHandles
+
     def genSuits(self):
         suitHandles = []
         for floor in xrange(len(self.suitInfos)):

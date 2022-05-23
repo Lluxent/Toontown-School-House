@@ -1395,6 +1395,43 @@ class SkipCMB(MagicWord):
         boss.b_setState('Victory')
         return "Skipped."
 
+class SummonCMB(MagicWord):
+    desc = "Summons reserve suit to CMB fight."
+    aliases = ["cmbs"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossMiniAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "Not in that fight."
+        
+        boss.appendSuitsToBattle(boss.battleNumber, None)
+        return "Appended suit."
+
+class CMBStats(MagicWord):
+    desc = "Summons reserve suit to CMB fight."
+    aliases = ["stats"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedCashbotBossMiniAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "Not in that fight."
+        
+        boss.printCurrentStats()
+        return "Printed."
 
 class SkipCFO(MagicWord):
     desc = "Skips to the indicated round of the CFO."

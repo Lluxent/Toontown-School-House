@@ -62,6 +62,11 @@ class DistributedCashbotBossMiniAI(DistributedMinibossAI.DistributedMinibossAI, 
         return {'activeSuits': activeSuits,
          'reserveSuits': reserveSuits}
 
+    def generateNewReserves(self, battleNumber):
+        cogs = self.invokeReservesPlanner(11, 'cmb')
+        reserveSuits = cogs['reserveSuits']
+        return {'reserveSuits': reserveSuits}        
+
     def removeToon(self, avId):
         DistributedMinibossAI.DistributedMinibossAI.removeToon(self, avId)
 

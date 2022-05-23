@@ -47,6 +47,12 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
         self.numRentalDiguises, self.numNormalDiguises = self.countDisguises()
         DistributedAvatarAI.DistributedAvatarAI.generateWithRequired(self, zoneId)
 
+    def printCurrentStats(self):
+        print('*****')
+        print('suits: %s' % self.suits)
+        print('reser: %s' % self.reserveSuits)
+        print('activ: %s' % self.activeSuits)
+
     def delete(self):
         self.ignoreAll()
         if self in AllBossCogs:
@@ -417,6 +423,12 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
         self.sendBattleIds()
         return
 
+    def appendSuitsToBattle(self, battleNumber, command):
+        self.battleNumber = battleNumber
+        suitHandles = self.generateNewReserves(battleNumber)
+        self.reserveSuits.append(suitHandles['reserveSuits'][0])
+        return
+
     def makeBattle(self, bossCogPosHpr, battlePosHpr, roundCallback, finishCallback, battleNumber, battleSide):
         battle = DistributedBattleMinibossAI.DistributedBattleMinibossAI(self.air, self, roundCallback, finishCallback, battleSide)
         self.setBattlePos(battle, bossCogPosHpr, battlePosHpr)
@@ -486,6 +498,11 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
     def generateSuits(self, battleNumber):
         return
 
+    def invokeReservesPlanner(self, buildingCode, specialCode):
+        planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId)
+        suits = planner.genReserveSuits(specialCode)
+        return suits
+
     def handleRoundDone(self, battle, suits, activeSuits, toonIds, totalHp, deadSuits):
         totalMaxHp = 0
         for suit in suits:
@@ -496,11 +513,10 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
 
         joinedReserves = []
         if len(self.reserveSuits) > 0 and len(activeSuits) < 4:
-            hpPercent = 100 - totalHp / totalMaxHp * 100.0
             for info in self.reserveSuits:
-                if info[1] <= hpPercent and len(activeSuits) < 4:
-                    suits.append(info[0])
-                    activeSuits.append(info[0])
+                if len(activeSuits) < 4:
+                    suits.append(info)
+                    activeSuits.append(info)
                     joinedReserves.append(info)
 
             for info in joinedReserves:
