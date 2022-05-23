@@ -53,7 +53,8 @@ suitATypes = ['ym',
  'nd',
  'tf',
  'm',
- 'mh']
+ 'mh',
+ 'cmb']
 suitBTypes = ['p',
  'ds',
  'b',
@@ -62,8 +63,7 @@ suitBTypes = ['p',
  'bc',
  'ls',
  'tm',
- 'ms',
- 'cmb']
+ 'ms']
 suitCTypes = ['f',
  'mm',
  'cr',
