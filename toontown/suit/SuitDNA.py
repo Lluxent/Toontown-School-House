@@ -53,8 +53,7 @@ suitATypes = ['ym',
  'nd',
  'tf',
  'm',
- 'mh',
- 'cmb']
+ 'mh']
 suitBTypes = ['p',
  'ds',
  'b',
@@ -63,7 +62,8 @@ suitBTypes = ['p',
  'bc',
  'ls',
  'tm',
- 'ms']
+ 'ms',
+ 'cmb']
 suitCTypes = ['f',
  'mm',
  'cr',
@@ -122,7 +122,7 @@ def getSuitDept(name):
     elif index < suitsPerDept * 4:
         return suitDepts[3]
     elif name == 'cmb':
-        return suitDepts[1]
+        return suitDepts[2]
     else:
         print 'Unknown dept for suit name: ', name
         return None

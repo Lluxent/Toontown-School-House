@@ -57,8 +57,6 @@ def getSuitVitals(name, level = -1):
 
 
 def pickSuitAttack(attacks, suitLevel):
-    if suitLevel > 7:   # if special cog
-        suitLevel = 0
     attackNum = None
     randNum = random.randint(0, 99)
     notify.debug('pickSuitAttack: rolled %d' % randNum)
@@ -66,6 +64,9 @@ def pickSuitAttack(attacks, suitLevel):
     index = 0
     total = 0
     for c in attacks:
+        attackIndexLen = len(c[3])
+        if attackIndexLen == 1:
+            suitLevel = 0
         total = total + c[3][suitLevel]
 
     for c in attacks:
@@ -96,8 +97,6 @@ def pickSuitAttack(attacks, suitLevel):
 
 
 def getSuitAttack(suitName, suitLevel, attackNum = -1):
-    if suitLevel > 7:   # if special cog
-        suitLevel = 0
     attackChoices = SuitAttributes[suitName]['attacks']
     if attackNum == -1:
         notify.debug('getSuitAttack: picking attacking for %s' % suitName)
@@ -109,6 +108,8 @@ def getSuitAttack(suitName, suitLevel, attackNum = -1):
     adict['name'] = name
     adict['id'] = SuitAttacks.keys().index(name)
     adict['animName'] = SuitAttacks[name][0]
+    if len(attack[1]) == 1:
+        suitLevel = 0
     adict['hp'] = attack[1][suitLevel]
     adict['acc'] = attack[2][suitLevel]
     adict['freq'] = attack[3][suitLevel]
@@ -133,6 +134,8 @@ def SuitDefaultDefDict(minLevel, maxLevel):
         else:
             t.append(SuitDefaultDefense[lv - 1])
     return tuple(t)
+
+SpecialCogDict = ('cmb',)
 
 # re-formatted by me :)
 SuitAttributes = {

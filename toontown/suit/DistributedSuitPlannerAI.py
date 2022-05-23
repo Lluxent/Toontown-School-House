@@ -407,9 +407,11 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
             newSuit.setSkelecog(skelecog)
         if revives:
             newSuit.setSkeleRevives(revives)
-        if executive:
+        if newSuit.dna.name in SuitBattleGlobals.SpecialCogDict:
+            newSuit.setManager(1)
+        if executive and not newSuit.getManager():
             newSuit.setExecutive(1)
-        elif random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE:
+        elif random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE and not newSuit.getManager():
             newSuit.setExecutive(1)
         newSuit.generateWithRequired(newSuit.zoneId)
         newSuit.moveToNextLeg(None)

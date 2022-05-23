@@ -1184,7 +1184,7 @@ class BattleCalculatorAI:
                 theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
                 atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
                 result = atkInfo['hp']
-                if theSuit.getExecutive():
+                if theSuit.getExecutive() or theSuit.getManager():
                     result = int(result * ToontownBattleGlobals.EXECUTIVE_DMG_MULT)
                 if theSuit.getMaxSkeleRevives() > 0 and theSuit.getSkeleRevives() == 0: # if the suit WAS ALREADY V2, AND IS NOW A SKELECOG
                     result = int(result * ToontownBattleGlobals.V2_SKELECOG_DMG_MULT)

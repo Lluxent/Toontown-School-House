@@ -351,6 +351,7 @@ class Suit(Avatar.Avatar):
         self.isDisguised = 0
         self.isWaiter = 0
         self.isExecutive = 0
+        self.isManager = 0
         self.isRental = 0
         return
 
@@ -511,11 +512,12 @@ class Suit(Avatar.Avatar):
             self.generateHead('bigwig')
             self.setHeight(8.69)
         elif dna.name == 'cmb':
-            self.scale = 7.0 / aSize   
-            self.handColor = SuitDNA.legalPolyColor
+            self.scale = 7.2 / aSize   
+            self.handColor = VBase4(0.313, 0.862, 0.392, 1.0)
+            self.headColor = VBase4(0.313, 0.862, 0.392, 1.0)
             self.generateBody()
             self.generateHead('bigwig')
-            self.setHeight(8.69)
+            self.setHeight(10.0)
         elif dna.name == 'sc':
             self.scale = 3.6 / cSize
             self.handColor = SuitDNA.moneyPolyColor
@@ -752,6 +754,27 @@ class Suit(Avatar.Avatar):
         else:
             self.setExecutiveColor(modelRoot)
 
+    def makeManager(self, modelRoot = None):
+        if not modelRoot:
+            modelRoot = self
+        self.isManager = 1
+        torsoTex = loader.loadTexture('phase_3.5/maps/e_blazer_' + self.style.dept + '.png')
+        torsoTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        torsoTex.setMagfilter(Texture.FTNearest)
+        legTex = loader.loadTexture('phase_3.5/maps/e_leg_' + self.style.dept + '.png')
+        legTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        legTex.setMagfilter(Texture.FTNearest)
+        armTex = loader.loadTexture('phase_3.5/maps/e_sleeve_' + self.style.dept + '.png')
+        armTex.setMinfilter(Texture.FTNearestMipmapLinear)
+        armTex.setMagfilter(Texture.FTNearest)
+        if not self.isSkeleton:
+            modelRoot.find('**/torso').setTexture(torsoTex, 1)
+            modelRoot.find('**/arms').setTexture(armTex, 1)
+            modelRoot.find('**/legs').setTexture(legTex, 1)
+            modelRoot.find('**/hands').setColor(self.handColor)
+        else:
+            self.setExecutiveColor(modelRoot)
+            
     def makeWaiter(self, modelRoot = None):
         if not modelRoot:
             modelRoot = self
@@ -954,8 +977,10 @@ class Suit(Avatar.Avatar):
 
                 if self.isWaiter:
                     self.makeWaiter(self.loseActor)
-                elif self.isExecutive:
+                elif self.isExecutive and not self.isManager:
                     self.makeExecutive(self.loseActor)
+                elif self.isManager:
+                    self.makeManager(self.loseActor)
                 else:
                     self.setSuitClothes(self.loseActor)
             else:
@@ -1009,6 +1034,11 @@ class Suit(Avatar.Avatar):
             'dept': self.getStyleDept(),
             'level': self.getActualLevel()}
             self.setExecutiveColor()
+        elif self.isManager:
+            nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': self._name,
+            'dept': self.getStyleDept(),
+            'level': self.getActualLevel()}
+            self.setExecutiveColor()
         else:
             nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
             'dept': self.getStyleDept(),
@@ -1050,7 +1080,7 @@ class Suit(Avatar.Avatar):
     def setExecutiveColor(self, modelRoot = None):
             if not modelRoot:
                 modelRoot = self
-            if self.isExecutive:
+            if self.isExecutive or self.isManager:
                 if self.dna.dept == 'c':
                     modelRoot.setColor(SuitDNA.corpPolyColor)
                 if self.dna.dept == 's':

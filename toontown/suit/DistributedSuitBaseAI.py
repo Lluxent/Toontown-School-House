@@ -20,6 +20,7 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         self.skeleRevives = 0
         self.maxSkeleRevives = 0
         self.executive = 0
+        self.manager = 0
         self.reviveFlag = 0
         self.buildingHeight = None
         return
@@ -118,6 +119,23 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         if self.executive:
             self.maxHP = int(self.maxHP * ToontownBattleGlobals.EXECUTIVE_HP_MULT)
             self.currHP = self.maxHP
+
+    def b_setManager(self, manager):
+        if manager == None:
+            manager = 0
+        self.setManager(manager)
+        self.d_setManager(self.getManager())
+
+    def d_setManager(self, manager):
+        self.sendUpdate('setManager', [manager])
+    
+    def getManager(self):
+        return self.manager
+
+    def setManager(self, manager):
+        if manager == None:
+            manager = 0
+        self.manager = manager
 
     def b_setSkeleRevives(self, num):
         if num == None:

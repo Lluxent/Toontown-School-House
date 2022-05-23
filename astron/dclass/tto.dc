@@ -1274,6 +1274,7 @@ dclass DistributedSuitBase : DistributedObject {
   setHP(int16) required broadcast ram;
   setMaxHp(int16) required broadcast ram;
   setExecutive(uint8) required broadcast ram;
+  setManager(uint8) required broadcast ram;
 };
 
 dclass DistributedSuit : DistributedSuitBase {

@@ -1,5 +1,6 @@
 from otp.ai.AIBaseGlobal import *
 import random
+from toontown.battle import SuitBattleGlobals
 from toontown.suit import SuitDNA
 from direct.directnotify import DirectNotifyGlobal
 from toontown.suit import DistributedSuitAI
@@ -136,7 +137,9 @@ class SuitPlannerInteriorAI:
         suit.dna = dna
         self.notify.debug('Creating suit type ' + suit.dna.name + ' of level ' + str(suitLevel) + ' from type ' + str(suitType) + ' and track ' + str(bldgTrack))
         suit.setLevel(suitLevel)
-        if random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE:
+        if suit.dna.name in SuitBattleGlobals.SpecialCogDict:
+            suit.setManager(1)
+        if random.randint(0, 100) <= ToontownBattleGlobals.EXECUTIVE_BASE_CHANCE and not suit.getManager():
             suit.setExecutive(1)
         return skeleton, executive
 
@@ -145,7 +148,7 @@ class SuitPlannerInteriorAI:
         skel, exe = self.__setupSuitInfo(newSuit, bldgTrack, suitLevel, suitType)
         if skel:
             newSuit.setSkelecog(1)
-        if exe:
+        if exe and not newSuit.getManager():
             newSuit.setExecutive(1)
         newSuit.setSkeleRevives(revives)
         newSuit.generateWithRequired(suitZone)
