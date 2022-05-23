@@ -16,6 +16,9 @@ class CogPageManagerAI:
         for suit in suitsEncountered:
             if toon.getDoId() in suit['activeToons']:
                 suitIndex = SuitDNA.suitHeadTypes.index(suit['type'])
+                if suitIndex >= 32:  # i am not implementing this shit for new cogs wtf lmao
+                    self.notify.warning("New Cog Defeated, not adding to Shticker")
+                    return
                 if cogStatus[suitIndex] == COG_UNSEEN:
                     cogStatus[suitIndex] = COG_BATTLED
 
