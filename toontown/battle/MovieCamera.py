@@ -371,6 +371,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera())
     elif name == CANNED:
         camTrack.append(defaultCamera(openShotDuration=2.9))
+    elif name == CIGAR_SMOKE:
+        camTrack.append(defaultCamera(openShotDuration=3.0))
     elif name == CHOMP:
         camTrack.append(defaultCamera(openShotDuration=2.8))
     elif name == CLIPON_TIE:
@@ -460,7 +462,7 @@ def chooseSuitShot(attack, attackDuration):
     elif name == SHAKE:
         shakeIntensity = 1.75
         camTrack.append(suitCameraShakeShot(suit, attackDuration, shakeIntensity))
-    elif name == SHRED:
+    elif name == SHRED or name == SONG_AND_DANCE:
         camTrack.append(defaultCamera(openShotDuration=4.1))
     elif name == SPIN:
         camTrack.append(defaultCamera(openShotDuration=1.7))
@@ -481,6 +483,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera())
     elif name == JURY_NOTICE:
         camTrack.append(defaultCamera(openShotDuration=3.0))
+    elif name == THROW_BOOK:
+        camTrack.append(defaultCamera(openShotDuration=2.9))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())

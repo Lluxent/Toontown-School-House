@@ -24,3 +24,5 @@ win32/.vscode/tasks.json
 phase_3/
 *Backup.bam
 resources/phase_5/models/char/suitA-snap.bam
+resources/phase_5/models/char/suitA-cigar-smoke.bam
+resources/phase_5/models/char/suitA-song-and-dance.bam
