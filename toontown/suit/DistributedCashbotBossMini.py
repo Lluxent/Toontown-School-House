@@ -103,7 +103,7 @@ class DistributedCashbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
         npc.setDNAString(dna.makeNetString())
         npc.animFSM.request('neutral')
         self.resistanceToon = npc
-        self.resistanceToon.setPosHpr(*ToontownGlobals.CashbotRTBattleOneStartPosHpr)
+        self.resistanceToon.setPosHpr(4000, 0, 0, 0, 0, 0)
         state = random.getstate()
         random.seed(self.doId)
         self.resistanceToon.suitType = SuitDNA.getRandomSuitByDept('m')
@@ -232,81 +232,9 @@ class DistributedCashbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
             if toon:
                 delayDeletes.append(DelayDelete.DelayDelete(toon, 'CashbotBoss.makeIntroductionMovie'))
 
-        rtTrack = Sequence()
-        startPos = Point3(ToontownGlobals.CashbotBossOffstagePosHpr[0], ToontownGlobals.CashbotBossOffstagePosHpr[1], ToontownGlobals.CashbotBossOffstagePosHpr[2])
-        battlePos = Point3(ToontownGlobals.CashbotBossBattleOnePosHpr[0], ToontownGlobals.CashbotBossBattleOnePosHpr[1], ToontownGlobals.CashbotBossBattleOnePosHpr[2])
-        battleHpr = VBase3(ToontownGlobals.CashbotBossBattleOnePosHpr[3], ToontownGlobals.CashbotBossBattleOnePosHpr[4], ToontownGlobals.CashbotBossBattleOnePosHpr[5])
-        bossTrack = Sequence()
-        bossTrack.append(Func(self.reparentTo, render))
-        bossTrack.append(Func(self.getGeomNode().setH, 180))
-        bossTrack.append(Func(self.pelvis.setHpr, self.pelvisForwardHpr))
-        bossTrack.append(Func(self.loop, 'Ff_neutral'))
-        track, hpr = self.rollBossToPoint(startPos, None, battlePos, None, 0)
-        bossTrack.append(track)
-        track, hpr = self.rollBossToPoint(battlePos, hpr, battlePos, battleHpr, 0)
-        bossTrack.append(track)
-        bossTrack.append(Func(self.getGeomNode().setH, 0))
-        bossTrack.append(Func(self.pelvis.setHpr, self.pelvisReversedHpr))
-        attackToons = TTL.CashbotBossCogAttack
-        rToon = self.resistanceToon
-        rToon.setPosHpr(*ToontownGlobals.CashbotRTBattleOneStartPosHpr)
         track = Sequence(
             Func(camera.setPosHpr, 82, -219, 5, 267, 0, 0),
-            Func(rToon.setChatAbsolute, TTL.ResistanceToonWelcome, CFSpeech),
-            Wait(3),
-            Parallel(
-                camera.posHprInterval(4, Point3(108, -244, 4), VBase3(211.5, 0, 0)),
-                Sequence(
-                    Func(rToon.suit.setPlayRate, 1.4, 'walk'),
-                    Func(rToon.suit.loop, 'walk'),
-                    Parallel(
-                        rToon.hprInterval(1, VBase3(180, 0, 0)),
-                        rToon.posInterval(3, VBase3(120, -255, 0)),
-                        Sequence(
-                            Wait(2),
-                            Func(rToon.clearChat))),
-                        Func(rToon.suit.loop, 'neutral'),
-                        self.door2.posInterval(3, VBase3(0, 0, 30)))),
-                        Func(rToon.setHpr, 0, 0, 0),
-                        Func(rToon.setChatAbsolute, TTL.ResistanceToonTooLate, CFSpeech),
-                        Func(camera.reparentTo, render),
-                        Func(camera.setPosHpr, 61.1, -228.8, 10.2, -90, 0, 0),
-                        self.door1.posInterval(2, VBase3(0, 0, 30)),
-                        Parallel(
-                            bossTrack,
-                            Sequence(
-                                Wait(3),
-                                Func(rToon.clearChat),
-                                self.door1.posInterval(3, VBase3(0, 0, 0)))),
-                            Func(self.setChatAbsolute, TTL.CashbotBossDiscoverToons1, CFSpeech),
-                            camera.posHprInterval(1.5, Point3(93.3, -230, 0.7), VBase3(-92.9, 39.7, 8.3)),
-                            Func(self.setChatAbsolute, TTL.CashbotBossDiscoverToons2, CFSpeech),
-                            Wait(4),
-                            Func(self.clearChat),
-                            self.loseCogSuits(self.toons, render, (113, -228, 10, 90, 0, 0)),
-                            Wait(1),
-                            Func(rToon.setHpr, 0, 0, 0),
-                            self.loseCogSuits([rToon], render, (133, -243, 5, 143, 0, 0), True),
-                            Func(rToon.setChatAbsolute, TTL.ResistanceToonKeepHimBusy, CFSpeech),
-                            Wait(1),
-                            Func(self.__showResistanceToon, False),
-                            Sequence(
-                                Func(rToon.animFSM.request, 'run'),
-                                rToon.hprInterval(1, VBase3(180, 0, 0)),
-                                Parallel(
-                                    Sequence(
-                                        rToon.posInterval(1.5, VBase3(109, -294, 0)),
-                                        Parallel(Func(rToon.animFSM.request, 'jump')),
-                                        rToon.posInterval(1.5, VBase3(93.935, -341.065, 2))),
-                                    self.door2.posInterval(3, VBase3(0, 0, 0))),
-                                    Func(rToon.animFSM.request, 'neutral')),
-                                    self.toonNormalEyes(self.involvedToons),
-                                    self.toonNormalEyes([self.resistanceToon], True),
-                                    Func(rToon.clearChat),
-                                    Func(camera.setPosHpr, 93.3, -230, 0.7, -92.9, 39.7, 8.3),
-                                    Func(self.setChatAbsolute, attackToons, CFSpeech),
-                                    Wait(2),
-                                    Func(self.clearChat))
+            )
         return Sequence(Func(camera.reparentTo, render), track)
 
     def setRewardId(self, rewardId):
@@ -399,9 +327,9 @@ class DistributedCashbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
     def enterBattleOne(self):
         DistributedMiniboss.DistributedMiniboss.enterBattleOne(self)
         self.reparentTo(render)
-        self.setPosHpr(*ToontownGlobals.CashbotBossBattleOnePosHpr)
-        self.show()
-        self.pelvis.setHpr(self.pelvisReversedHpr)
+        self.setPosHpr(120, -230, 0, 0, 0, 0)
+        self.hide()
+        self.pelvis.setHpr(4000, 0, 0, 0, 0, 0)
         self.doAnimate()
         self.endVault.stash()
         self.midVault.unstash()

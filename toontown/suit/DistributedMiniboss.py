@@ -54,7 +54,7 @@ class DistributedMiniboss(DistributedAvatar.DistributedAvatar, BossCog.BossCog):
         self.battleNode.setPosHpr(*ToontownGlobals.BossCogBattleAPosHpr)
         self.activeIntervals = {}
         self.flashInterval = None
-        self.elevatorType = ElevatorConstants.ELEVATOR_VP
+        self.elevatorType = ElevatorConstants.ELEVATOR_CFO
 
     def announceGenerate(self):
         DistributedAvatar.DistributedAvatar.announceGenerate(self)
