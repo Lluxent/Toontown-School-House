@@ -1110,7 +1110,7 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'JuryNotice':  ('snap', ATK_TGT_GROUP),
  'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
  'BookKeeping':  ('cease', ATK_TGT_GROUP),
- 'Corruption':  ('magic3', ATK_TGT_SINGLE)
+ 'Corruption':  ('magic2', ATK_TGT_SINGLE)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')

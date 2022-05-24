@@ -10,6 +10,9 @@ from toontown.pets import PetTricks, DistributedPetProxyAI
 from direct.showbase.PythonUtil import lerp
 
 class BattleCalculatorAI:
+    notify = DirectNotifyGlobal.directNotify.newCategory('BattleCalculatorAI')
+    notify.setDebug(True)
+
     AccuracyBonuses = [
      0, 20, 40, 60]
     DamageBonuses = [
@@ -28,7 +31,6 @@ class BattleCalculatorAI:
     CLEAR_MULTIPLE_TRAPS = 0
     KBBONUS_LURED_FLAG = 0
     KBBONUS_TGT_LURED = 1
-    notify = DirectNotifyGlobal.directNotify.newCategory('BattleCalculatorAI')
     toonsAlwaysHit = simbase.config.GetBool('toons-always-hit', 0)
     toonsAlwaysMiss = simbase.config.GetBool('toons-always-miss', 0)
     toonsAlways5050 = simbase.config.GetBool('toons-always-5050', 0)
@@ -54,6 +56,7 @@ class BattleCalculatorAI:
         self.__skillCreditMultiplier = 1
         self.tutorialFlag = tutorialFlag
         self.trainTrapTriggered = False
+        self.corruptionMeter = {}
 
     def setSkillCreditMultiplier(self, mult):
         self.__skillCreditMultiplier = mult
@@ -1194,7 +1197,10 @@ class BattleCalculatorAI:
                 if theSuit.getMaxSkeleRevives() > 0 and theSuit.getSkeleRevives() == 0: # if the suit WAS ALREADY V2, AND IS NOW A SKELECOG
                     result = int(result * ToontownBattleGlobals.V2_SKELECOG_DMG_MULT)
             targetIndex = self.battle.activeToons.index(toonId)
-            attack[SUIT_HP_COL][targetIndex] = result
+            if targetIndex in self.corruptionMeter:
+                attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[targetIndex]
+            else:
+                attack[SUIT_HP_COL][targetIndex] = result
 
     def __getToonHp(self, toonDoId):
         handle = self.battle.getToon(toonDoId)
@@ -1214,9 +1220,17 @@ class BattleCalculatorAI:
 
     def __applySuitAttackDamages(self, attackIndex):
         attack = self.battle.suitAttacks[attackIndex]
+        theSuit = self.battle.activeSuits[attackIndex]
         if self.APPLY_HEALTH_ADJUSTMENTS:
             for t in self.battle.activeToons:
                 position = self.battle.activeToons.index(t)
+                self.notify.debug(theSuit.dna.name)
+                if theSuit.dna.name == 'ssb':
+                    self.notify.debug('Corrupting!!!!!!!!!!!!!!!!!!!!!')
+                    self.__updateCorruption(position)
+                else:
+                    self.notify.debug('Not corrupting...')
+
                 if attack[SUIT_HP_COL][position] <= 0:
                     continue
                 toonHp = self.__getToonHp(t)
@@ -1234,6 +1248,23 @@ class BattleCalculatorAI:
         if self.__combatantDead(suitId, toon=0) or self.__suitIsLured(suitId) or self.__combatantJustRevived(suitId):
             return 0
         return 1
+
+    def __updateCorruption(self, toonId):
+        if toonId in self.corruptionMeter:
+            self.corruptionMeter[toonId] += 2
+        else:
+            self.corruptionMeter[toonId] = 2
+
+    def __printCorruptionStats(self):
+        self.notify.debug('Corruption Stats:')
+        for currTgt in self.corruptionMeter.keys():
+            if currTgt not in self.battle.activeToons:
+                continue
+            tgtPos = self.battle.activeToons.index(currTgt)
+            self.notify.debug(' toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' has a corruption level of ' + str(self.corruptionMeter[currTgt]))
+
+        self.notify.debug('\n')
+           
 
     def __updateSuitAtkStat(self, toonId):
         if toonId in self.suitAtkStats:
@@ -1266,6 +1297,7 @@ class BattleCalculatorAI:
                 attack[SUIT_ID_COL] = self.battle.activeSuits[i].doId
                 attack[SUIT_ATK_COL] = self.__calcSuitAtkType(i)
                 attack[SUIT_TGT_COL] = self.__calcSuitTarget(i)
+                theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
                 if attack[SUIT_TGT_COL] == -1:
                     self.battle.suitAttacks[i] = getDefaultSuitAttack()
                     attack = self.battle.suitAttacks[i]
@@ -1275,10 +1307,11 @@ class BattleCalculatorAI:
                     if self.__suitAtkAffectsGroup(attack):
                         for currTgt in self.battle.activeToons:
                             self.__updateSuitAtkStat(currTgt)
-
                     else:
                         tgtId = self.battle.activeToons[attack[SUIT_TGT_COL]]
                         self.__updateSuitAtkStat(tgtId)
+                else:
+                    self.notify.debug('*********************** WE GOT NAE NAE\'d')
                 targets = self.__createSuitTargetList(i)
                 allTargetsDead = 1
                 for currTgt in targets:
@@ -1404,6 +1437,7 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Toon skills gained after this round: ' + repr(self.toonSkillPtsGained))
             self.__printSuitAtkStats()
+            self.__printCorruptionStats()
         return None
 
     def __calculateFiredCogs():

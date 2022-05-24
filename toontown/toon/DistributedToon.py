@@ -2495,11 +2495,13 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                 self.HpTextGenerator.setFont(OTPGlobals.getSignFont())
                 if number < 0:
                     self.HpTextGenerator.setText(str(number))
+                elif type(number) in [int, float]:
+                    self.HpTextGenerator.setText('+' + str(number))
                 else:
-                    hpGainedStr = '+' + str(number)
+                    self.HpTextGenerator.setText(str(number))
                     if hasInteractivePropBonus:
                         hpGainedStr += '\n' + TTLocalizer.InteractivePropTrackBonusTerms[0]
-                    self.HpTextGenerator.setText(hpGainedStr)
+                        self.HpTextGenerator.setText(hpGainedStr)
                 self.HpTextGenerator.clearShadow()
                 self.HpTextGenerator.setAlign(TextNode.ACenter)
                 if bonus == 1:
@@ -2512,6 +2514,18 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
                     g = 0.5
                     b = 0
                     a = 1
+                elif bonus == 3:    
+                    r = 0.6
+                    g = 0.2
+                    b = 0.8
+                    a = 1.0
+                    scale = 0.9
+                elif bonus == 4:    
+                    r = 0.93
+                    g = 0.51
+                    b = 0.93
+                    a = 1.0
+                    scale = 0.9
                 elif number < 0:
                     r = 0.9
                     g = 0

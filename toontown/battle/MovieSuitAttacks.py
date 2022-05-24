@@ -1,4 +1,7 @@
 from libotp import *
+from direct.task import Task
+from toontown.battle.MovieCamera import toonGroupHighShot
+
 from toontown.toonbase.ToontownGlobals import *
 from SuitBattleGlobals import *
 from direct.interval.IntervalGlobal import *
@@ -1230,6 +1233,9 @@ def doCigarSmoke(attack):
         multiTrackList.append(colorTrack)
     return multiTrackList
 
+def corruptionPrintout(toon):
+    toon.showHpText("+1 CORRUPTION", 3)
+
 def doCorruption(attack):
     suit = attack['suit']
     battle = attack['battle']
@@ -1237,8 +1243,24 @@ def doCorruption(attack):
     toon = target['toon']
     dmg = target['hp']
     suitTrack = getSuitTrack(attack)
-    toonTrack = getToonTrack(attack, 3.55, ['cringe'], 3.0, ['sidestep'])
-    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('AA_drop_bigweight.ogg'), node=suit, duration = 1.0))
+    taskMgr.doMethodLater(1.5, corruptionPrintout, 'corruption-print', extraArgs=[toon])
+    toonTrack = Sequence(Sequence(getToonTrack(attack, 3.55, ['cringe'], 3.0, ['sidestep'])))
+    choice1 = random.randint(0, 5)
+    choice2 = random.randint(0, 5)
+    choice3 = random.randint(0, 5)
+    choice4 = random.randint(0, 5)
+    choice5 = random.randint(0, 5)
+    # yes, i know there's better ways to do this logic, but i really dont care rn im hella tired
+    while choice2 == choice1:
+        choice2 = random.randint(0, 5)
+    while choice3 == choice2:
+        choice3 = random.randint(0, 5)    
+    while choice4 == choice3:
+        choice4 = random.randint(0, 5)  
+    while choice5 == choice4:
+        choice5 = random.randint(0, 5) 
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice1), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice2), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice3), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice4), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice5), node=suit, duration = 1.0))
+
     multiTrackList = Parallel(suitTrack, toonTrack, soundTrack)
 
     def changeColor(parts):

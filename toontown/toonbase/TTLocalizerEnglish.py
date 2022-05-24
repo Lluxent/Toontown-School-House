@@ -1322,7 +1322,7 @@ SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
   'BookKeeping':  'The %s removes all negative effects from other Cogs!' % SuitCMB,
-  'Corruption': 'Corrupted...'
+  'Corruption': 'Your form begins to fade...'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
