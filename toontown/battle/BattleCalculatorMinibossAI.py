@@ -60,6 +60,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         self.tutorialFlag = tutorialFlag
         self.trainTrapTriggered = False
         self.TurnsElapsed = 0
+        self.TurnsSinceSummonWithOnlyOneCog = 0
 
     def setSkillCreditMultiplier(self, mult):
         self.__skillCreditMultiplier = mult
@@ -1489,6 +1490,9 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
     def getLuredSuits(self):
         self.TurnsElapsed += 1
         self.notify.debug('Current Elapsed Turns: ' + str(self.TurnsElapsed))
+        if len(self.battle.activeSuits) <= 2:
+            self.TurnsSinceSummonWithOnlyOneCog += 1
+        self.notify.debug('Current Elapsed Turns Alt: ' + str(self.TurnsSinceSummonWithOnlyOneCog))
         luredSuits = self.currentlyLuredSuits.keys()
         self.notify.debug('Lured suits reported to battle: ' + repr(luredSuits))
         return luredSuits
@@ -1669,8 +1673,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             self.notify.debug('LURE REMOVE CHEAT can attack: ' + str(self.__suitCanAttack(theSuit.doId)) + " " + str(self.__suitCanAttack(theSuit.doId)))
             self.notify.debug('LURE REMOVE CHEAT is manager: ' + str(theSuit.getManager()) + " " + str(theSuit.getManager()))
     
-            if len(self.battle.activeSuits) < 2:
-                self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
+            if len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2:
                 boss = None
                 for do in simbase.air.doId2do.values():
                     if isinstance(do, DistributedCashbotBossMiniAI):
@@ -1678,9 +1681,15 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                             if toon in do.involvedToons:
                                 boss = do
                                 break
-                  
+
+                if self.TurnsSinceSummonWithOnlyOneCog > 2:
+                    self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
+                else:
+                    boss.appendSuitsToBattle(boss.battleNumber, None)
+                    self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
+                self.TurnsSinceSummonWithOnlyOneCog = 0
+
                 boss.appendSuitsToBattle(boss.battleNumber, None)  
-                boss.appendSuitsToBattle(boss.battleNumber, None)
                 boss.appendSuitsToBattle(boss.battleNumber, None)
                 return 4
             elif self.TurnsElapsed % 3 == 0:
