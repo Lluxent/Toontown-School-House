@@ -1242,9 +1242,9 @@ SuitBackStabber = 'Back Stabber'
 SuitSpinDoctor = 'Spin Doctor'
 SuitLegalEagle = 'Legal Eagle'
 SuitBigWig = 'Big Wig'
-SuitCMB = 'Johnathan \'Banker\' McBill'
-SuitCMBS = 'a Johnathan \'Banker\' McBill'
-SuitCMBP = 'Johnathan \'Banker\' McBills'
+SuitCMB = 'Treasurer'
+SuitCMBS = 'a Treasurer'
+SuitCMBP = 'Treasurers'
 SuitFlunkyS = 'a Flunky'
 SuitPencilPusherS = 'a Pencil Pusher'
 SuitYesmanS = 'a Yesman'
@@ -1382,7 +1382,7 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Watercooler': 'Watercooler!',
  'Withdrawal': 'Withdrawal!',
  'WriteOff': 'Write Off!',
- 'JuryNotice': 'Predatory Business!',
+ 'JuryNotice': 'Predatory Finance!',
  'CompoundingInterest': 'Compound Interest!'}
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1396,12 +1396,15 @@ SuitAttackTaunts = {
            'Time for you to account for your expenses.',
            "I've found an error in your books."],
   'JuryNotice': ["The party\'s over here, boys.",
-           "Gonna need a second opinion on you.",
-           'The party ain\'t ever big enough.'],
-  'CompoundingInterest': ['Might need to take out a second loan, Toon.',
-  'No amount of money is ever enough money.',
-  'The house is coming down on you, Toon.',
-  'Another layer of debt to seal your fate.'],
+           "Don\'t get ahead of yourself.",
+           'You might want to think about some life insurance, Toon.',
+           'Your loans have defaulted, Toon.',
+           'It\'s time to negotiate your loans.'],
+  'CompoundingInterest': ['Might need to consider taking out a second loan, Toon.',
+            'Money makes the man, as I unmake you, Toon.',
+            'The house is coming down on you, Toon.',
+            'Anybody tells you that money is the root of all evil doesn\'t have any.',
+            'Deadlines, deadlines, deadlines, Toon. Can you keep up the pace?'],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
           "You're biting off more than you can chew.",
