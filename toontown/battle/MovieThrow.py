@@ -108,6 +108,8 @@ def doThrows(throws):
     camDuration = retTrack.getDuration()
     enterDuration = npcArrivals.getDuration()
     exitDuration = npcDepartures.getDuration()
+    if npcs:
+        camDuration -= 11.6
     camTrack = MovieCamera.chooseThrowShot(throws, suitThrowsDict, camDuration, enterDuration=enterDuration, exitDuration=exitDuration)
     return (retTrack, camTrack)
 

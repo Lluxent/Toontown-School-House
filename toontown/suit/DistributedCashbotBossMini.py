@@ -327,9 +327,9 @@ class DistributedCashbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
     def enterBattleOne(self):
         DistributedMiniboss.DistributedMiniboss.enterBattleOne(self)
         self.reparentTo(render)
-        self.setPosHpr(120, -230, 0, 0, 0, 0)
+        self.setPosHpr(4000, 0, 0, 0, 0, 0)
         self.hide()
-        self.pelvis.setHpr(4000, 0, 0, 0, 0, 0)
+        #self.pelvis.setHpr(4000, 0, 0, 0, 0, 0)
         self.doAnimate()
         self.endVault.stash()
         self.midVault.unstash()
