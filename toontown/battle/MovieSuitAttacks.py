@@ -248,6 +248,10 @@ def doSuitAttack(attack):
         suitTrack = doWithdrawal(attack)
     elif name == WRITE_OFF:
         suitTrack = doWriteOff(attack)
+    elif name == JURY_NOTICE:
+        suitTrack = doJuryNotice(attack)
+    elif name == COMPOUNDING_INTEREST:
+        suitTrack = doCompoundingInterest(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -467,6 +471,11 @@ def doDefault(attack):
         attack['name'] = 'FingerWag'
         attack['animName'] = 'finger-wag'
         return doFingerWag(attack)
+    elif suitName == 'cmb':
+        attack['id'] = POWER_TRIP
+        attack['name'] = 'PowerTrip'
+        attack['animName'] = 'magic3'
+        return doPowerTrip(attack)
     else:
         self.notify.error('doDefault() - unsupported suit type: %s' % suitName)
     return None
@@ -1111,6 +1120,44 @@ def doFingerWag(attack):
     soundTrack = getSoundTrack('SA_finger_wag.ogg', delay=1.3, node=suit)
     return Parallel(suitTrack, toonTrack, partTrack, soundTrack)
 
+
+def doJuryNotice(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    suitTrack = Sequence(getSuitAnimTrack(attack), Wait(2.5), ActorInterval(attack['suit'], 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
+    return Parallel(suitTrack, soundTrack)
+
+def doCompoundingInterest(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    targets = attack['target']
+    damageDelay = 1.7
+    hitAtleastOneToon = 0
+    for t in targets:
+        if t['hp'] > 0:
+            hitAtleastOneToon = 1
+
+    particleEffect = BattleParticles.createParticleEffect('Synergy')
+    waterfallEffect = BattleParticles.createParticleEffect(file='synergyWaterfall')
+    suitTrack = getSuitAnimTrack(attack)
+    partTrack = getPartTrack(particleEffect, 1.0, 1.9, [particleEffect, suit, 0])
+    waterfallTrack = getPartTrack(waterfallEffect, 0.8, 1.9, [waterfallEffect, suit, 0])
+    damageAnims = [['slip-forward']]
+    dodgeAnims = []
+    dodgeAnims.append(['jump',
+     0.01,
+     0,
+     0.6])
+    dodgeAnims.extend(getSplicedLerpAnims('jump', 0.31, 1.3, startTime=0.6))
+    dodgeAnims.append(['jump', 0, 0.91])
+    toonTracks = getToonTracks(attack, damageDelay=damageDelay, damageAnimNames=['slip-forward'], dodgeDelay=0.91, splicedDodgeAnims=dodgeAnims, showMissedExtraTime=1.0)
+    synergySoundTrack = Sequence(Wait(0.9), SoundInterval(globalBattleSoundCache.getSound('SA_synergy.ogg'), node=suit))
+    if hitAtleastOneToon > 0:
+        fallingSoundTrack = Sequence(Wait(damageDelay + 0.5), SoundInterval(globalBattleSoundCache.getSound('Toon_bodyfall_synergy.ogg'), node=suit))
+        return Parallel(suitTrack, partTrack, waterfallTrack, synergySoundTrack, fallingSoundTrack, toonTracks)
+    else:
+        return Parallel(suitTrack, partTrack, waterfallTrack, synergySoundTrack, toonTracks)
 
 def doWriteOff(attack):
     suit = attack['suit']

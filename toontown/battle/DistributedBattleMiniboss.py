@@ -9,6 +9,7 @@ from toontown.toonbase import ToontownGlobals
 class DistributedBattleMiniboss(DistributedBattleFinal.DistributedBattleFinal):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleMiniboss')
 
+    
     def __init__(self, cr):
         DistributedBattleFinal.DistributedBattleFinal.__init__(self, cr)
         base.dbw = self

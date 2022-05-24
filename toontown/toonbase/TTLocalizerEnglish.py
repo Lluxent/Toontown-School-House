@@ -1311,6 +1311,10 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest')
+SuitCheatDescription = {
+  'JuryNotice': 'They\'re getting closer!'
+}
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
  'BounceCheck': 'Bounce Check!',
@@ -1377,8 +1381,11 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Tremor': 'Tremor!',
  'Watercooler': 'Watercooler!',
  'Withdrawal': 'Withdrawal!',
- 'WriteOff': 'Write Off!'}
-SuitAttackTaunts = {'Audit': ["I believe your books don't balance.",
+ 'WriteOff': 'Write Off!',
+ 'JuryNotice': 'Predatory Business!',
+ 'CompoundingInterest': 'Compound Interest!'}
+SuitAttackTaunts = {
+  'Audit': ["I believe your books don't balance.",
            "Looks like you're in the red.",
            'Let me help you with your books.',
            'Your debit column is much too high.',
@@ -1388,6 +1395,13 @@ SuitAttackTaunts = {'Audit': ["I believe your books don't balance.",
            'This should drain your account.',
            'Time for you to account for your expenses.',
            "I've found an error in your books."],
+  'JuryNotice': ["The party\'s over here, boys.",
+           "Gonna need a second opinion on you.",
+           'The party ain\'t ever big enough.'],
+  'CompoundingInterest': ['Might need to take out a second loan, Toon.',
+  'No amount of money is ever enough money.',
+  'The house is coming down on you, Toon.',
+  'Another layer of debt to seal your fate.'],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
           "You're biting off more than you can chew.",

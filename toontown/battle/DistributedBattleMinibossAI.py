@@ -1,11 +1,14 @@
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import DistributedBattleFinalAI
+from toontown.battle import BattleCalculatorMinibossAI
+from toontown.toonbase import ToontownBattleGlobals
 
 class DistributedBattleMinibossAI(DistributedBattleFinalAI.DistributedBattleFinalAI):
     notify = DirectNotifyGlobal.directNotify.newCategory('DistributedBattleMinibossAI')
 
     def __init__(self, air, bossCog, roundCallback, finishCallback, battleSide):
         DistributedBattleFinalAI.DistributedBattleFinalAI.__init__(self, air, bossCog, roundCallback, finishCallback, battleSide)
+        self.battleCalc = BattleCalculatorMinibossAI.BattleCalculatorMinibossAI(self, 0)
 
     def startBattle(self, toonIds, suits):
         self.joinableFsm.request('Joinable')
@@ -28,7 +31,7 @@ class DistributedBattleMinibossAI(DistributedBattleFinalAI.DistributedBattleFina
             self.d_setMembers()
             self.b_setState('ReservesJoining')
         elif len(self.suits) == 0:
-            battleMultiplier = getBossBattleCreditMultiplier(self.battleNumber)
+            battleMultiplier = ToontownBattleGlobals.getBossBattleCreditMultiplier(self.battleNumber)
             for toonId in self.activeToons:
                 toon = self.getToon(toonId)
                 if toon:

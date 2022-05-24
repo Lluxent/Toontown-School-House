@@ -464,7 +464,7 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=4.1))
     elif name == SPIN:
         camTrack.append(defaultCamera(openShotDuration=1.7))
-    elif name == SYNERGY:
+    elif name == SYNERGY or name == COMPOUNDING_INTEREST:
         camTrack.append(defaultCamera(openShotDuration=1.7))
     elif name == TABULATE:
         camTrack.append(defaultCamera())
@@ -479,12 +479,17 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.2))
     elif name == WRITE_OFF:
         camTrack.append(defaultCamera())
+    elif name == JURY_NOTICE:
+        camTrack.append(defaultCamera(openShotDuration=3.0))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())
     pbpText = attack['playByPlayText']
     displayName = TTLocalizer.SuitAttackNames[attack['name']]
-    pbpTrack = pbpText.getShowInterval(displayName, 3.5)
+    if attack['name'] in TTLocalizer.SuitCheatNames:
+        pbpTrack = pbpText.getShowIntervalCheat(displayName, 3.5)
+    else:
+        pbpTrack = pbpText.getShowInterval(displayName, 3.5)
     return Parallel(camTrack, pbpTrack)
 
 

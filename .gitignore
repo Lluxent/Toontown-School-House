@@ -23,3 +23,4 @@ win32/.vscode/tasks.json
 *.code-workspace
 phase_3/
 *Backup.bam
+resources/phase_5/models/char/suitA-snap.bam
