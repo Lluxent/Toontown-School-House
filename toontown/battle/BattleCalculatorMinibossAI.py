@@ -18,7 +18,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
      0, 20, 40, 60]
     DamageBonuses = [
      0, 20, 20, 20]
-    DropDamageBonuses = [0, 60, 70, 80]
+    DropDamageBonuses = [0, 30, 40, 50]
     AttackExpPerTrack = [
      0, 10, 20, 30, 40, 50, 60]
     NumRoundsLured = [

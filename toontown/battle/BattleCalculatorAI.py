@@ -14,6 +14,7 @@ class BattleCalculatorAI:
      0, 20, 40, 60]
     DamageBonuses = [
      0, 20, 20, 20]
+    DropDamageBonuses = [0, 30, 40, 50]
     AttackExpPerTrack = [
      0, 10, 20, 30, 40, 50, 60]
     NumRoundsLured = [
@@ -817,10 +818,14 @@ class BattleCalculatorAI:
                     attackIdx = currTgt[currAtkType][numDmgs - 1][0]
                     attackerId = self.toonAtkOrder[attackIdx]
                     attack = self.battle.toonAttacks[attackerId]
-                    if hp:
+                    if hp and currAtkType != 6:
                         attack[TOON_HPBONUS_COL] = math.ceil(totalDmgs * (self.DamageBonuses[numDmgs - 1] * 0.01))
                         if self.notify.getDebug():
                             self.notify.debug('Applying hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))
+                    elif hp and currAtkType == 6:
+                        attack[TOON_HPBONUS_COL] = math.ceil(totalDmgs * (self.DropDamageBonuses[numDmgs - 1] * 0.01))
+                        if self.notify.getDebug():
+                            self.notify.debug('Applying drop hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))  
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
                         attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * 0.5
                         if self.notify.getDebug():
