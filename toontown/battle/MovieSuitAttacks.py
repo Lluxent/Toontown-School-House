@@ -256,6 +256,8 @@ def doSuitAttack(attack):
         suitTrack = doCigarSmoke(attack)
     elif name == SONG_AND_DANCE:
         suitTrack = doSongAndDance(attack)
+    elif name == CORRUPTION:
+        suitTrack = doCorruption(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1227,6 +1229,53 @@ def doCigarSmoke(attack):
         colorTrack.append(Func(battle.movie.clearRestoreColor))
         multiTrackList.append(colorTrack)
     return multiTrackList
+
+def doCorruption(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    target = attack['target']
+    toon = target['toon']
+    dmg = target['hp']
+    suitTrack = getSuitTrack(attack)
+    toonTrack = getToonTrack(attack, 3.55, ['cringe'], 3.0, ['sidestep'])
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('AA_drop_bigweight.ogg'), node=suit, duration = 1.0))
+    multiTrackList = Parallel(suitTrack, toonTrack, soundTrack)
+
+    def changeColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.setColorScale, Vec4(0, 0, 0, 1)))
+
+        return track
+
+    def resetColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.clearColorScale))
+
+        return track
+
+    if dmg > 0:
+        headParts = toon.getHeadParts()
+        torsoParts = toon.getTorsoParts()
+        legsParts = toon.getLegsParts()
+        colorTrack = Sequence()
+        colorTrack.append(Wait(3.6))
+        colorTrack.append(Func(battle.movie.needRestoreColor))
+        colorTrack.append(changeColor(headParts))
+        colorTrack.append(changeColor(torsoParts))
+        colorTrack.append(changeColor(legsParts))
+        colorTrack.append(Wait(2.2))
+        colorTrack.append(resetColor(headParts))
+        colorTrack.append(resetColor(torsoParts))
+        colorTrack.append(resetColor(legsParts))
+        colorTrack.append(Func(battle.movie.clearRestoreColor))
+        multiTrackList.append(colorTrack)
+    return multiTrackList
+
+
 
 def doJuryNotice(attack):
     suit = attack['suit']

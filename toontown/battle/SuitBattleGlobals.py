@@ -135,7 +135,7 @@ def SuitDefaultDefDict(minLevel, maxLevel):
             t.append(SuitDefaultDefense[lv - 1])
     return tuple(t)
 
-SpecialCogDict = ('cmb',)
+SpecialCogDict = ('cmb','ssb')
 
 # re-formatted by me :)
 SuitAttributes = {
@@ -1017,7 +1017,24 @@ SuitAttributes = {
             (0,),
             (0,)),
         )
-    }                 
+    },
+    'ssb': {
+        'name':         TTLocalizer.SuitShadow,
+        'singularname': TTLocalizer.SuitShadowS,
+        'pluralname':   TTLocalizer.SuitShadowP,
+        'level':    10,
+        'hp':   (100,),
+        'def':  (0,),
+        'freq': (0,),
+        'acc':  (0,),
+        'attacks':
+        (
+            ('Corruption',
+            (1,),
+            (100,),
+            (100,)),
+        )
+    },
 }
 
 ATK_TGT_UNKNOWN = 1
@@ -1092,7 +1109,8 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'WriteOff': ('hold-pencil', ATK_TGT_SINGLE),
  'JuryNotice':  ('snap', ATK_TGT_GROUP),
  'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
- 'BookKeeping':  ('cease', ATK_TGT_GROUP)
+ 'BookKeeping':  ('cease', ATK_TGT_GROUP),
+ 'Corruption':  ('magic3', ATK_TGT_SINGLE)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1164,6 +1182,7 @@ WRITE_OFF = SuitAttacks.keys().index('WriteOff')
 JURY_NOTICE = SuitAttacks.keys().index('JuryNotice')
 COMPOUNDING_INTEREST = SuitAttacks.keys().index('CompoundingInterest')
 BOOK_KEEPING = SuitAttacks.keys().index('BookKeeping')
+CORRUPTION = SuitAttacks.keys().index('Corruption')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

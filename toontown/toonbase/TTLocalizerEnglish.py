@@ -1242,9 +1242,15 @@ SuitBackStabber = 'Back Stabber'
 SuitSpinDoctor = 'Spin Doctor'
 SuitLegalEagle = 'Legal Eagle'
 SuitBigWig = 'Big Wig'
+# cashbot miniboss
 SuitCMB = 'Treasurer'
 SuitCMBS = 'a Treasurer'
 SuitCMBP = 'Treasurers'
+# sellbot miniboss
+SuitShadow = 'Shadow'
+SuitShadowS = 'a Shadow'
+SuitShadowP = 'Shadows'
+
 SuitFlunkyS = 'a Flunky'
 SuitPencilPusherS = 'a Pencil Pusher'
 SuitYesmanS = 'a Yesman'
@@ -1311,11 +1317,12 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
   'BookKeeping':  'The %s removes all negative effects from other Cogs!' % SuitCMB,
+  'Corruption': 'Corrupted...'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1386,7 +1393,8 @@ SuitAttackNames = {'Audit': 'Audit!',
  'WriteOff': 'Write Off!',
  'JuryNotice': 'Predatory Finance!',
  'CompoundingInterest': 'Compound Interest!',
- 'BookKeeping': 'Bookkeeping!'
+ 'BookKeeping': 'Bookkeeping!',
+ 'Corruption': 'Corruption!'
 }
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1414,6 +1422,13 @@ SuitAttackTaunts = {
             'I\'ve no time for your jokes, Toon.',
             'I think it\'s time we get back on schedule.',
             'Aaaaaand, we\'re back to business.'],
+  'Corruption': [
+    '5jhDYi7Hnk48YnPJv5MM436RbkOkN4KJX5OR2RVu',
+    'zbDnunEhmkD3SmEaYv2EzTiffdd1kWnrGcRqyHBh',
+    'QrVQQnlJXhEj4lIFn7ZbiBWRiNIpNtnNGAghYyzg',
+    'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
+    'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
+  ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
           "You're biting off more than you can chew.",

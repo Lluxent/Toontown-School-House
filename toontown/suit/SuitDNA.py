@@ -39,7 +39,8 @@ suitHeadTypes = ['f',
  'tf',
  'm',
  'mh',
- 'cmb']
+ 'cmb',
+ 'ssb']
 suitATypes = ['ym',
  'hh',
  'tbc',
@@ -72,7 +73,8 @@ suitCTypes = ['f',
  'tw',
  'mb',
  'cc',
- 'gh']
+ 'gh',
+ 'ssb']
 suitDepts = ['c',
  'l',
  'm',
@@ -123,6 +125,8 @@ def getSuitDept(name):
         return suitDepts[3]
     elif name == 'cmb':
         return suitDepts[2]
+    elif name == 'ssb':
+        return suitDepts[3]
     else:
         print 'Unknown dept for suit name: ', name
         return None
@@ -161,8 +165,8 @@ def getSuitType(name):
         index = 7
     elif index in [7, 15, 23, 31]:
         index = 8
-    elif index == 32:
-        index = 9
+    elif index >= 32:   # bullshit hacky fix i love coding so much mmmm i love it wowie wow wow
+        index -= 23
     else:
         print('FUCK FUCK FUCK FUCK FUCK')
         index = 1
@@ -265,8 +269,6 @@ class SuitDNA(AvatarDNA.AvatarDNA):
         self.type = 's'
         if level == None:
             level = random.choice(xrange(1, len(suitsPerLevel)))
-        elif level < 0 or level > 9:
-            notify.error('Invalid suit level: %d' % level)
         if dept == None:
             dept = random.choice(suitDepts)
         self.dept = dept
@@ -283,7 +285,7 @@ class SuitDNA(AvatarDNA.AvatarDNA):
             self.name = suitHeadTypes[random.choice(xrange(bottom, top))]
         else:
             top = bottom
-            self.name = suitHeadTypes[-1]
+            self.name = suitHeadTypes[level - (len(suitHeadTypes) - 23)]    # doing this allows new types cogs to spawn, it's a bullshit hacky fix ik, but idc
         
         self.body = getSuitBodyType(self.name)
         return
