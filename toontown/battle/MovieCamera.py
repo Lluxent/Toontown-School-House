@@ -358,6 +358,9 @@ def chooseSuitShot(attack, attackDuration):
         else:
             return randomAttackCam(attack['suit'], target['toon'], attack['battle'], attackDuration, openShotDuration, 'suit')
 
+    def managerCamera(attack = attack, attackDuration = attackDuration, openShotDuration = 3.5, target = target):
+        return randomManagerCheatCam(attack['suit'], target, attack['battle'], attackDuration, openShotDuration)
+
     if name == AUDIT:
         camTrack.append(defaultCamera())
     elif name == BITE:
@@ -482,8 +485,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.2))
     elif name == WRITE_OFF:
         camTrack.append(defaultCamera())
-    elif name == JURY_NOTICE:
-        camTrack.append(defaultCamera(openShotDuration=3.0))
+    elif name == JURY_NOTICE or name == BOOK_KEEPING:
+        camTrack.append(managerCamera(openShotDuration=6.0))
     elif name == THROW_BOOK:
         camTrack.append(defaultCamera(openShotDuration=2.9))
     else:
@@ -843,6 +846,11 @@ def randomGroupAttackCam(suit, targets, battle, attackDuration, openShotDuration
     closeShot = randomToonGroupShot(targets, suit, closeShotDuration, battle)
     return Sequence(openShot, closeShot)
 
+def randomManagerCheatCam(suit, targets, battle, attackDuration, openShotDuration):
+    if openShotDuration > attackDuration:
+        openShotDuration = attackDuration
+    openShot = randomActorShot(suit, battle, openShotDuration, 'suit', groupShot=0)
+    return Sequence(openShot)
 
 def randomActorShot(actor, battle, duration, actorType, groupShot = 0):
     height = actor.getHeight()

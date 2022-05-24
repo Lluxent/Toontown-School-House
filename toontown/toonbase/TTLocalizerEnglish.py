@@ -1311,10 +1311,11 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
-  'CompoundingInterest': 'The interest fees are racking up!'
+  'CompoundingInterest': 'The interest fees are racking up!',
+  'BookKeeping':  'The %s removes all negative effects from other Cogs!' % SuitCMB,
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1384,7 +1385,9 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Withdrawal': 'Withdrawal!',
  'WriteOff': 'Write Off!',
  'JuryNotice': 'Predatory Finance!',
- 'CompoundingInterest': 'Compound Interest!'}
+ 'CompoundingInterest': 'Compound Interest!',
+ 'BookKeeping': 'Bookkeeping!'
+}
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
            "Looks like you're in the red.",
@@ -1406,6 +1409,11 @@ SuitAttackTaunts = {
             'The house is coming down on you, Toon.',
             'Anybody tells you that money is the root of all evil doesn\'t have any.',
             'Deadlines, deadlines, deadlines, Toon. Can you keep up the pace?'],
+  'BookKeeping':  ['Break time\'s over.',
+            'My, my, would you look at the time?',
+            'I\'ve no time for your jokes, Toon.',
+            'I think it\'s time we get back on schedule.',
+            'Aaaaaand, we\'re back to business.'],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
           "You're biting off more than you can chew.",

@@ -250,6 +250,8 @@ def doSuitAttack(attack):
         suitTrack = doJuryNotice(attack)
     elif name == COMPOUNDING_INTEREST:
         suitTrack = doCompoundingInterest(attack)
+    elif name == BOOK_KEEPING:
+        suitTrack = doBookKeeping(attack)
     elif name == CIGAR_SMOKE:
         suitTrack = doCigarSmoke(attack)
     elif name == SONG_AND_DANCE:
@@ -1229,7 +1231,14 @@ def doCigarSmoke(attack):
 def doJuryNotice(attack):
     suit = attack['suit']
     battle = attack['battle']
-    suitTrack = Sequence(getSuitAnimTrack(attack), Wait(2.5), ActorInterval(attack['suit'], 'neutral'))
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
+    return Parallel(suitTrack, soundTrack)
+
+def doBookKeeping(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
     return Parallel(suitTrack, soundTrack)
 

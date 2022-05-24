@@ -1012,6 +1012,10 @@ SuitAttributes = {
             (1,),
             (100,),
             (0,)),
+            ('BookKeeping',
+            (0,),
+            (0,),
+            (0,)),
         )
     }                 
 }
@@ -1087,7 +1091,9 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Withdrawal': ('magic1', ATK_TGT_SINGLE),
  'WriteOff': ('hold-pencil', ATK_TGT_SINGLE),
  'JuryNotice':  ('snap', ATK_TGT_GROUP),
- 'CompoundingInterest':  ('magic3', ATK_TGT_GROUP)}
+ 'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
+ 'BookKeeping':  ('cease', ATK_TGT_GROUP)
+}
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
 BOUNCE_CHECK = SuitAttacks.keys().index('BounceCheck')
@@ -1157,6 +1163,7 @@ WITHDRAWAL = SuitAttacks.keys().index('Withdrawal')
 WRITE_OFF = SuitAttacks.keys().index('WriteOff')
 JURY_NOTICE = SuitAttacks.keys().index('JuryNotice')
 COMPOUNDING_INTEREST = SuitAttacks.keys().index('CompoundingInterest')
+BOOK_KEEPING = SuitAttacks.keys().index('BookKeeping')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

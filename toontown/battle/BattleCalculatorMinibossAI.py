@@ -1662,6 +1662,13 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
 
         if theSuit.dna.name == 'cmb':
             from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
+    
+            self.notify.debug('LURE REMOVE CHEAT suit: ' + str(theSuit))
+            self.notify.debug('LURE REMOVE CHEAT num lure: ' + str(len(self.currentlyLuredSuits)) + " " + str(4 > len(self.currentlyLuredSuits) >= 2))
+            self.notify.debug('LURE REMOVE CHEAT turns: ' + str(self.TurnsElapsed) + " " + str(not self.TurnsElapsed % 3 == 0))
+            self.notify.debug('LURE REMOVE CHEAT can attack: ' + str(self.__suitCanAttack(theSuit.doId)) + " " + str(self.__suitCanAttack(theSuit.doId)))
+            self.notify.debug('LURE REMOVE CHEAT is manager: ' + str(theSuit.getManager()) + " " + str(theSuit.getManager()))
+    
             if len(self.battle.activeSuits) < 2:
                 self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 boss = None
@@ -1676,10 +1683,16 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 boss.appendSuitsToBattle(boss.battleNumber, None)
                 boss.appendSuitsToBattle(boss.battleNumber, None)
                 return 4
-
             elif self.TurnsElapsed % 3 == 0:
                 self.notify.debug("TURN IS MULTIPLE OF 3 (and we have suits), INCReASE THE POWAHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!!!!!")
                 return 5
+            elif 4 > len(self.currentlyLuredSuits) >= 2:
+                self.notify.debug("THERE ARE TWO OR MORE LURED SUITS, and we are not using court fees, SO UNLURE THOSE MFS")
+                for suit in self.currentlyLuredSuits.keys(): # this wouldn't work in python 3 :)
+                    self.__removeLured(suit)
+                return 6
+
+
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']
         atk = SuitBattleGlobals.pickSuitAttack(attacks, theSuit.getLevel())
