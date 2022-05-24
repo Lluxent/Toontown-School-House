@@ -7,6 +7,7 @@ from SuitBattleGlobals import *
 from direct.directnotify import DirectNotifyGlobal
 import random
 import MovieUtil
+import PlayByPlayText
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieCamera')
 
 def chooseHealShot(heals, attackDuration):
@@ -488,13 +489,17 @@ def chooseSuitShot(attack, attackDuration):
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())
-    pbpText = attack['playByPlayText']
+    pbpText = attack['playByPlayText'] 
     displayName = TTLocalizer.SuitAttackNames[attack['name']]
     if attack['name'] in TTLocalizer.SuitCheatNames:
+        pbpDc = PlayByPlayText.PlayByPlayText()
+        pbpDesc = pbpDc.getShowIntervalDesc(TTLocalizer.SuitCheatDescription[attack['name']], 3.5)
         pbpTrack = pbpText.getShowIntervalCheat(displayName, 3.5)
+        return Parallel(camTrack, pbpTrack, pbpDesc)
     else:
         pbpTrack = pbpText.getShowInterval(displayName, 3.5)
-    return Parallel(camTrack, pbpTrack)
+        return Parallel(camTrack, pbpTrack)
+    
 
 
 def chooseSuitCloseShot(attack, openDuration, openName, attackDuration):

@@ -156,7 +156,8 @@ cmb = (
     ('glower', 'glower', 5),
     ('throw-paper','throw-paper', 5),
     ('snap', 'snap', 5),
-    ('magic1', 'magic1', 5)
+    ('magic1', 'magic1', 5),
+    ('pickpocket', 'pickpocket', 5)
 )
 if not base.config.GetBool('want-new-cogs', 0):
     ModelDict = {'a': ('/models/char/suitA-', 4),

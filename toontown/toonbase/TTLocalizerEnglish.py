@@ -1313,7 +1313,8 @@ SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
 SuitCheatNames = ('JuryNotice', 'CompoundingInterest')
 SuitCheatDescription = {
-  'JuryNotice': 'They\'re getting closer!'
+  'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
+  'CompoundingInterest': 'The interest fees are racking up!'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',

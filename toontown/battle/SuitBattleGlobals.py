@@ -988,7 +988,7 @@ SuitAttributes = {
         'acc':  (0,),
         'attacks':
         (
-            ('Synergy',
+            ('PickPocket',
             (40,),
             (95,),
             (25,)),

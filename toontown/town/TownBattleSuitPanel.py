@@ -79,6 +79,8 @@ class TownBattleSuitPanel(DirectFrame):
         if self.cog.getSkeleRevives() > 0:
             self['image_color'] = Vec4(0.7, 0.7, 0.7, 0.8)
             t += TTLocalizer.SkeleRevivePostFix
+        else:
+            self['image_color'] = Vec4(0.7, 0.7, 0.7, 0.8)
         self.healthText['text'] = t
 
     def updateHealthBar(self):
