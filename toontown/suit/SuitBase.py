@@ -56,13 +56,20 @@ class SuitBase:
             self.maxHP = attributes['hp'][self.level]
             self.currHP = self.maxHP
         else:
-            self.level = attributes['level']
-            nameWLevel = TTLocalizer.SuitBaseNameWithLevel % {'name': self.name,
-            'dept': self.getStyleDept(),
-            'level': self.getActualLevel()}
+            if self.dna.name == 'ssb':
+                self.level = level
+                nameWLevel = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': TTLocalizer.SuitShadow,
+                'dept': self.getStyleDept(),
+                'level': 10}
+            else:
+                self.level = attributes['level'] # don't subtract 1, assume the level is as-is from battleglobals
+                nameWLevel = TTLocalizer.SuitBaseNameWithLevel % {'name': self.name,
+                'dept': self.getStyleDept(),
+                'level': self.getActualLevel()}
+
             self.setDisplayName(nameWLevel)
             if self.dna.name == 'ssb':
-                self.maxHP = 7
+                self.maxHP = attributes['hp'][self.level]
                 self.currHP = self.maxHP
             else:
                 self.maxHP = attributes['hp'][0]

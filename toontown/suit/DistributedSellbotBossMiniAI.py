@@ -233,8 +233,8 @@ class DistributedSellbotBossMiniAI(DistributedMinibossAI.DistributedMinibossAI, 
         return {'activeSuits': activeSuits,
          'reserveSuits': reserveSuits}
 
-    def generateNewReserves(self, battleNumber, command):
-        cogs = self.invokeReservesPlanner(battleNumber, command)
+    def generateNewReserves(self, battleNumber, command, args):
+        cogs = self.invokeReservesPlanner(battleNumber, command, args)
         reserveSuits = cogs['reserveSuits']
         return {'reserveSuits': reserveSuits} 
 

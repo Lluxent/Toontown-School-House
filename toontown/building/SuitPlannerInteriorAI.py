@@ -197,7 +197,7 @@ class SuitPlannerInteriorAI:
         suitHandles['reserveSuits'] = []
         return suitHandles
 
-    def genReserveSuits(self, specialCode):
+    def genReserveSuits(self, specialCode, arg = None):
         suitHandles = {}
         reserveSuits = []
         if specialCode == 'cmb':
@@ -210,7 +210,8 @@ class SuitPlannerInteriorAI:
             reserveSuits.append(suit)            
         elif specialCode == 'hst2':
             # generate shadow
-            suit = self.__genSuitObject(self.zoneId, 10, 's', 10, 0)
+            suit = self.__genSuitObject(self.zoneId, 10, 's', arg, 0)
+            suit.setLevel(arg)
             reserveSuits.append(suit)       
 
         suitHandles['reserveSuits'] = reserveSuits

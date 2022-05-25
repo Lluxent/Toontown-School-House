@@ -135,6 +135,14 @@ def SuitDefaultDefDict(minLevel, maxLevel):
             t.append(SuitDefaultDefense[lv - 1])
     return tuple(t)
 
+SuitShadowHealth = lambda level: int(50 + (level * 35))
+
+def SuitShadowHPDict(minLevel, maxLevel):
+    t = []
+    for lv in range(minLevel, maxLevel + 1):
+        t.append(SuitShadowHealth(lv))
+    return tuple(t)
+
 SpecialCogDict = ('cmb','ssb','hst')
 
 # re-formatted by me :)
@@ -1023,7 +1031,7 @@ SuitAttributes = {
         'singularname': TTLocalizer.SuitShadowS,
         'pluralname':   TTLocalizer.SuitShadowP,
         'level':    10,
-        'hp':   (100,),
+        'hp':   SuitShadowHPDict(0, 50),
         'def':  (0,),
         'freq': (0,),
         'acc':  (0,),

@@ -1718,12 +1718,12 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 if self.TurnsSinceSummonWithOnlyOneCog > 2:
                     self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 else:
-                    boss.appendSuitsToBattle(boss.battleNumber, 'cmb')
+                    boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 self.TurnsSinceSummonWithOnlyOneCog = 0
 
-                boss.appendSuitsToBattle(boss.battleNumber, 'cmb')  
-                boss.appendSuitsToBattle(boss.battleNumber, 'cmb')
+                boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)  
+                boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)
                 return 4
             elif self.TurnsElapsed % 3 == 0:
                 self.notify.debug("TURN IS MULTIPLE OF 3 (and we have suits), INCReASE THE POWAHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!!!!!")
@@ -1746,19 +1746,21 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                                 boss = do
                                 break
 
+                summonValue = self.numShadowsSummoned
+
                 if self.TurnsSinceSummonWithOnlyOneCog > 2:
                     self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 else:
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2')
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
                     self.numShadowsSummoned += 1
                 self.TurnsSinceSummonWithOnlyOneCog = 0
 
                 for i in range(2):
                     r = random.randint(1, 2)
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r, None if r == 1 else self.numShadowsSummoned)
                     if r == 2:
                         self.numShadowsSummoned += 1
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r)
                 return 5
 
 

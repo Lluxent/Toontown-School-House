@@ -57,12 +57,15 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
             self.maxHP = hp
             self.currHP = hp
         else:
-            self.level = attributes['level'] # don't subtract 1, assume the level is as-is from battleglobals
+            if self.dna.name == 'ssb':
+                self.level = lvl
+            else:
+                self.level = attributes['level'] # don't subtract 1, assume the level is as-is from battleglobals
             self.notify.debug('Assigning level to non-normal cog ' + str(self.level))
             if hasattr(self, 'doId'):
                 self.d_setLevelDist(self.level)      
             if self.dna.name == 'ssb':
-                hp = 7
+                hp = attributes['hp'][self.level]
             else:
                 hp = attributes['hp'][0]
             self.maxHP = hp

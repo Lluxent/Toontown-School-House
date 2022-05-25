@@ -423,9 +423,9 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
         self.sendBattleIds()
         return
 
-    def appendSuitsToBattle(self, battleNumber, command):
+    def appendSuitsToBattle(self, battleNumber, command, args):
         self.battleNumber = battleNumber
-        suitHandles = self.generateNewReserves(battleNumber, command)
+        suitHandles = self.generateNewReserves(battleNumber, command, args)
         self.reserveSuits.append(suitHandles['reserveSuits'][0])
         return
 
@@ -498,9 +498,9 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
     def generateSuits(self, battleNumber):
         return
 
-    def invokeReservesPlanner(self, buildingCode, specialCode):
+    def invokeReservesPlanner(self, buildingCode, specialCode, args):
         planner = SuitPlannerInteriorAI.SuitPlannerInteriorAI(1, buildingCode, self.dna.dept, self.zoneId)
-        suits = planner.genReserveSuits(specialCode)
+        suits = planner.genReserveSuits(specialCode, args)
         return suits
 
     def handleRoundDone(self, battle, suits, activeSuits, toonIds, totalHp, deadSuits):

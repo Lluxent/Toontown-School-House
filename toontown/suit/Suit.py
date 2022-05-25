@@ -1069,9 +1069,14 @@ class Suit(Avatar.Avatar):
             'level': self.getActualLevel()}
             self.setExecutiveColor()
         elif self.isManager:
-            nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': self._name,
-            'dept': self.getStyleDept(),
-            'level': self.getActualLevel()}
+            if self.dna.name == 'ssb':
+                nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': TTLocalizer.SuitShadow,
+                'dept': self.getStyleDept(),
+                'level': 10}
+            else:
+                nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': self._name,
+                'dept': self.getStyleDept(),
+                'level': self.getActualLevel()}
             self.setExecutiveColor()
         else:
             nameInfo = TTLocalizer.SuitBaseNameWithLevel % {'name': self._name,
