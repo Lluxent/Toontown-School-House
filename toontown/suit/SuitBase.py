@@ -61,8 +61,12 @@ class SuitBase:
             'dept': self.getStyleDept(),
             'level': self.getActualLevel()}
             self.setDisplayName(nameWLevel)
-            self.maxHP = attributes['hp'][0]
-            self.currHP = self.maxHP
+            if self.dna.name == 'ssb':
+                self.maxHP = 7
+                self.currHP = self.maxHP
+            else:
+                self.maxHP = attributes['hp'][0]
+                self.currHP = self.maxHP
 
     def getSkelecog(self):
         return self.isSkelecog

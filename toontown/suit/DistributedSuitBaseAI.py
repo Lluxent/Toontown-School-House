@@ -61,7 +61,10 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
             self.notify.debug('Assigning level to non-normal cog ' + str(self.level))
             if hasattr(self, 'doId'):
                 self.d_setLevelDist(self.level)      
-            hp = attributes['hp'][0]
+            if self.dna.name == 'ssb':
+                hp = 7
+            else:
+                hp = attributes['hp'][0]
             self.maxHP = hp
             self.currHP = hp     
 
@@ -181,11 +184,7 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
         return self.currHP
 
     def setHP(self, hp):
-        if hp > self.maxHP:
-            self.currHP = self.maxHP
-        else:
-            self.currHP = hp
-        return None
+        self.currHP = hp
 
     def setMaxHp(self, maxHp):
         self.maxHP = maxHp

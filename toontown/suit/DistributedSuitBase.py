@@ -160,11 +160,7 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
         return self.currHP
 
     def setHP(self, hp):
-        if hp > self.maxHP:
-            self.currHP = self.maxHP
-        else:
-            self.currHP = hp
-        return None
+        self.currHP = hp
     
     def setMHP(self, hitPoints):
         self.maxHP = hitPoints

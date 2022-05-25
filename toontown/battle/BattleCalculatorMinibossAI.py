@@ -62,6 +62,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         self.corruptionMeter = {}
         self.TurnsElapsed = 0
         self.TurnsSinceSummonWithOnlyOneCog = 0
+        self.numShadowsSummoned = 0
 
     def setSkillCreditMultiplier(self, mult):
         self.__skillCreditMultiplier = mult
@@ -560,6 +561,11 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0
                         self.notify.debug('setting damage to 0, since drop on a lured suit')
+                    if self.battle.findSuit(targetId).dna.name == 'hst' and self.numShadowsSummoned > 0:
+                        self.notify.debug('Shadow Count exceeds 1 (%i), processing attack damage' % self.numShadowsSummoned)
+                        self.notify.debug('Multiplying toon damage by %f' % (1 + (self.numShadowsSummoned * 0.05)))
+                        result *= (1 + (0.05 * self.numShadowsSummoned))
+                    
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' damage to suit')
             else:
@@ -1745,9 +1751,14 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 else:
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                     boss.appendSuitsToBattle(boss.battleNumber, 'hst2')
+                    self.numShadowsSummoned += 1
+                self.TurnsSinceSummonWithOnlyOneCog = 0
 
                 for i in range(2):
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % random.randint(1, 2))
+                    r = random.randint(1, 2)
+                    if r == 2:
+                        self.numShadowsSummoned += 1
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r)
                 return 5
 
 

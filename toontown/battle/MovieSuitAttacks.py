@@ -1313,7 +1313,9 @@ def doShadowMarketing(attack):
     battle = attack['battle']
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
-    return Parallel(suitTrack, soundTrack)
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.5, (0.3, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 2.5, (0.9, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 1, (oldcolor)))
+    return Parallel(suitTrack, soundTrack, lightingTrack)
 
 def doBookKeeping(attack):
     suit = attack['suit']
