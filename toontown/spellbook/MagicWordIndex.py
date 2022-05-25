@@ -1411,7 +1411,45 @@ class SummonCMB(MagicWord):
         if not boss:
             return "Not in that fight."
         
-        boss.appendSuitsToBattle(boss.battleNumber, None)
+        boss.appendSuitsToBattle(boss.battleNumber, 'cmb')
+        return "Appended suit."
+
+class SummonSMB(MagicWord):
+    desc = "Summons reserve suit to SMB fight."
+    aliases = ["smbs"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedSellbotBossMiniAI import DistributedSellbotBossMiniAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedSellbotBossMiniAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "Not in that fight."
+        
+        boss.appendSuitsToBattle(boss.battleNumber, 'hst1')
+        return "Appended suit."
+
+class SummonSMB2(MagicWord):
+    desc = "Summons reserve suit to SMB fight."
+    aliases = ["shadow"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        from toontown.suit.DistributedSellbotBossMiniAI import DistributedSellbotBossMiniAI
+        boss = None
+        for do in simbase.air.doId2do.values():
+            if isinstance(do, DistributedSellbotBossMiniAI):
+                if invoker.doId in do.involvedToons:
+                    boss = do
+                    break
+        if not boss:
+            return "Not in that fight."
+        
+        boss.appendSuitsToBattle(boss.battleNumber, 'hst2')
         return "Appended suit."
 
 class CMBStats(MagicWord):

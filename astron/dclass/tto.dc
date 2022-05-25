@@ -61,6 +61,7 @@ from toontown.suit import DistributedFactorySuit/AI
 from toontown.suit import DistributedMintSuit/AI
 from toontown.suit import DistributedStageSuit/AI
 from toontown.suit import DistributedSellbotBoss/AI
+from toontown.suit import DistributedSellbotBossMini/AI
 from toontown.suit import DistributedCashbotBoss/AI
 from toontown.suit import DistributedCashbotBossMini/AI
 from toontown.coghq import DistributedCashbotBossSafe/AI
@@ -159,6 +160,7 @@ from toontown.coghq import DistributedLawOfficeElevatorInt/AI
 from toontown.building import DistributedElevatorFloor/AI
 from toontown.building import DistributedBossElevator/AI
 from toontown.building import DistributedVPElevator/AI
+from toontown.building import DistributedSBMElevator/AI
 from toontown.building import DistributedCFOElevator/AI
 from toontown.building import DistributedCBMElevator/AI
 from toontown.building import DistributedCJElevator/AI
@@ -1322,6 +1324,21 @@ dclass DistributedBossCog : DistributedNode {
   zapToon(int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, int8/100, int8/100, uint8, int16) airecv clsend;
   showZapToon(uint32, int16/10, int16/10, int16/10, int16/10, int16/10, int16/10, uint8, int16) broadcast;
   setAttackCode(uint8, uint32) broadcast;
+};
+
+dclass DistributedSellbotBossMini : DistributedBossCog {
+  setCagedToonNpcId(uint32) required broadcast ram;
+  setDooberIds(uint32[]) broadcast ram;
+  setBossDamage(uint16, uint8, int16) broadcast ram;
+  setState(string) broadcast ram;
+  hitBoss(uint8) airecv clsend;
+  hitBossInsides() airecv clsend;
+  hitToon(uint32) airecv clsend;
+  finalPieSplat() airecv clsend;
+  touchCage() airecv clsend;
+  doStrafe(uint8, uint8) broadcast;
+  cagedToonBattleThree(uint16, uint32) broadcast;
+  toonPromoted(uint8(0-1));
 };
 
 dclass DistributedSellbotBoss : DistributedBossCog {
@@ -2555,6 +2572,9 @@ dclass DistributedCogdoElevatorInt : DistributedElevatorInt {
 dclass DistributedBossElevator : DistributedElevatorExt {
   setBossOfficeZone(uint32);
   setBossOfficeZoneForce(uint32);
+};
+
+dclass DistributedSBMElevator : DistributedBossElevator {
 };
 
 dclass DistributedVPElevator : DistributedBossElevator {

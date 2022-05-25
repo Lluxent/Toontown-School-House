@@ -1320,12 +1320,13 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
   'BookKeeping':  'The %s removes all negative effects from other Cogs!' % SuitCMB,
-  'Corruption': 'Your form begins to fade...'
+  'Corruption': 'Your form begins to fade...',
+  'ShadowMarketing': 'The %s makes a deal with the shadows...' % SuitHustler
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1397,7 +1398,8 @@ SuitAttackNames = {'Audit': 'Audit!',
  'JuryNotice': 'Predatory Finance!',
  'CompoundingInterest': 'Compound Interest!',
  'BookKeeping': 'Bookkeeping!',
- 'Corruption': 'Corruption!'
+ 'Corruption': 'Corruption!',
+ 'ShadowMarketing': 'Shadow Marketing!'
 }
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1431,6 +1433,13 @@ SuitAttackTaunts = {
     'QrVQQnlJXhEj4lIFn7ZbiBWRiNIpNtnNGAghYyzg',
     'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
     'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
+  ],
+  'ShadowMarketing': [
+    'No cost too great for greatness.',
+    'A deal with the devil is the least of my concerns right now.',
+    'What is a soul but a means to bargain?',
+    'This will hurt you a lot more than it will ever hurt me.',
+    'Say your prayers, Toon.'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
@@ -8518,6 +8527,7 @@ ElevatorCashBotMint0 = 'Coin Mint'
 ElevatorCashBotMint1 = 'Dollar Mint'
 ElevatorCashBotMint2 = 'Bullion Mint'
 ElevatorSellBotBoss = 'Senior V.P Battle'
+ElevatorSellBotMiniBoss = 'THE FUCK BATTLE'
 ElevatorSellBotFactory0 = 'Front Entrance'
 ElevatorSellBotFactory1 = 'Side Entrance'
 ElevatorLawBotBoss = 'Chief Justice Battle'

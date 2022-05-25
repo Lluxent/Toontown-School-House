@@ -190,6 +190,9 @@ class SuitPlannerInteriorAI:
         if specialCode == 'cmb':
             miniboss = self.__genSuitObject(self.zoneId, 9, 'm', 50, 0)
             activeSuits.append(miniboss)
+        elif specialCode == 'hst':
+            miniboss = self.__genSuitObject(self.zoneId, 11, 's', 35, 0)
+            activeSuits.append(miniboss)
         suitHandles['activeSuits'] = activeSuits
         suitHandles['reserveSuits'] = []
         return suitHandles
@@ -201,6 +204,14 @@ class SuitPlannerInteriorAI:
             # generate random cashbot from lv 12 to 20
             suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'm', random.randint(12, 20), 0)
             reserveSuits.append(suit)
+        if specialCode == 'hst1':
+            # generate random sellbot from lv 12 to 20
+            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 's', random.randint(12, 20), 0)
+            reserveSuits.append(suit)            
+        elif specialCode == 'hst2':
+            # generate shadow
+            suit = self.__genSuitObject(self.zoneId, 10, 's', 10, 0)
+            reserveSuits.append(suit)       
 
         suitHandles['reserveSuits'] = reserveSuits
         return suitHandles

@@ -485,7 +485,7 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.2))
     elif name == WRITE_OFF:
         camTrack.append(defaultCamera())
-    elif name == JURY_NOTICE or name == BOOK_KEEPING:
+    elif name == JURY_NOTICE or name == BOOK_KEEPING or name == SHADOW_MARKETING:
         camTrack.append(managerCamera(openShotDuration=6.0))
     elif name == THROW_BOOK:
         camTrack.append(defaultCamera(openShotDuration=2.9))

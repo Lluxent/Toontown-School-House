@@ -1066,6 +1066,10 @@ SuitAttributes = {
             (42,),
             (95,),
             (15,)),
+            ('ShadowMarketing',
+            (0,),
+            (0,),
+            (0,))
         )
     },
 }
@@ -1143,7 +1147,8 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'JuryNotice':  ('snap', ATK_TGT_GROUP),
  'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
  'BookKeeping':  ('cease', ATK_TGT_GROUP),
- 'Corruption':  ('magic2', ATK_TGT_SINGLE)
+ 'Corruption':  ('magic2', ATK_TGT_SINGLE),
+ 'ShadowMarketing': ('summon', ATK_TGT_GROUP)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1216,6 +1221,7 @@ JURY_NOTICE = SuitAttacks.keys().index('JuryNotice')
 COMPOUNDING_INTEREST = SuitAttacks.keys().index('CompoundingInterest')
 BOOK_KEEPING = SuitAttacks.keys().index('BookKeeping')
 CORRUPTION = SuitAttacks.keys().index('Corruption')
+SHADOW_MARKETING = SuitAttacks.keys().index('ShadowMarketing')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

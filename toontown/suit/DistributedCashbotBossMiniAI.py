@@ -62,8 +62,8 @@ class DistributedCashbotBossMiniAI(DistributedMinibossAI.DistributedMinibossAI, 
         return {'activeSuits': activeSuits,
          'reserveSuits': reserveSuits}
 
-    def generateNewReserves(self, battleNumber):
-        cogs = self.invokeReservesPlanner(11, 'cmb')
+    def generateNewReserves(self, battleNumber, command):
+        cogs = self.invokeReservesPlanner(battleNumber, command)
         reserveSuits = cogs['reserveSuits']
         return {'reserveSuits': reserveSuits}        
 

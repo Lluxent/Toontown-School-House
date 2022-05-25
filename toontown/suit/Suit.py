@@ -167,6 +167,7 @@ hst = (
     ('magic1', 'magic1', 5),
     ('magic2', 'magic2', 5),    
     ('cigar-smoke', 'cigar-smoke', 5),
+    ('summon', 'summon', 5)
 )
 
 if not base.config.GetBool('want-new-cogs', 0):

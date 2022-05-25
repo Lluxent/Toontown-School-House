@@ -59,6 +59,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         self.__skillCreditMultiplier = 1
         self.tutorialFlag = tutorialFlag
         self.trainTrapTriggered = False
+        self.corruptionMeter = {}
         self.TurnsElapsed = 0
         self.TurnsSinceSummonWithOnlyOneCog = 0
 
@@ -1199,7 +1200,10 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             if theSuit.dna.name == 'cmb' and self.TurnsElapsed % 3 == 0 and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                 attack[SUIT_HP_COL][targetIndex] = (12 + (self.TurnsElapsed * 3))
             else:
-                attack[SUIT_HP_COL][targetIndex] = result
+                if targetIndex in self.corruptionMeter:
+                    attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[targetIndex]
+                else:
+                    attack[SUIT_HP_COL][targetIndex] = result
 
     def __getToonHp(self, toonDoId):
         handle = self.battle.getToon(toonDoId)
@@ -1227,6 +1231,12 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 self.notify.debug('name %s' % theSuit.dna.name)
                 if self.TurnsElapsed % 3 == 0 and theSuit.dna.name == 'cmb' and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                     position = self.battle.activeToons.index(t)
+                    self.notify.debug(theSuit.dna.name)
+                    if theSuit.dna.name == 'ssb':
+                        self.notify.debug('Corrupting!!!!!!!!!!!!!!!!!!!!!')
+                        self.__updateCorruption(position)
+                    else:
+                        self.notify.debug('Not corrupting...')
                     damageToDeal = (12 + (self.TurnsElapsed * 3))
                     if damageToDeal <= 0:
                         continue
@@ -1242,6 +1252,12 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
                 else:
                     position = self.battle.activeToons.index(t)
+                    self.notify.debug(theSuit.dna.name)
+                    if theSuit.dna.name == 'ssb':
+                        self.notify.debug('Corrupting!!!!!!!!!!!!!!!!!!!!!')
+                        self.__updateCorruption(position)
+                    else:
+                        self.notify.debug('Not corrupting...')
                     if attack[SUIT_HP_COL][position] <= 0:
                         continue
                     toonHp = self.__getToonHp(t)
@@ -1259,6 +1275,22 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         if self.__combatantDead(suitId, toon=0) or self.__suitIsLured(suitId) or self.__combatantJustRevived(suitId):
             return 0
         return 1
+
+    def __updateCorruption(self, toonId):
+        if toonId in self.corruptionMeter:
+            self.corruptionMeter[toonId] += 2
+        else:
+            self.corruptionMeter[toonId] = 2
+
+    def __printCorruptionStats(self):
+        self.notify.debug('Corruption Stats:')
+        for currTgt in self.corruptionMeter.keys():
+            if currTgt not in self.battle.activeToons:
+                continue
+            tgtPos = self.battle.activeToons.index(currTgt)
+            self.notify.debug(' toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' has a corruption level of ' + str(self.corruptionMeter[currTgt]))
+
+        self.notify.debug('\n')
 
     def __updateSuitAtkStat(self, toonId):
         if toonId in self.suitAtkStats:
@@ -1429,6 +1461,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         if self.notify.getDebug():
             self.notify.debug('Toon skills gained after this round: ' + repr(self.toonSkillPtsGained))
             self.__printSuitAtkStats()
+            self.__printCorruptionStats()
         return None
 
     def __calculateFiredCogs():
@@ -1667,12 +1700,6 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         if theSuit.dna.name == 'cmb':
             from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
     
-            self.notify.debug('LURE REMOVE CHEAT suit: ' + str(theSuit))
-            self.notify.debug('LURE REMOVE CHEAT num lure: ' + str(len(self.currentlyLuredSuits)) + " " + str(4 > len(self.currentlyLuredSuits) >= 2))
-            self.notify.debug('LURE REMOVE CHEAT turns: ' + str(self.TurnsElapsed) + " " + str(not self.TurnsElapsed % 3 == 0))
-            self.notify.debug('LURE REMOVE CHEAT can attack: ' + str(self.__suitCanAttack(theSuit.doId)) + " " + str(self.__suitCanAttack(theSuit.doId)))
-            self.notify.debug('LURE REMOVE CHEAT is manager: ' + str(theSuit.getManager()) + " " + str(theSuit.getManager()))
-    
             if len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2:
                 boss = None
                 for do in simbase.air.doId2do.values():
@@ -1685,12 +1712,12 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 if self.TurnsSinceSummonWithOnlyOneCog > 2:
                     self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 else:
-                    boss.appendSuitsToBattle(boss.battleNumber, None)
+                    boss.appendSuitsToBattle(boss.battleNumber, 'cmb')
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 self.TurnsSinceSummonWithOnlyOneCog = 0
 
-                boss.appendSuitsToBattle(boss.battleNumber, None)  
-                boss.appendSuitsToBattle(boss.battleNumber, None)
+                boss.appendSuitsToBattle(boss.battleNumber, 'cmb')  
+                boss.appendSuitsToBattle(boss.battleNumber, 'cmb')
                 return 4
             elif self.TurnsElapsed % 3 == 0:
                 self.notify.debug("TURN IS MULTIPLE OF 3 (and we have suits), INCReASE THE POWAHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!!!!!")
@@ -1701,6 +1728,27 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     self.__removeLured(suit)
                 return 6
 
+        if theSuit.dna.name == 'hst':
+            from toontown.suit.DistributedSellbotBossMiniAI import DistributedSellbotBossMiniAI
+
+            if len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2:
+                boss = None
+                for do in simbase.air.doId2do.values():
+                    if isinstance(do, DistributedSellbotBossMiniAI):
+                        for toon in self.battle.activeToons:
+                            if toon in do.involvedToons:
+                                boss = do
+                                break
+
+                if self.TurnsSinceSummonWithOnlyOneCog > 2:
+                    self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
+                else:
+                    self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2')
+
+                for i in range(2):
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % random.randint(1, 2))
+                return 5
 
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']

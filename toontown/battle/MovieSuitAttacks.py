@@ -261,7 +261,8 @@ def doSuitAttack(attack):
         suitTrack = doSongAndDance(attack)
     elif name == CORRUPTION:
         suitTrack = doCorruption(attack)
-    
+    elif name == SHADOW_MARKETING:
+        suitTrack = doShadowMarketing(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1305,6 +1306,13 @@ def doJuryNotice(attack):
     battle = attack['battle']
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
+    return Parallel(suitTrack, soundTrack)
+
+def doShadowMarketing(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
     return Parallel(suitTrack, soundTrack)
 
 def doBookKeeping(attack):

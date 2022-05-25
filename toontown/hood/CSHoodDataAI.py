@@ -1,5 +1,6 @@
 from direct.directnotify import DirectNotifyGlobal
 import HoodDataAI
+from toontown.building import DistributedSBMElevatorAI
 from toontown.toonbase import ToontownGlobals
 from toontown.coghq import DistributedFactoryElevatorExtAI
 from toontown.coghq import DistributedCogHQDoorAI
@@ -8,6 +9,7 @@ from toontown.building import DoorTypes
 from toontown.coghq import LobbyManagerAI
 from toontown.building import DistributedVPElevatorAI
 from toontown.suit import DistributedSellbotBossAI
+from toontown.suit import DistributedSellbotBossMiniAI
 from toontown.building import DistributedBoardingPartyAI
 
 class CSHoodDataAI(HoodDataAI.HoodDataAI):
@@ -35,6 +37,12 @@ class CSHoodDataAI(HoodDataAI.HoodDataAI):
         self.lobbyElevator = DistributedVPElevatorAI.DistributedVPElevatorAI(self.air, self.lobbyMgr, ToontownGlobals.SellbotLobby, antiShuffle=1)
         self.lobbyElevator.generateWithRequired(ToontownGlobals.SellbotLobby)
         self.addDistObj(self.lobbyElevator)
+        self.miniMgr = LobbyManagerAI.LobbyManagerAI(self.air, DistributedSellbotBossMiniAI.DistributedSellbotBossMiniAI)
+        self.miniMgr.generateWithRequired(ToontownGlobals.SellbotLobby)
+        self.addDistObj(self.miniMgr)
+        self.miniElevator = DistributedSBMElevatorAI.DistributedSBMElevatorAI(self.air, self.miniMgr, ToontownGlobals.SellbotLobby, antiShuffle = 0)
+        self.miniElevator.generateWithRequired(ToontownGlobals.SellbotLobby)
+        self.addDistObj(self.miniElevator)
         if simbase.config.GetBool('want-boarding-groups', 1):
             self.boardingParty = DistributedBoardingPartyAI.DistributedBoardingPartyAI(self.air, [self.lobbyElevator.doId], 8)
             self.boardingParty.generateWithRequired(ToontownGlobals.SellbotLobby)
