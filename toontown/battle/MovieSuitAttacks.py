@@ -261,6 +261,7 @@ def doSuitAttack(attack):
         suitTrack = doSongAndDance(attack)
     elif name == CORRUPTION:
         suitTrack = doCorruption(attack)
+    
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)

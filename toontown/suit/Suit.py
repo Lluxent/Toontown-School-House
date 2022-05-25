@@ -163,6 +163,11 @@ cmb = (
 ssb = (
     ('magic2', 'magic2', 5),
 )
+hst = (
+    ('magic1', 'magic1', 5),
+    ('magic2', 'magic2', 5),    
+    ('cigar-smoke', 'cigar-smoke', 5),
+)
 
 if not base.config.GetBool('want-new-cogs', 0):
     ModelDict = {'a': ('/models/char/suitA-', 4),
@@ -539,6 +544,13 @@ class Suit(Avatar.Avatar):
             self.generateBody()
             self.generateHead('flunky')
             self.setHeight(3.0)
+        elif dna.name == 'hst':
+            self.scale = 7.2 / aSize   
+            self.handColor = SuitDNA.salesPolyColor
+            #self.headColor = VBase4(0.313, 0.862, 0.392, 1.0)
+            self.generateBody()
+            self.generateHead('yesman')
+            self.setHeight(10.0)
         elif dna.name == 'sc':
             self.scale = 3.6 / cSize
             self.handColor = SuitDNA.moneyPolyColor

@@ -135,7 +135,7 @@ def SuitDefaultDefDict(minLevel, maxLevel):
             t.append(SuitDefaultDefense[lv - 1])
     return tuple(t)
 
-SpecialCogDict = ('cmb','ssb')
+SpecialCogDict = ('cmb','ssb','hst')
 
 # re-formatted by me :)
 SuitAttributes = {
@@ -1033,6 +1033,39 @@ SuitAttributes = {
             (1,),
             (100,),
             (100,)),
+        )
+    },
+    'hst': {
+        'name':         TTLocalizer.SuitHustler,
+        'singularname': TTLocalizer.SuitHustlerS,
+        'pluralname':   TTLocalizer.SuitHustlerP,
+        'level':    35,
+        'hp':   (4000,),
+        'def':  (65,),
+        'freq': (0,),
+        'acc':  (0,),
+        'attacks':
+        (
+            ('PowerTrip',
+            (28,),
+            (95,),
+            (15,)),
+            ('ParadigmShift',
+            (36,),
+            (95,),
+            (15,)),
+            ('CigarSmoke',
+            (36,),
+            (95,),
+            (30,)),
+            ('Demotion',
+            (38,),
+            (95,),
+            (25,)),
+            ('Fired',
+            (42,),
+            (95,),
+            (15,)),
         )
     },
 }
