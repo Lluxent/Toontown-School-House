@@ -1206,7 +1206,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             if theSuit.dna.name == 'cmb' and self.TurnsElapsed % 3 == 0 and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                 attack[SUIT_HP_COL][targetIndex] = (12 + (self.TurnsElapsed * 3))
             else:
-                if targetIndex in self.corruptionMeter:
+                if targetIndex in self.corruptionMeter and attack[SUIT_HP_COL][targetIndex] > 0:
                     attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[targetIndex]
                 else:
                     attack[SUIT_HP_COL][targetIndex] = result
