@@ -162,6 +162,7 @@ cmb = (
 )
 ssb = (
     ('magic2', 'magic2', 5),
+    ('effort', 'effort', 5)
 )
 hst = (
     ('magic1', 'magic1', 5),
@@ -339,12 +340,18 @@ class Suit(Avatar.Avatar):
      Vec4(1, 1, 0, 1),
      Vec4(1, 0.5, 0, 1),
      Vec4(1, 0, 0, 1),
-     Vec4(0.3, 0.3, 0.3, 1))
+     Vec4(0.3, 0.3, 0.3, 1),
+     (),
+     Vec4(0.0, 1.0, 1.0, 1),    # overheal
+     Vec4(0.5, 0.0, 0.5, 1))    # overcharge
     healthGlowColors = (Vec4(0.25, 1, 0.25, 0.5),
      Vec4(1, 1, 0.25, 0.5),
      Vec4(1, 0.5, 0.25, 0.5),
      Vec4(1, 0.25, 0.25, 0.5),
-     Vec4(0.3, 0.3, 0.3, 0))
+     Vec4(0.3, 0.3, 0.3, 0),
+     (),
+     Vec4(0.0, 1.0, 1.0, 0.5),    # overheal
+     Vec4(0.5, 0.0, 0.5, 0.5))    # overcharge
     medallionColors = {'c': Vec4(0.863, 0.776, 0.769, 1.0),
      's': Vec4(0.843, 0.745, 0.745, 1.0),
      'l': Vec4(0.749, 0.776, 0.824, 1.0),
@@ -939,11 +946,15 @@ class Suit(Avatar.Avatar):
         self.healthBar.setPos(0.0, 0.1, 0.0)
 
     def updateHealthBar(self, hp, forceUpdate = 0):
-        if hp > self.currHP:
-            hp = self.currHP
         self.currHP -= hp
         health = float(self.currHP) / float(self.maxHP)
-        if health > 0.95:
+        print('UpdateHealthBar MHP %i HP %i' % (self.maxHP, self.currHP))
+        print('UpdateHealthBar - health is %f' % health)
+        if health > 1.5:
+            condition = 7
+        elif health > 1.0:
+            condition = 6
+        elif health > 0.95:
             condition = 0
         elif health > 0.7:
             condition = 1
@@ -955,6 +966,7 @@ class Suit(Avatar.Avatar):
             condition = 4
         else:
             condition = 5
+        print('UpdateHealthBar - condition is %i' % condition)
         if self.healthCondition != condition or forceUpdate:
             if condition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))

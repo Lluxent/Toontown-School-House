@@ -1,3 +1,4 @@
+from re import S
 from libotp import *
 from direct.task import Task
 from toontown.battle.MovieCamera import toonGroupHighShot
@@ -263,6 +264,8 @@ def doSuitAttack(attack):
         suitTrack = doCorruption(attack)
     elif name == SHADOW_MARKETING:
         suitTrack = doShadowMarketing(attack)
+    elif name == RECARMDRA:
+        suitTrack = doRecarmdra(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1235,9 +1238,6 @@ def doCigarSmoke(attack):
         multiTrackList.append(colorTrack)
     return multiTrackList
 
-def corruptionPrintout(toon):
-    toon.showHpText("+1 CORRUPTION", 3)
-
 def doCorruption(attack):
     suit = attack['suit']
     battle = attack['battle']
@@ -1245,8 +1245,8 @@ def doCorruption(attack):
     toon = target['toon']
     dmg = target['hp']
     suitTrack = getSuitTrack(attack)
-    taskMgr.doMethodLater(1.5, corruptionPrintout, 'corruption-print', extraArgs=[toon])
     toonTrack = Sequence(Sequence(getToonTrack(attack, 3.55, ['cringe'], 3.0, ['sidestep'])))
+    toonNotifTrack = Sequence(Wait(1.5), Func(toon.showHpText, "+1 CORRUPTION", 3))
     choice1 = random.randint(0, 5)
     choice2 = random.randint(0, 5)
     choice3 = random.randint(0, 5)
@@ -1263,7 +1263,7 @@ def doCorruption(attack):
         choice5 = random.randint(0, 5) 
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice1), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice2), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice3), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice4), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice5), node=suit, duration = 1.0))
 
-    multiTrackList = Parallel(suitTrack, toonTrack, soundTrack)
+    multiTrackList = Parallel(suitTrack, toonTrack, soundTrack, toonNotifTrack)
 
     def changeColor(parts):
         track = Parallel()
@@ -1299,7 +1299,41 @@ def doCorruption(attack):
         multiTrackList.append(colorTrack)
     return multiTrackList
 
+def doRecarmdra(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    target = attack['target'][0]
+    dmg = target['hp']
+    theSuit = None
+    for s in battle.suits:
+        if s.dna.name == 'hst':
+            print('Found manager... using it...')
+            theSuit = s
 
+    if theSuit == None:
+        print('Error finding manager... using self...')
+        theSuit = suit
+
+    print('*************************************')
+
+    print('suit.currHP %i' % int(suit.currHP))
+    print('setHP() %i' % int(suit.currHP - dmg))
+    suit.setHealthForMe(int(suit.currHP - dmg))
+    print('suit.currHP %i' % int(suit.currHP))
+
+    print('ts.currHP %i' % int(theSuit.currHP))
+    print('setHP() %i' % int(theSuit.currHP + dmg))
+    theSuit.setHealthForMe(int(theSuit.currHP + dmg))
+    print('ts.currHP %i' % int(theSuit.currHP))
+
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
+    selfDamageTrack = Sequence(Wait(2), Func(suit.showHpText, -dmg), Func(suit.updateHealthBar, 0))
+    managerHealTrack = Sequence(Wait(2), Func(theSuit.showHpText, dmg), Func(theSuit.updateHealthBar, 0), SoundInterval(globalBattleSoundCache.getSound('LB_toonup.ogg'), node = theSuit))
+    
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.5, (0.3, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 2.5, (0.9, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 1, (oldcolor)))
+    return Parallel(suitTrack, soundTrack, lightingTrack, selfDamageTrack, managerHealTrack)
 
 def doJuryNotice(attack):
     suit = attack['suit']

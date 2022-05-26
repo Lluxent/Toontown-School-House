@@ -1188,27 +1188,39 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             toonId = targetList[currTarget]
             toon = self.battle.getToon(toonId)
             result = 0
+            theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
+            atkType = attack[SUIT_ATK_COL]
+            atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
             if toon and toon.immortalMode:
                 result = 1
             elif self.TOONS_TAKE_NO_DAMAGE:
                 result = 0
             elif self.__suitAtkHit(attackIndex):
-                atkType = attack[SUIT_ATK_COL]
-                theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
-                atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
                 result = atkInfo['hp']
                 if theSuit.getExecutive():
                     result = int(result * ToontownBattleGlobals.EXECUTIVE_DMG_MULT)
                 if theSuit.getMaxSkeleRevives() > 0 and theSuit.getSkeleRevives() == 0: # if the suit WAS ALREADY V2, AND IS NOW A SKELECOG
                     result = int(result * ToontownBattleGlobals.V2_SKELECOG_DMG_MULT)
             targetIndex = self.battle.activeToons.index(toonId)
-            theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
             if theSuit.dna.name == 'cmb' and self.TurnsElapsed % 3 == 0 and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                 attack[SUIT_HP_COL][targetIndex] = (12 + (self.TurnsElapsed * 3))
+            elif theSuit.dna.name == 'ssb' and atkInfo['acc'] == 98:
+                self.notify.debug('Recarmdra Cheat activated')
+                attack[SUIT_HP_COL][targetIndex] = int(theSuit.currHP / 2)
+                theSuit.setHP(int(theSuit.currHP / 2))
+                managerTarget = None
+                for suit in self.battle.suits:
+                    if self.battle.findSuit(suit.doId).getManager():
+                        managerTarget = suit
+                        break
+                managerTarget.setHP(managerTarget.getHP() + int(theSuit.getHP()))
             else:
-                if targetIndex in self.corruptionMeter and attack[SUIT_HP_COL][targetIndex] > 0:
-                    attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[targetIndex]
+                self.notify.debug('Current Corruptions: %s' % str(self.corruptionMeter))
+                if toonId in self.corruptionMeter and result > 0:
+                    self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.corruptionMeter[toonId])
+                    attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[toonId]
                 else:
+                    self.notify.debug('__calcSuitAtkHp - Target is not corrupt, not doing any bonus here')
                     attack[SUIT_HP_COL][targetIndex] = result
 
     def __getToonHp(self, toonDoId):
@@ -1232,17 +1244,13 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         theSuit = self.battle.activeSuits[attackIndex]
         if self.APPLY_HEALTH_ADJUSTMENTS:
             for t in self.battle.activeToons:
-                self.notify.debug('TESTING SHIT HERE')
-                self.notify.debug('turns %i' % self.TurnsElapsed)
-                self.notify.debug('name %s' % theSuit.dna.name)
                 if self.TurnsElapsed % 3 == 0 and theSuit.dna.name == 'cmb' and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                     position = self.battle.activeToons.index(t)
-                    self.notify.debug(theSuit.dna.name)
                     if theSuit.dna.name == 'ssb':
-                        self.notify.debug('Corrupting!!!!!!!!!!!!!!!!!!!!!')
-                        self.__updateCorruption(position)
+                        self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on %s' % str(position))
+                        self.__updateCorruption(t)
                     else:
-                        self.notify.debug('Not corrupting...')
+                        self.notify.debug('__applySuitAttackDamages - NOT calling __updateCorruption')
                     damageToDeal = (12 + (self.TurnsElapsed * 3))
                     if damageToDeal <= 0:
                         continue
@@ -1258,15 +1266,17 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
                 else:
                     position = self.battle.activeToons.index(t)
-                    self.notify.debug(theSuit.dna.name)
-                    if theSuit.dna.name == 'ssb':
-                        self.notify.debug('Corrupting!!!!!!!!!!!!!!!!!!!!!')
-                        self.__updateCorruption(position)
-                    else:
-                        self.notify.debug('Not corrupting...')
                     if attack[SUIT_HP_COL][position] <= 0:
                         continue
                     toonHp = self.__getToonHp(t)
+                    if theSuit.dna.name == 'ssb':
+                        if attack[SUIT_ATK_COL] == 0:
+                            self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s' % str(t))
+                            self.__updateCorruption(t)
+                        else:
+                            self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
+                            self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
+                            return
                     if toonHp - attack[SUIT_HP_COL][position] <= 0:
                         if self.notify.getDebug():
                             self.notify.debug('Toon %d has died, removing' % t)
@@ -1274,6 +1284,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                         attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << position
                     if self.notify.getDebug():
                         self.notify.debug('Toon ' + str(t) + ' takes ' + str(attack[SUIT_HP_COL][position]) + ' damage')
+                        
                     self.toonHPAdjusts[t] -= attack[SUIT_HP_COL][position]
                     self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
 
@@ -1284,19 +1295,21 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
 
     def __updateCorruption(self, toonId):
         if toonId in self.corruptionMeter:
-            self.corruptionMeter[toonId] += 2
+            self.corruptionMeter[int(toonId)] += 2
         else:
-            self.corruptionMeter[toonId] = 2
+            self.corruptionMeter[int(toonId)] = 2
 
     def __printCorruptionStats(self):
-        self.notify.debug('Corruption Stats:')
-        for currTgt in self.corruptionMeter.keys():
-            if currTgt not in self.battle.activeToons:
-                continue
-            tgtPos = self.battle.activeToons.index(currTgt)
-            self.notify.debug(' toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' has a corruption level of ' + str(self.corruptionMeter[currTgt]))
+        if self.corruptionMeter:
+            self.notify.debug('Corruption Stats:')
+            for currTgt in self.corruptionMeter.keys():
+                if currTgt not in self.battle.activeToons:
+                    continue
+                tgtPos = self.battle.activeToons.index(currTgt)
+                self.notify.debug('Toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' has a corruption level of ' + str(self.corruptionMeter[currTgt]))
 
-        self.notify.debug('\n')
+        if self.numShadowsSummoned > 0:
+            self.notify.debug('Manager has a Shadow Influence level of %i - Currently taking %f%% Damage' % (self.numShadowsSummoned, (1.0 + (self.numShadowsSummoned * 0.05)) * 100))
 
     def __updateSuitAtkStat(self, toonId):
         if toonId in self.suitAtkStats:
@@ -1310,9 +1323,8 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             if currTgt not in self.battle.activeToons:
                 continue
             tgtPos = self.battle.activeToons.index(currTgt)
-            self.notify.debug(' toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' was attacked ' + str(self.suitAtkStats[currTgt]) + ' times')
+            self.notify.debug('Toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' was attacked ' + str(self.suitAtkStats[currTgt]) + ' times')
 
-        self.notify.debug('\n')
 
     def __calculateSuitAttacks(self):
         for i in xrange(len(self.battle.suitAttacks)):
@@ -1762,6 +1774,34 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     if r == 2:
                         self.numShadowsSummoned += 1
                 return 5
+
+        if theSuit.dna.name == 'ssb':
+            currentBossHealth = -1
+            for s in self.battle.suits:
+                if s.dna.name == 'hst':
+                    currentBossHealth = s.currHP
+            if currentBossHealth == -1:
+                self.notify.warning('No manager found?')
+                return 0
+            baseChance = 5.0
+            roll = random.randint(0, 99)
+            self.notify.debug('****************************************************')
+            self.notify.debug('Trying Recarmdra Cheat with a roll of %i (need at least 50)' % roll)
+            self.notify.debug('Building Recarmdra Cheat Roll:')
+            self.notify.debug('Base Chance Inf.:\t%f\t\t->\t\t%f' % (baseChance, baseChance))
+            self.notify.debug('Self HP Influence:\t(%i / 400) * 45\t\t\t->\t%f' % (theSuit.getHP(), (theSuit.getHP() / 400.0) * 45))
+            self.notify.debug('Boss Manager HP Inf.:\t(5000 / %i) * %f\t->\t%f' % (currentBossHealth, baseChance, ((5000.0 / currentBossHealth) * baseChance)))
+            rollAgainst = baseChance + (theSuit.getHP() / 400.0) * 45 + (5000.0 / currentBossHealth) * baseChance
+            self.notify.debug('Total Chance: %f' % rollAgainst)
+            self.notify.debug('Roll this time: %i' % roll)
+            if roll < rollAgainst:
+                self.notify.debug('Success, choosing Recarmdra')
+                self.notify.debug('****************************************************')
+                return 1
+            self.notify.debug('Roll failed, choosing Corruption')
+            self.notify.debug('****************************************************')
+            return 0
+
 
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']

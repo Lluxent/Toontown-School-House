@@ -1041,14 +1041,18 @@ SuitAttributes = {
             (1,),
             (100,),
             (100,)),
+            ('Recarmdra',
+            (0,),
+            (98,),
+            (0,)),
         )
     },
     'hst': {
         'name':         TTLocalizer.SuitHustler,
         'singularname': TTLocalizer.SuitHustlerS,
         'pluralname':   TTLocalizer.SuitHustlerP,
-        'level':    35,
-        'hp':   (4000,),
+        'level':    40,
+        'hp':   (5000,),
         'def':  (65,),
         'freq': (0,),
         'acc':  (0,),
@@ -1156,6 +1160,7 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
  'BookKeeping':  ('cease', ATK_TGT_GROUP),
  'Corruption':  ('magic2', ATK_TGT_SINGLE),
+ 'Recarmdra':   ('effort', ATK_TGT_GROUP),
  'ShadowMarketing': ('summon', ATK_TGT_GROUP)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
@@ -1230,6 +1235,7 @@ COMPOUNDING_INTEREST = SuitAttacks.keys().index('CompoundingInterest')
 BOOK_KEEPING = SuitAttacks.keys().index('BookKeeping')
 CORRUPTION = SuitAttacks.keys().index('Corruption')
 SHADOW_MARKETING = SuitAttacks.keys().index('ShadowMarketing')
+RECARMDRA = SuitAttacks.keys().index('Recarmdra')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

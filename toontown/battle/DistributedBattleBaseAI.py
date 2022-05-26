@@ -1588,6 +1588,7 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
         lastActiveSuitDied = 0
         if len(self.activeSuits) == 0 and len(self.pendingSuits) == 0:
             lastActiveSuitDied = 1
+
         for i in xrange(4):
             attack = self.suitAttacks[i][SUIT_ATK_COL]
             if attack != NO_ATTACK:
@@ -1602,7 +1603,10 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     self.air.writeServerEvent('suspicious', toonId, '_movieDone avoiding crash, suit has no dna')
                     continue
                 adict = getSuitAttack(suit.getStyleName(), suit.getLevel(), attack)
-                hps = self.suitAttacks[i][SUIT_HP_COL]
+                if adict['acc'] == 98:
+                    hps = [0]
+                else:
+                    hps = self.suitAttacks[i][SUIT_HP_COL]
                 if adict['group'] == ATK_TGT_GROUP:
                     for activeToon in self.activeToons:
                         toon = self.getToon(activeToon)
