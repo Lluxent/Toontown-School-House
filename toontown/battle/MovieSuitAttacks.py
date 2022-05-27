@@ -1,4 +1,3 @@
-from re import S
 from libotp import *
 from direct.task import Task
 from toontown.battle.MovieCamera import toonGroupHighShot
@@ -1423,7 +1422,7 @@ def doRecarmdra(attack):
     print('ts.currHP %i' % int(theSuit.currHP))
 
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
-    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_recarmdra.ogg'), node=suit))
     selfDamageTrack = Sequence(Wait(2), Func(suit.showHpText, -dmg), Func(suit.updateHealthBar, 0))
     managerHealTrack = Sequence(Wait(2), Func(theSuit.showHpText, dmg), Func(theSuit.updateHealthBar, 0), SoundInterval(globalBattleSoundCache.getSound('LB_toonup.ogg'), node = theSuit))
     
@@ -1455,6 +1454,24 @@ def doShadowWave(attack):
     sprayTrack = getPartTrack(sprayEffect, 1.0, 1.9, [sprayEffect, suit, 0])
     liftTracks = Parallel()
     toonRiseTracks = Parallel()
+    colorTracks = Parallel()
+
+    def changeColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.setColorScale, Vec4(0, 0, 0, 1)))
+
+        return track
+
+    def resetColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.clearColorScale))
+
+        return track
+
     totalDamage = 0
     for t in targets:
         toon = t['toon']
@@ -1506,38 +1523,21 @@ def doShadowWave(attack):
             shadowTrack.append(Func(MovieUtil.removeProp, fakeShadow))
             shadowTrack.append(Func(battle.movie.clearRenderProp, fakeShadow))
             toonRiseTracks.append(Parallel(shakeTrack, shadowTrack, toonNotifTrack))
-
-    def changeColor(parts):
-        track = Parallel()
-        for partNum in xrange(0, parts.getNumPaths()):
-            nextPart = parts.getPath(partNum)
-            track.append(Func(nextPart.setColorScale, Vec4(0, 0, 0, 1)))
-
-        return track
-
-    def resetColor(parts):
-        track = Parallel()
-        for partNum in xrange(0, parts.getNumPaths()):
-            nextPart = parts.getPath(partNum)
-            track.append(Func(nextPart.clearColorScale))
-
-        return track
-
-    colorTrack = Sequence()
-    if dmg > 0:
-        headParts = toon.getHeadParts()
-        torsoParts = toon.getTorsoParts()
-        legsParts = toon.getLegsParts()
-        colorTrack.append(Wait(3.6))
-        colorTrack.append(Func(battle.movie.needRestoreColor))
-        colorTrack.append(changeColor(headParts))
-        colorTrack.append(changeColor(torsoParts))
-        colorTrack.append(changeColor(legsParts))
-        colorTrack.append(Wait(2.2))
-        colorTrack.append(resetColor(headParts))
-        colorTrack.append(resetColor(torsoParts))
-        colorTrack.append(resetColor(legsParts))
-        colorTrack.append(Func(battle.movie.clearRestoreColor))
+            colorTrack = Sequence()
+            headParts = toon.getHeadParts()
+            torsoParts = toon.getTorsoParts()
+            legsParts = toon.getLegsParts()
+            colorTrack.append(Wait(3.6))
+            colorTrack.append(Func(battle.movie.needRestoreColor))
+            colorTrack.append(changeColor(headParts))
+            colorTrack.append(changeColor(torsoParts))
+            colorTrack.append(changeColor(legsParts))
+            colorTrack.append(Wait(2.2))
+            colorTrack.append(resetColor(headParts))
+            colorTrack.append(resetColor(torsoParts))
+            colorTrack.append(resetColor(legsParts))
+            colorTrack.append(Func(battle.movie.clearRestoreColor))
+            colorTracks.append(colorTrack)
 
     damageAnims = []
     damageAnims.extend(getSplicedLerpAnims('think', 0.66, 3.5, startTime=2.06))
@@ -1553,14 +1553,14 @@ def doShadowWave(attack):
     if hitAtleastOneToon == 1:
         soundTrack = Sequence()
         suit.setHealthForMe(int(suit.currHP + totalDamage * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
-        soundTrack.append(getSoundTrack('SA_dark_summon.ogg', delay=2.1, duration=3.05, node=suit))
-        soundTrack.append(Wait(0.45))
-        soundTrack.append(Func(suit.showHpText, totalDamage * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
-        soundTrack.append(Func(suit.updateHealthBar, 0))
-        soundTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
-        return Parallel(suitTrack, sprayTrack, soundTrack, liftTracks, toonTracks, toonRiseTracks, colorTrack)
+        soundTrack.append(getSoundTrack('SA_shadowwave.ogg', delay=2.0, node=suit))
+        soundTrack2 = Sequence(Wait(7.75))
+        soundTrack2.append(Func(suit.showHpText, totalDamage * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
+        soundTrack2.append(Func(suit.updateHealthBar, 0))
+        soundTrack2.append(getSoundTrack('LB_toonup.ogg', node = suit))
+        return Parallel(suitTrack, sprayTrack, soundTrack, soundTrack2, liftTracks, toonTracks, toonRiseTracks, colorTracks)
     else:
-        return Parallel(suitTrack, sprayTrack, liftTracks, toonTracks, toonRiseTracks, colorTrack)
+        return Parallel(suitTrack, sprayTrack, liftTracks, toonTracks, toonRiseTracks, colorTracks)
 
 def doJuryNotice(attack):
     suit = attack['suit']
@@ -1605,7 +1605,7 @@ def doCoalescence(attack):
     suitTrack.append(Func(suit.showHpText, totalDamage * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP + currentHitTrack * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE))
     suitTrack.append(Func(suit.updateHealthBar, 0))
     suitTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
-    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
+    soundTrack = Sequence(Wait(1), SoundInterval(globalBattleSoundCache.getSound('SA_ghost_shroud.ogg'), node=suit))
     oldcolor = render.getColorScale()
     lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 2, (0.,0.,0., 1)), Wait(2), LerpColorScaleInterval(render, 2, (oldcolor)))
     return Parallel(suitTrack, soundTrack, lightingTrack, hitTracks)

@@ -1329,8 +1329,8 @@ SuitCheatDescription = {
   'GroupCorruption': 'Your forms begin to fade...',
   'ShadowMarketing': 'The %s makes a deal with the shadows...' % SuitHustler,
   'Recarmdra': '%s sacrifies its own health for an ally!' % SuitShadow,
-  'ShadowWave': 'The Corruption flows out!',
-  'Coalescence': 'A form unknown emerges...'
+  'ShadowWave': 'The %s siphons your Laff through the Shadows!' % SuitHustler,
+  'Coalescence': 'Your Laff has been reduced to 1!'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1435,21 +1435,13 @@ SuitAttackTaunts = {
             'I\'ve no time for your jokes, Toon.',
             'I think it\'s time we get back on schedule.',
             'Aaaaaand, we\'re back to business.'],
-  'Corruption': [
-    '5jhDYi7Hnk48YnPJv5MM436RbkOkN4KJX5OR2RVu',
-    'zbDnunEhmkD3SmEaYv2EzTiffdd1kWnrGcRqyHBh',
-    'QrVQQnlJXhEj4lIFn7ZbiBWRiNIpNtnNGAghYyzg',
-    'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
-    'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
-  ],
-  'GroupCorruption': [
-    '5jhDYi7Hnk48YnPJv5MM436RbkOkN4KJX5OR2RVu',
-    'zbDnunEhmkD3SmEaYv2EzTiffdd1kWnrGcRqyHBh',
-    'QrVQQnlJXhEj4lIFn7ZbiBWRiNIpNtnNGAghYyzg',
-    'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
-    'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
-  ],
-  'Recarmdra': ['A sacrificial lamb... '],
+  'Recarmdra': [
+    'For my liege...',
+    'The call of the shadows...',
+    'For the cause...',
+    '...',
+    'A sacrifice most necessary...'
+    ],
   'ShadowMarketing': [
     'No cost too great for greatness.',
     'A deal with the devil is the least of my concerns right now.',
@@ -1458,10 +1450,18 @@ SuitAttackTaunts = {
     'Say your prayers, Toon.'
   ],
   'ShadowWave': [
-    'Feel the flow, Toon.'
+    'How my shadow darkens.',
+    'Look to the shadows for a taste of your fate.',
+    'My shadow rises while your shadow falls.',
+    'The shadows ripple in my wake.',
+    'Fear what comes next!'
   ],
   'Coalescence': [
-    'It\'s all coming together, now.'
+    'Come into my dominion!',
+    'That\'s me you feel.',
+    'You wear my shadows now!',
+    'No light shelters you from the dark.',
+    'My shadow seeks you, Toon.'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',

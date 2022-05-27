@@ -1827,6 +1827,8 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             if currentBossHealth == -1:
                 self.notify.warning('No manager found?')
                 return random.choice([0, 2])
+            if theSuit.getHP() == 1:
+                return random.choice([0, 2])
             baseChance = 5.0
             roll = random.randint(0, 99)
             self.notify.debug('****************************************************')

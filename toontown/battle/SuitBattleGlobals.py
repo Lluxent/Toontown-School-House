@@ -1279,6 +1279,12 @@ def getAttackTauntIndex(attackName):
 
 
 def getAttackTaunt(attackName, index = None):
+    if attackName in ['Corruption', 'GroupCorruption']:
+        from string import ascii_letters, punctuation, digits
+        s = ''
+        for i in range(64):
+            s += random.choice(ascii_letters + punctuation + digits)
+        return s
     if attackName in SuitAttackTaunts:
         taunts = SuitAttackTaunts[attackName]
     else:
