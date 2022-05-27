@@ -135,7 +135,7 @@ def SuitDefaultDefDict(minLevel, maxLevel):
             t.append(SuitDefaultDefense[lv - 1])
     return tuple(t)
 
-SuitShadowHealth = lambda level: int(50 + (level * 35))
+SuitShadowHealth = lambda level: int(108 + (level * 72))
 
 def SuitShadowHPDict(minLevel, maxLevel):
     t = []
@@ -1040,11 +1040,15 @@ SuitAttributes = {
             ('Corruption',
             (1,),
             (100,),
-            (100,)),
+            (60,)),
             ('Recarmdra',
             (0,),
             (98,),
             (0,)),
+            ('GroupCorruption',
+            (1,),
+            (100,),
+            (40,)),
         )
     },
     'hst': {
@@ -1079,6 +1083,14 @@ SuitAttributes = {
             (95,),
             (15,)),
             ('ShadowMarketing',
+            (0,),
+            (0,),
+            (0,)),
+            ('ShadowWave',
+            (1,),
+            (100,),
+            (0,)),
+            ('Coalescence',
             (0,),
             (0,),
             (0,))
@@ -1160,8 +1172,11 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'CompoundingInterest':  ('magic3', ATK_TGT_GROUP),
  'BookKeeping':  ('cease', ATK_TGT_GROUP),
  'Corruption':  ('magic2', ATK_TGT_SINGLE),
+ 'GroupCorruption':  ('magic4', ATK_TGT_GROUP),
  'Recarmdra':   ('effort', ATK_TGT_GROUP),
- 'ShadowMarketing': ('summon', ATK_TGT_GROUP)
+ 'ShadowMarketing': ('summon', ATK_TGT_GROUP),
+ 'ShadowWave': ('summon', ATK_TGT_GROUP),
+ 'Coalescence': ('summon', ATK_TGT_GROUP)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1236,6 +1251,9 @@ BOOK_KEEPING = SuitAttacks.keys().index('BookKeeping')
 CORRUPTION = SuitAttacks.keys().index('Corruption')
 SHADOW_MARKETING = SuitAttacks.keys().index('ShadowMarketing')
 RECARMDRA = SuitAttacks.keys().index('Recarmdra')
+SHADOW_WAVE = SuitAttacks.keys().index('ShadowWave')
+COALESCENCE = SuitAttacks.keys().index('Coalescence')
+GROUP_CORRUPTION = SuitAttacks.keys().index('GroupCorruption')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

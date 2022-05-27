@@ -1320,14 +1320,17 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave', 'Coalescence', 'GroupCorruption')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
   'BookKeeping':  'The %s removes all negative effects from other Cogs!' % SuitCMB,
   'Corruption': 'Your form begins to fade...',
+  'GroupCorruption': 'Your forms begin to fade...',
   'ShadowMarketing': 'The %s makes a deal with the shadows...' % SuitHustler,
   'Recarmdra': '%s sacrifies its own health for an ally!' % SuitShadow,
+  'ShadowWave': 'The Corruption flows out!',
+  'Coalescence': 'A form unknown emerges...'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1400,8 +1403,11 @@ SuitAttackNames = {'Audit': 'Audit!',
  'CompoundingInterest': 'Compound Interest!',
  'BookKeeping': 'Bookkeeping!',
  'Corruption': 'Corruption!',
+ 'GroupCorruption': 'Corruption!',
  'ShadowMarketing': 'Shadow Marketing!',
  'Recarmdra': 'Recarmdra!',
+ 'ShadowWave': 'Shadow Wave!',
+ 'Coalescence': 'Coalescence!',
 }
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1436,6 +1442,13 @@ SuitAttackTaunts = {
     'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
     'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
   ],
+  'GroupCorruption': [
+    '5jhDYi7Hnk48YnPJv5MM436RbkOkN4KJX5OR2RVu',
+    'zbDnunEhmkD3SmEaYv2EzTiffdd1kWnrGcRqyHBh',
+    'QrVQQnlJXhEj4lIFn7ZbiBWRiNIpNtnNGAghYyzg',
+    'ANE35wDDaII8m9aMcvzCOVKXyuLMx8GSEGhORm6T',
+    'iol9AOFF9G0UkB7cWHpI1M762ruhZtl9umP6dndL'
+  ],
   'Recarmdra': ['A sacrificial lamb... '],
   'ShadowMarketing': [
     'No cost too great for greatness.',
@@ -1443,6 +1456,12 @@ SuitAttackTaunts = {
     'What is a soul but a means to bargain?',
     'This will hurt you a lot more than it will ever hurt me.',
     'Say your prayers, Toon.'
+  ],
+  'ShadowWave': [
+    'Feel the flow, Toon.'
+  ],
+  'Coalescence': [
+    'It\'s all coming together, now.'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',

@@ -262,10 +262,16 @@ def doSuitAttack(attack):
         suitTrack = doSongAndDance(attack)
     elif name == CORRUPTION:
         suitTrack = doCorruption(attack)
+    elif name == GROUP_CORRUPTION:
+        suitTrack = doGroupCorruption(attack)
     elif name == SHADOW_MARKETING:
         suitTrack = doShadowMarketing(attack)
     elif name == RECARMDRA:
         suitTrack = doRecarmdra(attack)
+    elif name == SHADOW_WAVE:
+        suitTrack = doShadowWave(attack)
+    elif name == COALESCENCE:
+        suitTrack = doCoalescence(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -566,7 +572,10 @@ def getToonTrack(attack, damageDelay = 1e-06, damageAnimNames = None, dodgeDelay
     animTrack = Sequence()
     animTrack.append(Func(toon.headsUp, battle, suitPos))
     if dmg > 0:
-        animTrack.append(getToonTakeDamageTrack(toon, target['died'], dmg, damageDelay, damageAnimNames, splicedDamageAnims, showDamageExtraTime))
+        if attack['name'] in ['ShadowWave']:
+            animTrack.append(getToonTakeDamageTrack(toon, target['died'], 0, damageDelay, damageAnimNames, splicedDamageAnims, showDamageExtraTime))
+        else:
+            animTrack.append(getToonTakeDamageTrack(toon, target['died'], dmg, damageDelay, damageAnimNames, splicedDamageAnims, showDamageExtraTime))
         return animTrack
     else:
         animTrack.append(getToonDodgeTrack(target, dodgeDelay, dodgeAnimNames, splicedDodgeAnims, showMissedExtraTime))
@@ -1246,7 +1255,7 @@ def doCorruption(attack):
     dmg = target['hp']
     suitTrack = getSuitTrack(attack)
     toonTrack = Sequence(Sequence(getToonTrack(attack, 3.55, ['cringe'], 3.0, ['sidestep'])))
-    toonNotifTrack = Sequence(Wait(1.5), Func(toon.showHpText, "+1 CORRUPTION", 3))
+    toonNotifTrack = Sequence(Wait(1.5), Func(toon.showHpText, "+3 CORRUPTION", 3))
     choice1 = random.randint(0, 5)
     choice2 = random.randint(0, 5)
     choice3 = random.randint(0, 5)
@@ -1273,6 +1282,8 @@ def doCorruption(attack):
 
         return track
 
+
+
     def resetColor(parts):
         track = Parallel()
         for partNum in xrange(0, parts.getNumPaths()):
@@ -1297,6 +1308,91 @@ def doCorruption(attack):
         colorTrack.append(resetColor(legsParts))
         colorTrack.append(Func(battle.movie.clearRestoreColor))
         multiTrackList.append(colorTrack)
+    return multiTrackList
+
+def doGroupCorruption(attack):
+    suitTrack = getSuitAnimTrack(attack)
+    toonTracks = Sequence(Sequence(getToonTracks(attack, 3.55, ['cringe'], 3.0, ['sidestep'])))
+    choice1 = random.randint(0, 5)
+    choice2 = random.randint(0, 5)
+    choice3 = random.randint(0, 5)
+    choice4 = random.randint(0, 5)
+    choice5 = random.randint(0, 5)
+    # yes, i know there's better ways to do this logic, but i really dont care rn im hella tired
+    while choice2 == choice1:
+        choice2 = random.randint(0, 5)
+    while choice3 == choice2:
+        choice3 = random.randint(0, 5)    
+    while choice4 == choice3:
+        choice4 = random.randint(0, 5)  
+    while choice5 == choice4:
+        choice5 = random.randint(0, 5) 
+
+    hitTrack1 = Sequence()
+    hitTrack2 = Sequence()
+    hitTrack3 = Sequence()
+    hitTrack4 = Sequence()
+    cTrack1 = Sequence()
+    cTrack2 = Sequence()
+    cTrack3 = Sequence()
+    cTrack4 = Sequence()
+    
+    
+    def changeColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.setColorScale, Vec4(0, 0, 0, 1)))
+
+        return track
+
+
+
+    def resetColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.clearColorScale))
+
+        return track
+    suit = attack['suit']
+    battle = attack['battle']
+    targets = attack['target']
+    currentHitTrack = 0
+    for t in targets:
+        currentHitTrack += 1
+        if currentHitTrack == 1:
+            hitTrack = hitTrack1
+            colorTrack = cTrack1
+        elif currentHitTrack == 2:
+            hitTrack = hitTrack2
+            colorTrack = cTrack2
+        elif currentHitTrack == 3:
+            hitTrack = hitTrack3
+            colorTrack = cTrack3
+        elif currentHitTrack == 4:
+            hitTrack = hitTrack4
+            colorTrack = cTrack4
+        toon = t['toon']
+        
+        hitTrack.append(Sequence(Wait(1.5), Func(toon.showHpText, "+1 CORRUPTION", 3)))
+        headParts = toon.getHeadParts()
+        torsoParts = toon.getTorsoParts()
+        legsParts = toon.getLegsParts()
+        colorTrack.append(Wait(3.6))
+        colorTrack.append(Func(battle.movie.needRestoreColor))
+        colorTrack.append(changeColor(headParts))
+        colorTrack.append(changeColor(torsoParts))
+        colorTrack.append(changeColor(legsParts))
+        colorTrack.append(Wait(2.2))
+        colorTrack.append(resetColor(headParts))
+        colorTrack.append(resetColor(torsoParts))
+        colorTrack.append(resetColor(legsParts))
+        colorTrack.append(Func(battle.movie.clearRestoreColor))
+
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice1), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice2), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice3), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice4), node=suit, duration = 1.0), SoundInterval(globalBattleSoundCache.getSound('mus_dialup_%i.ogg' % choice5), node=suit, duration = 1.0))
+
+    multiTrackList = Parallel(toonTracks, suitTrack, hitTrack1, hitTrack2, hitTrack3, hitTrack4, soundTrack, cTrack1, cTrack2, cTrack3, cTrack4)
     return multiTrackList
 
 def doRecarmdra(attack):
@@ -1335,6 +1431,137 @@ def doRecarmdra(attack):
     lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.5, (0.3, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 2.5, (0.9, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 1, (oldcolor)))
     return Parallel(suitTrack, soundTrack, lightingTrack, selfDamageTrack, managerHealTrack)
 
+def doShadowWave(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    targets = attack['target']
+    hitAtleastOneToon = 0
+    for t in targets:
+        if t['hp'] > 0:
+            hitAtleastOneToon = 1
+
+    damageDelay = 1.95
+    dodgeDelay = 0.95
+    sprayEffect = BattleParticles.createParticleEffect('ShadowSpray')
+    suitName = suit.getStyleName()
+    if suitName == 'm':
+        sprayEffect.setPos(Point3(-5.2, 4.6, 2.7))
+    elif suitName == 'sd':
+        sprayEffect.setPos(Point3(-5.2, 4.6, 2.7))
+    else:
+        sprayEffect.setPos(Point3(0.1, 4.6, 2.7))
+    suitTrack = Sequence(getSuitAnimTrack(attack))
+    suitTrack.append(ActorInterval(suit, 'magic3'))
+    sprayTrack = getPartTrack(sprayEffect, 1.0, 1.9, [sprayEffect, suit, 0])
+    liftTracks = Parallel()
+    toonRiseTracks = Parallel()
+    totalDamage = 0
+    for t in targets:
+        toon = t['toon']
+        dmg = t['hp']
+        totalDamage += dmg
+        toonNotifTrack = Sequence(Wait(1.5), Func(toon.showHpText, "+4 CORRUPTION", 3))
+        if dmg > 0:
+            liftEffect = BattleParticles.createParticleEffect('ShadowLift')
+            liftEffect.setPos(toon.getPos(battle))
+            liftEffect.setZ(liftEffect.getZ() - 1.3)
+            liftTracks.append(getPartTrack(liftEffect, 1.1, 5.1, [liftEffect, battle, 0]))
+            shadow = toon.dropShadow
+            fakeShadow = MovieUtil.copyProp(shadow)
+            x = toon.getX()
+            y = toon.getY()
+            z = toon.getZ()
+            height = 3
+            groundPoint = Point3(x, y, z)
+            risePoint = Point3(x, y, z + height)
+            shakeRight = Point3(x, y + 0.7, z + height)
+            shakeLeft = Point3(x, y - 0.7, z + height)
+            shakeTrack = Sequence()
+            shakeTrack.append(Wait(damageDelay + 0.25))
+            shakeTrack.append(Func(shadow.hide))
+            shakeTrack.append(LerpPosInterval(toon, 1.1, risePoint))
+            
+            
+            for i in xrange(0, 42):
+                shakeTrack.append(LerpPosInterval(toon, 0.03, shakeLeft))
+                shakeTrack.append(LerpPosInterval(toon, 0.03, shakeRight))
+                if i % 6 == 0:
+                    shakeTrack.append(Func(toon.takeDamage, int(dmg / 7)))
+
+            shakeTrack.append(LerpPosInterval(toon, 0.1, risePoint))
+            shakeTrack.append(LerpPosInterval(toon, 0.1, groundPoint))
+            shakeTrack.append(Func(shadow.show))
+            shadowTrack = Sequence()
+            shadowTrack.append(Func(battle.movie.needRestoreRenderProp, fakeShadow))
+            shadowTrack.append(Wait(damageDelay + 0.25))
+            shadowTrack.append(Func(fakeShadow.hide))
+            shadowTrack.append(Func(fakeShadow.setScale, 0.27))
+            shadowTrack.append(Func(fakeShadow.reparentTo, toon))
+            shadowTrack.append(Func(fakeShadow.setPos, MovieUtil.PNT3_ZERO))
+            shadowTrack.append(Func(fakeShadow.wrtReparentTo, battle))
+            shadowTrack.append(Func(fakeShadow.show))
+            shadowTrack.append(LerpScaleInterval(fakeShadow, 0.4, Point3(0.17, 0.17, 0.17)))
+            shadowTrack.append(Wait(1.81))
+            shadowTrack.append(LerpScaleInterval(fakeShadow, 0.1, Point3(0.27, 0.27, 0.27)))
+            shadowTrack.append(Func(MovieUtil.removeProp, fakeShadow))
+            shadowTrack.append(Func(battle.movie.clearRenderProp, fakeShadow))
+            toonRiseTracks.append(Parallel(shakeTrack, shadowTrack, toonNotifTrack))
+
+    def changeColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.setColorScale, Vec4(0, 0, 0, 1)))
+
+        return track
+
+    def resetColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.clearColorScale))
+
+        return track
+
+    colorTrack = Sequence()
+    if dmg > 0:
+        headParts = toon.getHeadParts()
+        torsoParts = toon.getTorsoParts()
+        legsParts = toon.getLegsParts()
+        colorTrack.append(Wait(3.6))
+        colorTrack.append(Func(battle.movie.needRestoreColor))
+        colorTrack.append(changeColor(headParts))
+        colorTrack.append(changeColor(torsoParts))
+        colorTrack.append(changeColor(legsParts))
+        colorTrack.append(Wait(2.2))
+        colorTrack.append(resetColor(headParts))
+        colorTrack.append(resetColor(torsoParts))
+        colorTrack.append(resetColor(legsParts))
+        colorTrack.append(Func(battle.movie.clearRestoreColor))
+
+    damageAnims = []
+    damageAnims.extend(getSplicedLerpAnims('think', 0.66, 3.5, startTime=2.06))
+    damageAnims.append(['slip-backward', 0.01, 0.5])
+    dodgeAnims = []
+    dodgeAnims.append(['jump',
+     0.01,
+     0,
+     0.6])
+    dodgeAnims.extend(getSplicedLerpAnims('jump', 0.31, 1.0, startTime=0.6))
+    dodgeAnims.append(['jump', 0, 0.91])
+    toonTracks = getToonTracks(attack, damageDelay=damageDelay, splicedDamageAnims=damageAnims, dodgeDelay=dodgeDelay, splicedDodgeAnims=dodgeAnims, showDamageExtraTime=2.7)
+    if hitAtleastOneToon == 1:
+        soundTrack = Sequence()
+        suit.setHealthForMe(int(suit.currHP + totalDamage * 10))
+        soundTrack.append(getSoundTrack('SA_dark_summon.ogg', delay=2.1, duration=3.05, node=suit))
+        soundTrack.append(Wait(0.45))
+        soundTrack.append(Func(suit.showHpText, totalDamage * 10))
+        soundTrack.append(Func(suit.updateHealthBar, 0))
+        soundTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
+        return Parallel(suitTrack, sprayTrack, soundTrack, liftTracks, toonTracks, toonRiseTracks, colorTrack)
+    else:
+        return Parallel(suitTrack, sprayTrack, liftTracks, toonTracks, toonRiseTracks, colorTrack)
+
 def doJuryNotice(attack):
     suit = attack['suit']
     battle = attack['battle']
@@ -1342,10 +1569,52 @@ def doJuryNotice(attack):
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
     return Parallel(suitTrack, soundTrack)
 
+def doCoalescence(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    targets = attack['target']
+    hitTrack1 = Sequence()
+    hitTrack2 = Sequence()
+    hitTrack3 = Sequence()
+    hitTrack4 = Sequence()
+    totalDamage = 0
+    currentHitTrack = 0
+    for t in targets:
+        currentHitTrack += 1
+        if currentHitTrack == 1:
+            hitTrack = hitTrack1
+        elif currentHitTrack == 2:
+            hitTrack = hitTrack2
+        elif currentHitTrack == 3:
+            hitTrack = hitTrack3
+        elif currentHitTrack == 4:
+            hitTrack = hitTrack4
+        dmg = t['hp']
+        toon = t['toon']
+        totalDamage += dmg
+        hitTrack.append(Wait(2.5))
+        for i in range(dmg):
+            hitTrack.append(Sequence(Func(toon.takeDamage, 1)))
+            hitTrack.append(Wait((136.0/dmg) * 0.01))
+
+    hitTracks = Parallel(hitTrack1, hitTrack2, hitTrack3, hitTrack4)
+
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    suit.setHealthForMe(int(suit.currHP + totalDamage * 3 + currentHitTrack * 100))
+    suitTrack.append(Wait(0.45))
+    suitTrack.append(Func(suit.showHpText, totalDamage * 3 + currentHitTrack * 100))
+    suitTrack.append(Func(suit.updateHealthBar, 0))
+    suitTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 2, (0.,0.,0., 1)), Wait(2), LerpColorScaleInterval(render, 2, (oldcolor)))
+    return Parallel(suitTrack, soundTrack, lightingTrack, hitTracks)
+
 def doShadowMarketing(attack):
     suit = attack['suit']
     battle = attack['battle']
-    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    suit.setHealthForMe(suit.currHP + 2500)
+    suitTrack = Sequence(Func(suit.showHpText, 2500), Func(suit.updateHealthBar, 0), SoundInterval(globalBattleSoundCache.getSound('LB_toonup.ogg')), getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
     oldcolor = render.getColorScale()
     lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.5, (0.3, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 2.5, (0.9, 0.3, 0.3, 1)), LerpColorScaleInterval(render, 1, (oldcolor)))

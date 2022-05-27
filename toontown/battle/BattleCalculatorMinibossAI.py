@@ -1,3 +1,4 @@
+from math import floor
 import BattleCalculatorAI
 from BattleBase import *
 from DistributedBattleAI import *
@@ -62,6 +63,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         self.corruptionMeter = {}
         self.TurnsElapsed = 0
         self.TurnsSinceSummonWithOnlyOneCog = 0
+        self.TurnsSinceSummon = 0
         self.numShadowsSummoned = 0
 
     def setSkillCreditMultiplier(self, mult):
@@ -561,10 +563,16 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0
                         self.notify.debug('setting damage to 0, since drop on a lured suit')
-                    if self.battle.findSuit(targetId).dna.name == 'hst' and self.numShadowsSummoned > 0:
+                    if self.battle.findSuit(targetId).dna.name in ['hst', 'ssb'] and self.numShadowsSummoned > 0:
                         self.notify.debug('Shadow Count exceeds 1 (%i), processing attack damage' % self.numShadowsSummoned)
-                        self.notify.debug('Multiplying toon damage by %f' % (1 + (self.numShadowsSummoned * 0.05)))
-                        result *= (1 + (0.05 * self.numShadowsSummoned))
+                        
+                        if self.battle.findSuit(targetId).dna.name == 'ssb':
+                            self.notify.debug('Multiplying toon damage by %f' % (1 + (self.numShadowsSummoned * 0.05 * 2)))
+                            result *= (1 + (self.numShadowsSummoned * 0.05 * 2))
+                        else:
+                            self.notify.debug('Multiplying toon damage by %f' % (1 + (self.numShadowsSummoned * 0.05)))
+                            result *= (1 + (self.numShadowsSummoned * 0.05))
+                        
                     
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' damage to suit')
@@ -1216,7 +1224,19 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 managerTarget.setHP(managerTarget.getHP() + int(theSuit.getHP()))
             else:
                 self.notify.debug('Current Corruptions: %s' % str(self.corruptionMeter))
-                if toonId in self.corruptionMeter and result > 0:
+                if atkInfo['name'] == 'Coalescence':
+                    if toon.getHp() == 1:
+                        attack[SUIT_HP_COL][targetIndex] = 1
+                    else:
+                        attack[SUIT_HP_COL][targetIndex] = toon.getHp() - 1
+                    theSuit.setHP(int(theSuit.currHP + 100 + attack[SUIT_HP_COL][targetIndex] * 3))    
+                elif atkInfo['suitName'] == 'hst' and atkInfo['name'] == 'ShadowWave':
+                    if toonId in self.corruptionMeter:
+                        attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.corruptionMeter[toonId] / 4.0) * 7)
+                    else:
+                        attack[SUIT_HP_COL][targetIndex] = 7
+                    theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * 10))
+                elif toonId in self.corruptionMeter and result > 0:
                     self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.corruptionMeter[toonId])
                     attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[toonId]
                 else:
@@ -1246,11 +1266,6 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             for t in self.battle.activeToons:
                 if self.TurnsElapsed % 3 == 0 and theSuit.dna.name == 'cmb' and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
                     position = self.battle.activeToons.index(t)
-                    if theSuit.dna.name == 'ssb':
-                        self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on %s' % str(position))
-                        self.__updateCorruption(t)
-                    else:
-                        self.notify.debug('__applySuitAttackDamages - NOT calling __updateCorruption')
                     damageToDeal = (12 + (self.TurnsElapsed * 3))
                     if damageToDeal <= 0:
                         continue
@@ -1270,13 +1285,23 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                         continue
                     toonHp = self.__getToonHp(t)
                     if theSuit.dna.name == 'ssb':
-                        if attack[SUIT_ATK_COL] == 0:
+                        if attack[SUIT_ATK_COL] in [0, 2]:
                             self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s' % str(t))
                             self.__updateCorruption(t)
+                            if attack[SUIT_ATK_COL] == 0:
+                                self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s two additional times' % str(t))
+                                self.__updateCorruption(t)
+                                self.__updateCorruption(t)
                         else:
                             self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
                             self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
                             return
+                    if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
+                        self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s FOUR TIMES' % str(t))
+                        self.__updateCorruption(t)
+                        self.__updateCorruption(t)
+                        self.__updateCorruption(t)
+                        self.__updateCorruption(t)
                     if toonHp - attack[SUIT_HP_COL][position] <= 0:
                         if self.notify.getDebug():
                             self.notify.debug('Toon %d has died, removing' % t)
@@ -1310,6 +1335,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
 
         if self.numShadowsSummoned > 0:
             self.notify.debug('Manager has a Shadow Influence level of %i - Currently taking %f%% Damage' % (self.numShadowsSummoned, (1.0 + (self.numShadowsSummoned * 0.05)) * 100))
+            self.notify.debug('Shadows have a Shadow Influence level of %i - Currently taking %f%% Damage' % (self.numShadowsSummoned, (1.0 + (self.numShadowsSummoned * 0.05 * 2)) * 100))
 
     def __updateSuitAtkStat(self, toonId):
         if toonId in self.suitAtkStats:
@@ -1543,7 +1569,9 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
         self.notify.debug('Current Elapsed Turns: ' + str(self.TurnsElapsed))
         if len(self.battle.activeSuits) <= 2:
             self.TurnsSinceSummonWithOnlyOneCog += 1
-        self.notify.debug('Current Elapsed Turns Alt: ' + str(self.TurnsSinceSummonWithOnlyOneCog))
+        self.TurnsSinceSummon += 1
+        self.notify.debug('Current Elapsed Turns Since Summon (Any): ' + str(self.TurnsSinceSummon))
+        self.notify.debug('Current Elapsed Turns Since Summon (With One Cog): ' + str(self.TurnsSinceSummonWithOnlyOneCog))
         luredSuits = self.currentlyLuredSuits.keys()
         self.notify.debug('Lured suits reported to battle: ' + repr(luredSuits))
         return luredSuits
@@ -1736,6 +1764,7 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
 
                 boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)  
                 boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)
+                self.TurnsSinceSummon = 0
                 return 4
             elif self.TurnsElapsed % 3 == 0:
                 self.notify.debug("TURN IS MULTIPLE OF 3 (and we have suits), INCReASE THE POWAHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!!!!!")
@@ -1748,6 +1777,26 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
 
         if theSuit.dna.name == 'hst':
             from toontown.suit.DistributedSellbotBossMiniAI import DistributedSellbotBossMiniAI
+
+            if self.TurnsSinceSummon > 3:
+                self.TurnsSinceSummon = 0
+                self.TurnsSinceSummonWithOnlyOneCog = 0
+                return 7
+
+            if self.TurnsSinceSummon > 2 and random.randint(0, 99) < 60:
+                boss = None
+                for do in simbase.air.doId2do.values():
+                    if isinstance(do, DistributedSellbotBossMiniAI):
+                        for toon in self.battle.activeToons:
+                            if toon in do.involvedToons:
+                                boss = do
+                                break
+                self.TurnsSinceSummon = 0
+                self.TurnsSinceSummonWithOnlyOneCog = 0
+                for i in range(0, 4 - len(self.battle.activeSuits)):
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
+                    self.numShadowsSummoned += 1
+                return 6
 
             if len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2:
                 boss = None
@@ -1766,8 +1815,9 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                     boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
                     self.numShadowsSummoned += 1
+                theSuit.setHP(theSuit.currHP + 2500)    
                 self.TurnsSinceSummonWithOnlyOneCog = 0
-
+                self.TurnsSinceSummon = 0
                 for i in range(2):
                     r = random.randint(1, 2)
                     boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r, None if r == 1 else self.numShadowsSummoned)
@@ -1786,7 +1836,6 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
             baseChance = 5.0
             roll = random.randint(0, 99)
             self.notify.debug('****************************************************')
-            self.notify.debug('Trying Recarmdra Cheat with a roll of %i (need at least 50)' % roll)
             self.notify.debug('Building Recarmdra Cheat Roll:')
             self.notify.debug('Base Chance Inf.:\t%f\t\t->\t\t%f' % (baseChance, baseChance))
             self.notify.debug('Self HP Influence:\t(%i / 400) * 45\t\t\t->\t%f' % (theSuit.getHP(), (theSuit.getHP() / 400.0) * 45))
@@ -1800,9 +1849,6 @@ class BattleCalculatorMinibossAI(BattleCalculatorAI.BattleCalculatorAI):
                 return 1
             self.notify.debug('Roll failed, choosing Corruption')
             self.notify.debug('****************************************************')
-            return 0
-
-
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']
         atk = SuitBattleGlobals.pickSuitAttack(attacks, theSuit.getLevel())

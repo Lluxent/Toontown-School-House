@@ -214,8 +214,8 @@ class DistributedSellbotBossMiniAI(DistributedMinibossAI.DistributedMinibossAI, 
         return str(self.cagedToonNpcId)
 
     def makeBattleOneBattles(self):
-        self.postBattleState = 'RollToBattleTwo'
-        self.initializeBattles(1, ToontownGlobals.SellbotBossBattleOnePosHpr)
+        self.postBattleState = 'Victory'
+        self.initializeBattles(1, (0, -110, -6.527, 0, 0, 0))
 
     def generateSuits(self, battleNumber):
         cogs = self.invokeEmptyPlanner(11, 'hst')

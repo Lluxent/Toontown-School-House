@@ -356,6 +356,7 @@ class DistributedSellbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
                              Wait(2),
                              Func(self.setChatAbsolute, attackToons, CFSpeech))))))
         track.append(dialogTrack)
+        return Sequence()
         return Sequence(Func(self.stickToonsToFloor), track, Func(self.unstickToons), name=self.uniqueName('Introduction'))
 
     def __makeRollToBattleTwoMovie(self):
@@ -673,7 +674,7 @@ class DistributedSellbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
     def enterElevator(self):
         DistributedMiniboss.DistributedMiniboss.enterElevator(self)
         self.rampA.request('extended')
-        self.rampB.request('extended')
+        self.rampB.request('retracted')
         self.rampC.request('retracted')
         self.setCageIndex(0)
         self.reparentTo(render)
@@ -694,7 +695,7 @@ class DistributedSellbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
         self.stopAnimate()
         DistributedMiniboss.DistributedMiniboss.enterIntroduction(self)
         self.rampA.request('extended')
-        self.rampB.request('extended')
+        self.rampB.request('retracted')
         self.rampC.request('retracted')
         self.setCageIndex(0)
         base.playMusic(self.promotionMusic, looping=1, volume=0.9)
@@ -706,7 +707,7 @@ class DistributedSellbotBossMini(DistributedMiniboss.DistributedMiniboss, FSM.FS
     def enterBattleOne(self):
         DistributedMiniboss.DistributedMiniboss.enterBattleOne(self)
         self.reparentTo(render)
-        self.setPosHpr(*ToontownGlobals.SellbotBossBattleOnePosHpr)
+        self.setPosHpr(0, -35, 0, 0, 0, 0)
         self.clearChat()
         self.cagedToon.clearChat()
         self.rampA.request('retract')

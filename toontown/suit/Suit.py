@@ -162,11 +162,13 @@ cmb = (
 )
 ssb = (
     ('magic2', 'magic2', 5),
+    ('magic4', 'magic4', 5),
     ('effort', 'effort', 5)
 )
 hst = (
     ('magic1', 'magic1', 5),
-    ('magic2', 'magic2', 5),    
+    ('magic2', 'magic2', 5),  
+    ('magic3', 'magic3', 5),  
     ('cigar-smoke', 'cigar-smoke', 5),
     ('summon', 'summon', 5)
 )
@@ -341,7 +343,7 @@ class Suit(Avatar.Avatar):
      Vec4(1, 0.5, 0, 1),
      Vec4(1, 0, 0, 1),
      Vec4(0.3, 0.3, 0.3, 1),
-     (),
+     Vec4(1, 0.25, 0.25, 0.5),
      Vec4(0.0, 1.0, 1.0, 1),    # overheal
      Vec4(0.5, 0.0, 0.5, 1))    # overcharge
     healthGlowColors = (Vec4(0.25, 1, 0.25, 0.5),
@@ -349,7 +351,7 @@ class Suit(Avatar.Avatar):
      Vec4(1, 0.5, 0.25, 0.5),
      Vec4(1, 0.25, 0.25, 0.5),
      Vec4(0.3, 0.3, 0.3, 0),
-     (),
+     Vec4(1, 0.25, 0.25, 0.5),
      Vec4(0.0, 1.0, 1.0, 0.5),    # overheal
      Vec4(0.5, 0.0, 0.5, 0.5))    # overcharge
     medallionColors = {'c': Vec4(0.863, 0.776, 0.769, 1.0),

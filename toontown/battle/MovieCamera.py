@@ -427,6 +427,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=2.8))
     elif name == PARADIGM_SHIFT:
         camTrack.append(defaultCamera(openShotDuration=1.6))
+    elif name ==  SHADOW_WAVE:
+        camTrack.append(suitCameraShakeShot(suit, attackDuration, 0))
     elif name == PECKING_ORDER:
         camTrack.append(defaultCamera(openShotDuration=2.8))
     elif name == PLAY_HARDBALL:
@@ -485,12 +487,14 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.2))
     elif name == WRITE_OFF:
         camTrack.append(defaultCamera())
-    elif name == JURY_NOTICE or name == BOOK_KEEPING or name == SHADOW_MARKETING:
+    elif name == JURY_NOTICE or name == BOOK_KEEPING or name == SHADOW_MARKETING or name == COALESCENCE:
         camTrack.append(managerCamera(openShotDuration=6.0))
     elif name == RECARMDRA:
         camTrack.append(managerCamera(openShotDuration=7.0))        
     elif name == THROW_BOOK:
         camTrack.append(defaultCamera(openShotDuration=2.9))
+    elif name == GROUP_CORRUPTION:
+        camTrack.append(defaultCamera(openShotDuration=1.1))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())
