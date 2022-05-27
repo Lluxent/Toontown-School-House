@@ -1,3 +1,9 @@
+# Quick Version
+Download the gamefiles in a .zip folder, by clicking the green CODE button. Extract them in a place you'll remember.
+
+Next, download the [Panda3D SDK for Windows (64-bit)](https://drive.google.com/file/d/1i-7C_uAfzZSaArzFh80NMD3Dg5FD2Tdt/view?usp=sharing) that this game needs. Install it in the default directory it tells you to.
+
+# Old Credits
 # Toontown-School-House
 Welcome to the Toontown School House repistory!
 
