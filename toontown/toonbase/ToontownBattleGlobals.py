@@ -849,3 +849,8 @@ def getUberFlagSafe(flagMask, index):
         return -1
     else:
         return getUberFlag(flagMask, index)
+
+HUSTLER_SHADOW_WAVE_HEAL_AMP = 15
+HUSTLER_COALESCENCE_HEAL_AMP = 5
+HUSTLER_COALESCENCE_HEAL_BASE = 100
+HUSTLER_BONUS_DMG_PER_SHADOW = 0.0725

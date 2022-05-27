@@ -16,7 +16,7 @@ from direct.directnotify import DirectNotifyGlobal
 import MovieUtil
 from direct.particles import ParticleEffect
 import BattleParticles
-from toontown.toonbase import ToontownGlobals
+from toontown.toonbase import ToontownBattleGlobals, ToontownGlobals
 from toontown.toonbase import TTLocalizer
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieSuitAttacks')
 notify.debug(True)
@@ -1552,10 +1552,10 @@ def doShadowWave(attack):
     toonTracks = getToonTracks(attack, damageDelay=damageDelay, splicedDamageAnims=damageAnims, dodgeDelay=dodgeDelay, splicedDodgeAnims=dodgeAnims, showDamageExtraTime=2.7)
     if hitAtleastOneToon == 1:
         soundTrack = Sequence()
-        suit.setHealthForMe(int(suit.currHP + totalDamage * 10))
+        suit.setHealthForMe(int(suit.currHP + totalDamage * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
         soundTrack.append(getSoundTrack('SA_dark_summon.ogg', delay=2.1, duration=3.05, node=suit))
         soundTrack.append(Wait(0.45))
-        soundTrack.append(Func(suit.showHpText, totalDamage * 10))
+        soundTrack.append(Func(suit.showHpText, totalDamage * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
         soundTrack.append(Func(suit.updateHealthBar, 0))
         soundTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
         return Parallel(suitTrack, sprayTrack, soundTrack, liftTracks, toonTracks, toonRiseTracks, colorTrack)
@@ -1600,9 +1600,9 @@ def doCoalescence(attack):
     hitTracks = Parallel(hitTrack1, hitTrack2, hitTrack3, hitTrack4)
 
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
-    suit.setHealthForMe(int(suit.currHP + totalDamage * 3 + currentHitTrack * 100))
+    suit.setHealthForMe(int(suit.currHP + totalDamage * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP + currentHitTrack * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE))
     suitTrack.append(Wait(0.45))
-    suitTrack.append(Func(suit.showHpText, totalDamage * 3 + currentHitTrack * 100))
+    suitTrack.append(Func(suit.showHpText, totalDamage * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP + currentHitTrack * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE))
     suitTrack.append(Func(suit.updateHealthBar, 0))
     suitTrack.append(getSoundTrack('LB_toonup.ogg', node = suit))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_dark_summon.ogg'), node=suit))
