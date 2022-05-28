@@ -520,6 +520,13 @@ EmoteFuncDict = {'Wave': 0,
  'Sing Note E': 30,
  'Sing Note F': 31,
  'Sing Note G2': 32}
+SuitFireManager = (
+       'Really?',
+       'You can\'t fire me, Toon. I have tenure.',
+       'You can\'t be serious.',
+       '...why?',
+       'Not this time, Toon.'
+)
 SuitNoHead = 'So, no head?'
 SuitBrushOffs = {'f': ["I'm late for a meeting."],
  'p': ['Push off.'],

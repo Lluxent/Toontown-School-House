@@ -1,3 +1,4 @@
+from math import ceil
 from direct.gui.DirectGui import *
 from panda3d.core import *
 from toontown.toonbase import ToontownBattleGlobals
@@ -293,27 +294,36 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
         damageBonusStr = ''
         damageBonus = 0
         
-
-
-
-        if self.propAndOrganicBonusStack:
-            if propBonus:
-                damageBonus += getDamageBonus(damage)
-            if organicBonus:
-                damageBonus += getDamageBonus(damage)
-            if damageBonus:
-                damageBonusStr = TTLocalizer.InventoryDamageBonus % damageBonus
-        else:
-            if propBonus or organicBonus:
-                damageBonus += getDamageBonus(damage)
-            if damageBonus:
-                damageBonusStr = TTLocalizer.InventoryDamageBonus % damageBonus
         accString = AvTrackAccStrings[track]
-        if track == LURE_TRACK:
+        if track == HEAL_TRACK:
+            self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
+            'damageString': self.getToonupDmgStr(track, level),
+            'damage': damage,
+            'bonus': '\nSelf Heal: %i' % math.ceil(damage / 2),
+            'singleOrGroup': self.getSingleGroupStr(track, level)})
+        elif track == TRAP_TRACK:
+            self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
+            'damageString': self.getToonupDmgStr(track, level),
+            'damage': damage,
+            'bonus': '\nHealthy Mult.: %i\nExe. Mult.: %i' % (int(damage * (1 + ToontownBattleGlobals.TRAP_HEALTHY_BONUS)), int(damage * (1 + ToontownBattleGlobals.TRAP_EXECUTIVE_BONUS))),
+            'singleOrGroup': self.getSingleGroupStr(track, level)})
+        elif track == LURE_TRACK:
             self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
             'damageString': "Rounds",
             'damage': ToontownBattleGlobals.AvLureRounds[level],
-            'bonus': '\nKnockback: 65%%',
+            'bonus': '\nKnockback: %i%%' % int(ToontownBattleGlobals.LURE_KNOCKBACK_VALUE * 100),
+            'singleOrGroup': self.getSingleGroupStr(track, level)})
+        elif track == SOUND_TRACK:
+            self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
+            'damageString': self.getToonupDmgStr(track, level),
+            'damage': damage,
+            'bonus': ' (+ Varies)',
+            'singleOrGroup': self.getSingleGroupStr(track, level)})
+        elif track == DROP_TRACK:
+            self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
+            'damageString': self.getToonupDmgStr(track, level),
+            'damage': damage,
+            'bonus': '\nBonus Combo %: 10%',
             'singleOrGroup': self.getSingleGroupStr(track, level)})
         else:
             self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
@@ -329,7 +339,7 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             self.setDetailCredit(track, (level + 1) * mult)
         else:
             self.setDetailCredit(track, None)
-        self.detailCreditLabel.show()
+        self.detailCreditLabel.hide()
         return
 
     def setDetailCredit(self, track, credit):

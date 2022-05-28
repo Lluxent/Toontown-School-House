@@ -1,6 +1,5 @@
 from direct.directnotify import DirectNotifyGlobal
 from toontown.battle import DistributedBattleFinalAI
-from toontown.battle import BattleCalculatorMinibossAI
 from toontown.toonbase import ToontownBattleGlobals
 
 class DistributedBattleMinibossAI(DistributedBattleFinalAI.DistributedBattleFinalAI):
@@ -8,7 +7,6 @@ class DistributedBattleMinibossAI(DistributedBattleFinalAI.DistributedBattleFina
 
     def __init__(self, air, bossCog, roundCallback, finishCallback, battleSide):
         DistributedBattleFinalAI.DistributedBattleFinalAI.__init__(self, air, bossCog, roundCallback, finishCallback, battleSide)
-        self.battleCalc = BattleCalculatorMinibossAI.BattleCalculatorMinibossAI(self, 0)
 
     def startBattle(self, toonIds, suits):
         self.joinableFsm.request('Joinable')

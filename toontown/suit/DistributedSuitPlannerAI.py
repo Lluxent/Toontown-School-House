@@ -1066,6 +1066,9 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if len(battle.suits) >= 4:
             return 0
         if battle:
+            for s in battle.suits:
+                if s.dna.name in SuitBattleGlobals.SpecialCogDict:
+                    return 1
             if simbase.config.GetBool('suits-always-join', 0):
                 return 1
             jChanceList = self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_JCHANCE]

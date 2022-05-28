@@ -160,7 +160,6 @@ class DistributedSuitBase(DistributedAvatar.DistributedAvatar, Suit.Suit, SuitBa
         return self.currHP
 
     def setHP(self, hp):
-        print('calling setHP from dist. suit base')
         self.currHP = hp
     
     def setHealthForMe(self, health):

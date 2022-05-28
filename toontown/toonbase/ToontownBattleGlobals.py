@@ -635,6 +635,7 @@ AvPropDamage = ((((6, 8), (Levels[0], Levels[1])),
 
 TRAP_EXECUTIVE_BONUS = 0.3
 TRAP_HEALTHY_BONUS = 0.2
+LURE_KNOCKBACK_VALUE = 0.65
 
 ATK_SINGLE_TARGET = 0
 ATK_GROUP_TARGET = 1
@@ -676,7 +677,7 @@ AvPropTarget = (0,
 
 def getTrapDamage(trapLevel, toon, suit = None, executive = None, healthy = None):
     if suit:
-        executive = suit.isExecutive
+        executive = suit.getExecutive() or suit.getManager()
         healthy = suit.currHP >= suit.maxHP / 2
     damage = getAvPropDamage(TRAP_TRACK, trapLevel, toon.experience.getExp(TRAP_TRACK))
     if healthy:
@@ -685,7 +686,7 @@ def getTrapDamage(trapLevel, toon, suit = None, executive = None, healthy = None
         damage += math.ceil(damage * TRAP_EXECUTIVE_BONUS)
     return int(damage)
 
-def getAvPropDamage(attackTrack, attackLevel, exp, organicBonus = False, propBonus = False, propAndOrganicBonusStack = False):
+def getAvPropDamage(attackTrack, attackLevel, exp):
     minD = AvPropDamage[attackTrack][attackLevel][0][0]
     maxD = AvPropDamage[attackTrack][attackLevel][0][1]
     minE = AvPropDamage[attackTrack][attackLevel][1][0]

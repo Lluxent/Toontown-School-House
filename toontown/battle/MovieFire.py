@@ -10,6 +10,8 @@ import random
 import MovieCamera
 import MovieUtil
 from MovieUtil import calcAvgSuitPos
+from otp.otpbase import OTPLocalizerEnglish
+from libotp import *
 notify = DirectNotifyGlobal.directNotify.newCategory('MovieThrow')
 hitSoundFiles = ('AA_tart_only.ogg', 'AA_slice_only.ogg', 'AA_slice_only.ogg', 'AA_slice_only.ogg', 'AA_slice_only.ogg', 'AA_wholepie_only.ogg', 'AA_wholepie_only.ogg')
 tPieLeavesHand = 2.7
@@ -252,8 +254,9 @@ def __throwPie(throw, delay, hitCount, showCannon = 1):
     toonTrack.append(Wait(delay))
     toonTrack.append(toonFace)
     toonTrack.append(ActorInterval(toon, 'pushbutton'))
-    toonTrack.append(ActorInterval(toon, 'wave', duration=2.0))
-    toonTrack.append(ActorInterval(toon, 'duck'))
+    if hitSuit:
+        toonTrack.append(ActorInterval(toon, 'wave', duration=2.0))
+        toonTrack.append(ActorInterval(toon, 'duck'))
     toonTrack.append(Func(toon.loop, 'neutral'))
     toonTrack.append(Func(toon.setHpr, battle, origHpr))
     buttonTrack = Sequence()
@@ -270,7 +273,7 @@ def __throwPie(throw, delay, hitCount, showCannon = 1):
     soundTrack = __getSoundTrack(level, hitSuit, toon)
     suitResponseTrack = Sequence()
     reactIval = Sequence()
-    if showCannon:
+    if showCannon and hitSuit:
         showDamage = Func(suit.showHpText, -hp, openEnded=0)
         updateHealthBar = Func(suit.updateHealthBar, hp)
         cannon = loader.loadModel('phase_4/models/minigames/toon_cannon')
@@ -293,10 +296,12 @@ def __throwPie(throw, delay, hitCount, showCannon = 1):
         suit.setPos(0, 0, 0)
         suit.setHpr(0, -90, 0)
         suitLevel = suit.getActualLevel()
+        if suitLevel > 12:  # this is literally just so the cogs don't shrink down to nothing if their levels are huge
+            suitLevel = 12
         deep = 2.5 + suitLevel * 0.2
         suitScale = 0.9
         import math
-        suitScale = 0.9 - math.sqrt(suitLevel) * 0.1
+        suitScale = 0.9 - math.sqrt(suitLevel) * 0.1    # like why tf was it coded like this, ig to make bigger cogs smaller, assuming a max of 12
         sival = []
         posInit = cannonHolder.getPos()
         posFinal = Point3(posInit[0] + 0.0, posInit[1] + 0.0, posInit[2] + 7.0)
@@ -336,6 +341,9 @@ ActorInterval(kapow, 'kapow'), Func(kapow.hide)), LerpPosInterval(suit, 3.0, Poi
             bonusTrack.append(Wait(0.75))
             bonusTrack.append(Func(suit.showHpText, -hpbonus, 1, openEnded=0))
         suitResponseTrack = Parallel(suitResponseTrack, bonusTrack)
+    
+    else:
+        suitResponseTrack = Parallel(suitResponseTrack, Sequence(Wait(4.25), Func(suit.setChatAbsolute, random.choice(OTPLocalizerEnglish.SuitFireManager), CFSpeech | CFTimeout), Func(MovieUtil.indicateMissed, suit, 0.6), ActorInterval(suit, 'victory', startTime=0.5, endTime=1.9)))
     return [toonTrack,
      soundTrack,
      buttonTrack,
