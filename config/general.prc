@@ -42,7 +42,6 @@ want-news-tab false
 want-gardening true
 want-cogdominiums true
 want-emblems true
-toons-always-hit true
 
 # Misc. settings
 respect-prev-transform true

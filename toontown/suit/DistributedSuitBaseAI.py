@@ -65,7 +65,10 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
             if hasattr(self, 'doId'):
                 self.d_setLevelDist(self.level)      
             if self.dna.name == 'ssb':
-                hp = attributes['hp'][self.level]
+                if self.level > 49:
+                    hp = hp = attributes['hp'][49]
+                else:
+                    hp = attributes['hp'][self.level]
             else:
                 hp = attributes['hp'][0]
             self.maxHP = hp
