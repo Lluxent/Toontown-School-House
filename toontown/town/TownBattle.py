@@ -450,7 +450,7 @@ class TownBattle(StateData.StateData):
         cogFireCostIndex = 0
         for cog in cogs:
             maxSuitLevel = max(maxSuitLevel, cog.getActualLevel())
-            self.cogFireCosts[cogFireCostIndex] = 1
+            self.cogFireCosts[cogFireCostIndex] = math.ceil(cog.getActualLevel() / 2.0)
             cogFireCostIndex += 1
 
         creditLevel = maxSuitLevel

@@ -484,25 +484,25 @@ class BattleCalculatorAI:
                 elif atkTrack == FIRE:
                     suit = self.battle.findSuit(targetId)
                     if suit:
-                        if suit.getManager():
-                            attackDamage = 0
+                        costToFire = math.ceil(suit.getActualLevel() / 2.0)
+                        abilityToFire = toon.getPinkSlips()
+                        toon.removePinkSlips(costToFire)
+                        if costToFire > abilityToFire:
+                            commentStr = 'Toon attempting to fire a %s cost cog with %s pinkslips' % (costToFire, abilityToFire)
+                            simbase.air.writeServerEvent('suspicious', toonId, commentStr)
+                            dislId = toon.DISLid
+                            simbase.air.banManager.ban(toonId, dislId, commentStr)
+                            print 'Not enough PinkSlips to fire cog - print a warning here'
                         else:
-                            costToFire = 1
-                            abilityToFire = toon.getPinkSlips()
-                            toon.removePinkSlips(costToFire)
-                            if costToFire > abilityToFire:
-                                commentStr = 'Toon attempting to fire a %s cost cog with %s pinkslips' % (costToFire, abilityToFire)
-                                simbase.air.writeServerEvent('suspicious', toonId, commentStr)
-                                dislId = toon.DISLid
-                                simbase.air.banManager.ban(toonId, dislId, commentStr)
-                                print 'Not enough PinkSlips to fire cog - print a warning here'
+                            suit.skeleRevives = 0
+                            if suit.getManager():
+                                attackDamage = 0
                             else:
-                                suit.skeleRevives = 0
                                 attackDamage = suit.getHP()
                     else:
                         attackDamage = 0
                     bonus = 0
-                if atkTrack == SOUND:   # sound's prestige from clash
+                elif atkTrack == SOUND:   # sound's prestige from clash
                     highestLevel = 1
                     for suit in self.battle.suits:
                         if suit.getActualLevel() > highestLevel:
