@@ -514,6 +514,10 @@ def asNumber(bitstring):
 
     return num
 
+def deptIndex2dept(dept):
+    if dept in SuitDNA.suitDeptFullnames:
+        dept = SuitDNA.suitDeptFullnames[dept]
+    return dept
 
 def dept2deptIndex(dept):
     if type(dept) == types.StringType:
