@@ -219,11 +219,11 @@ class BattleCalculatorAI:
         else:
             return 0
         return
-        
+
     def __targetDefense(self, suit, atkTrack):
         if atkTrack == HEAL:
             return 0
-        if suit.getLevel() > 7:
+        if suit.getActualLevel() > 7:
             suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][0]
         else:
             suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][suit.getLevel()]
