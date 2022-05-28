@@ -1160,11 +1160,13 @@ class DistributedSuitPlannerAI(DistributedObjectAI.DistributedObjectAI, SuitPlan
         if level not in ToontownGlobals.SuitLevels:
             level = min(max(level, type), type + 4)
 
+        if level < type:
+            level = type
+
         if track == None:
             track = SuitDNA.suitDepts[SuitBattleGlobals.pickFromFreqList(self.SuitHoodInfo[self.hoodInfoIdx][self.SUIT_HOOD_INFO_TRACK])]
         self.notify.debug('pickLevelTypeAndTrack: %d %d %s' % (level, type, track))
-        return (
-         level, type, track)
+        return (level, type, track)
 
     @classmethod
     def dump(cls):
