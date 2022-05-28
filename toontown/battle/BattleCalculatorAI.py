@@ -55,11 +55,106 @@ class BattleCalculatorAI:
         self.__skillCreditMultiplier = 1
         self.tutorialFlag = tutorialFlag
         self.trainTrapTriggered = False
-        self.corruptionMeter = {}
         self.TurnsElapsed = 0
         self.TurnsSinceSummonWithOnlyOneCog = 0
         self.TurnsSinceSummon = 0
         self.numShadowsSummoned = 0
+
+        # a dictionary of each toon's status conditions
+        # 
+        # each status is formatted this way
+        # 'condition': {modifier, turnsRemaining}
+        #
+        # the dictionary holds all four toons, so a possible dictionary could be
+        # { 10000000: { 'corruption': {'modifier': 2, 'turnsRemaining': -1} } }
+        self.toonStatusConditions = {}
+
+    def toonHasCondition(self, toonId, condition):
+        self.notify.debug('toonHasCondition() - checking for \'%s\' on toonId %i' % (condition, toonId))
+        if toonId not in self.toonStatusConditions:
+            self.notify.debug('toonHasCondition() - toon %i is not in the condition dictionary at all' % toonId)
+            return False
+        
+        if condition in self.toonStatusConditions[toonId]:
+            self.notify.debug('toonHasCondition() - toon %i has the \'%s\' condition' % (toonId, condition))
+            return True
+        else:
+            self.notify.debug('toonHasCondition() - toon %i is in the dictionary, but does not have the \'%s\' condition' % (toonId, condition))
+            return False
+
+    def getToonConditionModifier(self, toonId, condition):
+        if not self.toonHasCondition(toonId, condition):
+            self.notify.warning('getToonConditionModifier() - method called, but toon %i did not have %s condition' % (toonId, condition))
+            return 0
+        return self.toonStatusConditions[toonId][condition]['modifier']
+
+    def getToonConditionTurns(self, toonId, condition):
+        if not self.toonHasCondition(toonId, condition):
+            self.notify.warning('getToonConditionTurns() - method called, but toon %i did not have %s condition' % (toonId, condition))
+            return 0
+        return self.toonStatusConditions[toonId][condition]['turnsRemaining']
+
+    def setToonCondition(self, toonId, condition, modifier, turns, mode = 'none'):
+        # first, check if the toon is even in the dictionary
+        if toonId not in self.toonStatusConditions:
+            # if not, make them an entry
+            self.toonStatusConditions[toonId] = {}
+
+        # next, check if the toon has the condition already
+        if condition not in self.toonStatusConditions[toonId]:
+            # if not, add the condition, and we're done
+            self.toonStatusConditions[toonId][condition] = {'modifier': modifier, 'turnsRemaining': turns}
+            return
+        else:
+            # otherwise, increase the existing modifier appropriately
+            newModifier = 0 # the variable we will set the modifier to
+            newTurns = 0    # the variable we will set the turns to
+
+            # modifier APPENDED, turns SET, used to change a buff/debuff's timer, but keep its potency 
+            if mode is 'refreshTurns':
+                newModifier = self.getToonConditionModifier(toonId, condition) + modifier
+                newTurns = turns
+
+            # modifer SET, turns APPENDED, used to modify a buff/debuff's potency, but change its duration
+            if mode is 'refreshModifier':
+                newModifier = modifier
+                newTurns = self.getToonConditionTurns(toonId, condition) + turns
+            
+            # modifier APPENDED, turns APPENDED, used to change a buff/debuff's potency AND duration
+            if mode is 'refreshBoth':
+                newModifier = self.getToonConditionModifier(toonId, condition) + modifier        
+                newTurns = self.getToonConditionTurns(toonId, condition) + turns
+
+            # modifier SET, turns SET, used to explicitly set a modifier to a precise potency and duration
+            if mode is 'setBoth':
+                newModifier = modifier
+                newTurns = turns
+
+            self.notify.debug('setToonCondition() - gave toon %i modifier %s with modifier %i with %i turns remaining' % (toonId, modifier, newModifier, newTurns))
+            self.toonStatusConditions[toonId][condition] = {'modifier': newModifier, 'turnsRemaining': newTurns}
+
+    def decrementConditionTurns(self):
+        for toon in self.toonStatusConditions:
+            for condition in self.toonStatusConditions[toon]:
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] > 0:
+                    self.notify.debug('decrementConditionTurns() - Decremented %s condition on toon %i (new turns: %i)' % (condition, toon, self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1))
+                    self.toonStatusConditions[toon][condition]['turnsRemaining'] -= 1
+
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] == 0:
+                    self.notify.debug('decrementConditionTurns() - %s condition on toon %i have reached 0, removing.' % (condition, toon))
+                    del self.toonStatusConditions[toon][condition]
+                
+    def printToonConditions(self):
+        self.notify.debug('printToonConditions() *********************************************')
+        self.notify.debug('printToonConditions(): Beginning Turn Readout')
+        self.notify.debug('printToonConditions() *********************************************')
+        for toon in self.toonStatusConditions:
+            self.notify.debug('printToonConditions(): Toon %i has the following Conditions:' % toon)
+            for condition in self.toonStatusConditions[toon]:
+                self.notify.debug('printToonConditions(): %s x %i, with %i turns remaining' % (condition, self.toonStatusConditions[toon][condition]['modifier'], self.toonStatusConditions[toon][condition]['turnsRemaining']))
+        self.notify.debug('printToonConditions() *********************************************')
+        self.notify.debug('printToonConditions(): Ending Turn Readout')
+        self.notify.debug('printToonConditions() *********************************************')
 
     def setSkillCreditMultiplier(self, mult):
         self.__skillCreditMultiplier = mult
@@ -1193,7 +1288,6 @@ class BattleCalculatorAI:
                         break
                 managerTarget.setHP(managerTarget.getHP() + attack[SUIT_HP_COL][targetIndex])
             else:
-                self.notify.debug('Current Corruptions: %s' % str(self.corruptionMeter))
                 if atkInfo['name'] == 'Coalescence':
                     if toon.getHp() == 1:
                         attack[SUIT_HP_COL][targetIndex] = 1
@@ -1201,14 +1295,14 @@ class BattleCalculatorAI:
                         attack[SUIT_HP_COL][targetIndex] = toon.getHp() - 1
                     theSuit.setHP(int(theSuit.currHP + ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP))    
                 elif atkInfo['suitName'] == 'hst' and atkInfo['name'] == 'ShadowWave':
-                    if toonId in self.corruptionMeter:
-                        attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.corruptionMeter[toonId] / 4.0) * 7)
+                    if self.toonHasCondition(toonId, 'corruption'):
+                        attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.getToonConditionModifier(toonId, 'corruption') / 4.0) * 7)
                     else:
                         attack[SUIT_HP_COL][targetIndex] = 7
                     theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
-                elif toonId in self.corruptionMeter and result > 0:
-                    self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.corruptionMeter[toonId])
-                    attack[SUIT_HP_COL][targetIndex] = result + self.corruptionMeter[toonId]
+                elif self.toonHasCondition(toonId, 'corruption') and result > 0:
+                    self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.getToonConditionModifier(toonId, 'corruption'))
+                    attack[SUIT_HP_COL][targetIndex] = result + self.getToonConditionModifier(toonId, 'corruption')
                 else:
                     self.notify.debug('__calcSuitAtkHp - Target is not corrupt, not doing any bonus here')
                     attack[SUIT_HP_COL][targetIndex] = result
@@ -1256,22 +1350,18 @@ class BattleCalculatorAI:
                     toonHp = self.__getToonHp(t)
                     if theSuit.dna.name == 'ssb':
                         if attack[SUIT_ATK_COL] in [0, 2]:
-                            self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s' % str(t))
-                            self.__updateCorruption(t)
+                            self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s' % str(t))
+                            self.setToonCondition(t, 'corruption', 2, -1, 'refreshTurns')
                             if attack[SUIT_ATK_COL] == 0:
-                                self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s two additional times' % str(t))
-                                self.__updateCorruption(t)
-                                self.__updateCorruption(t)
+                                self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s two additional times' % str(t))
+                                self.setToonCondition(t, 'corruption', 4, -1, 'refreshTurns')
                         else:
                             self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
                             self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
                             return
                     if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
-                        self.notify.debug('__applySuitAttackDamages - calling __updateCorruption on toon %s FOUR TIMES' % str(t))
-                        self.__updateCorruption(t)
-                        self.__updateCorruption(t)
-                        self.__updateCorruption(t)
-                        self.__updateCorruption(t)
+                        self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s four times' % str(t))
+                        self.setToonCondition(t, 'corruption', 8, -1, 'refreshTurns')
                     if toonHp - attack[SUIT_HP_COL][position] <= 0:
                         if self.notify.getDebug():
                             self.notify.debug('Toon %d has died, removing' % t)
@@ -1287,24 +1377,6 @@ class BattleCalculatorAI:
         if self.__combatantDead(suitId, toon=0) or self.__suitIsLured(suitId) or self.__combatantJustRevived(suitId):
             return 0
         return 1
-
-    def __updateCorruption(self, toonId):
-        if toonId in self.corruptionMeter:
-            self.corruptionMeter[int(toonId)] += 2
-        else:
-            self.corruptionMeter[int(toonId)] = 2
-
-    def __printCorruptionStats(self):
-        if self.corruptionMeter:
-            self.notify.debug('Corruption Stats:')
-            for currTgt in self.corruptionMeter.keys():
-                if currTgt not in self.battle.activeToons:
-                    continue
-                tgtPos = self.battle.activeToons.index(currTgt)
-                self.notify.debug('Toon ' + str(currTgt) + ' at position ' + str(tgtPos) + ' has a corruption level of ' + str(self.corruptionMeter[currTgt]))
-
-        if self.numShadowsSummoned > 0:
-            self.notify.debug('There has a Shadow Influence level of %i - Currently taking %f%% Damage' % (self.numShadowsSummoned, (1.0 + (self.numShadowsSummoned * ToontownBattleGlobals.HUSTLER_BONUS_DMG_PER_SHADOW)) * 100))
 
     def __updateSuitAtkStat(self, toonId):
         if toonId in self.suitAtkStats:
@@ -1474,7 +1546,8 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Toon skills gained after this round: ' + repr(self.toonSkillPtsGained))
             self.__printSuitAtkStats()
-            self.__printCorruptionStats()
+            if self.toonStatusConditions:
+                self.printToonConditions()
         return None
 
     def __calculateFiredCogs():
@@ -1709,9 +1782,6 @@ class BattleCalculatorAI:
 
     def __calcSuitAtkType(self, attackIndex):
         theSuit = self.battle.activeSuits[attackIndex]
-
-        self.notify.debug("Using override method")
-
         if theSuit.dna.name == 'cmb':
             from toontown.suit.DistributedCashbotBossMiniAI import DistributedCashbotBossMiniAI
 
@@ -1769,7 +1839,7 @@ class BattleCalculatorAI:
                     boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
                     self.numShadowsSummoned += 1
                 return 6
-            print(boss)
+
             if (len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2) and boss is not None:
                 if self.TurnsSinceSummonWithOnlyOneCog > 2:
                     self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
