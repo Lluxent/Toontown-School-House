@@ -260,15 +260,14 @@ class MaxToon(MagicWord):
         experience = Experience.Experience(toon.getExperience(), toon)
         for i, track in enumerate(toon.getTrackAccess()):
             if track:
-                experience.experience[i] = (
-                        Experience.MaxSkill - Experience.UberSkill)
+                experience.experience[i] = (Experience.MaxSkill)
         toon.b_setExperience(experience.makeNetString())
 
         toon.inventory.zeroInv()
-        toon.inventory.maxOutInv(filterUberGags=0, filterPaidGags=0)
+        toon.inventory.maxOutInv()
         toon.b_setInventory(toon.inventory.makeNetString())
 
-        toon.b_setMaxMoney(Quests.RewardDict[707][1])
+        toon.b_setMaxMoney(ToontownGlobals.MaxJellybeanJar)
         toon.b_setMoney(toon.getMaxMoney())
         toon.b_setBankMoney(ToontownGlobals.DefaultMaxBankMoney)
 
@@ -1063,7 +1062,7 @@ class SetInventory(MagicWord):
                 return "Invalid target track index: {0}".format(targetTrack)
             if (targetTrack != -1) and (not toon.hasTrackAccess(targetTrack)):
                 return "The target Toon doesn't have target track index: {0}".format(targetTrack)
-            inventory.NPCMaxOutInv(targetTrack=targetTrack, maxLevelIndex=maxLevelIndex)
+            inventory.NPCMaxOutInv(targetTrack=targetTrack)
             toon.b_setInventory(inventory.makeNetString())
             if targetTrack == -1:
                 return "Inventory restocked."

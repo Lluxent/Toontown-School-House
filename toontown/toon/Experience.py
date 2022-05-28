@@ -44,21 +44,14 @@ class Experience:
         if type(track) == type(''):
             track = Tracks.index(track)
         self.notify.debug('adding %d exp to track %d' % (amount, track))
-        if self.owner.getGameAccess() == OTPGlobals.AccessFull:
-            if self.experience[track] + amount <= MaxSkill:
-                self.experience[track] += amount
-            else:
-                self.experience[track] = MaxSkill
-        elif self.experience[track] + amount <= UnpaidMaxSkills[track]:
+        if self.experience[track] + amount <= MaxSkill:
             self.experience[track] += amount
-        elif self.experience[track] > UnpaidMaxSkills[track]:
-            self.experience[track] += 0
         else:
-            self.experience[track] = UnpaidMaxSkills[track]
+            self.experience[track] = MaxSkill
 
     def maxOutExp(self):
         for track in xrange(0, len(Tracks)):
-            self.experience[track] = MaxSkill - UberSkill
+            self.experience[track] = MaxSkill
 
     def maxOutExpMinusOne(self):
         for track in xrange(0, len(Tracks)):
@@ -66,13 +59,13 @@ class Experience:
 
     def makeExpHigh(self):
         for track in xrange(0, len(Tracks)):
-            self.experience[track] = Levels[track][len(Levels[track]) - 1] - 1
+            self.experience[track] = Levels[len(Levels) - 1] - 1
 
     def makeExpRegular(self):
         import random
         for track in xrange(0, len(Tracks)):
             rank = random.choice((0, int(random.random() * 1500.0), int(random.random() * 2000.0)))
-            self.experience[track] = Levels[track][len(Levels[track]) - 1] - rank
+            self.experience[track] = Levels[len(Levels) - 1] - rank
 
     def zeroOutExp(self):
         for track in xrange(0, len(Tracks)):
@@ -96,9 +89,9 @@ class Experience:
         if type(track) == type(''):
             track = Tracks.index(track)
         level = 0
-        for amount in Levels[track]:
+        for amount in Levels:
             if self.experience[track] >= amount:
-                level = Levels[track].index(amount)
+                level = Levels.index(amount)
 
         return level
 
@@ -112,8 +105,8 @@ class Experience:
     def getNextExpValue(self, track, curSkill = None):
         if curSkill == None:
             curSkill = self.experience[track]
-        retVal = Levels[track][len(Levels[track]) - 1]
-        for amount in Levels[track]:
+        retVal = Levels[len(Levels) - 1]
+        for amount in Levels:
             if curSkill < amount:
                 retVal = amount
                 return retVal
@@ -126,7 +119,7 @@ class Experience:
         nextExpValue = self.getNextExpValue(track, curSkill)
         finalGagFlag = 0
         while curSkill + extraSkill >= nextExpValue and curSkill < nextExpValue and not finalGagFlag:
-            retList.append(Levels[track].index(nextExpValue))
+            retList.append(Levels.index(nextExpValue))
             newNextExpValue = self.getNextExpValue(track, nextExpValue)
             if newNextExpValue == nextExpValue:
                 finalGagFlag = 1

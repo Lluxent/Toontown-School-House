@@ -3101,7 +3101,7 @@ class MaxToonReward(Reward):
               for i, track in enumerate(av.getTrackAccess()):
                      if track:
                             experience.experience[i] = (
-                            Experience.MaxSkill - Experience.UberSkill)
+                            Experience.MaxSkill)
               av.b_setExperience(experience.makeNetString())
 
               av.inventory.zeroInv()

@@ -15,13 +15,16 @@ SkipMovie = 0
 BaseHp = 15
 Tracks = TTLocalizer.BattleGlobalTracks
 NPCTracks = TTLocalizer.BattleGlobalNPCTracks
-TrackColors = ((211 / 255.0, 148 / 255.0, 255 / 255.0),
- (249 / 255.0, 255 / 255.0, 93 / 255.0),
- (79 / 255.0, 190 / 255.0, 76 / 255.0),
- (93 / 255.0, 108 / 255.0, 239 / 255.0),
- (255 / 255.0, 145 / 255.0, 66 / 255.0),
- (255 / 255.0, 65 / 255.0, 199 / 255.0),
- (67 / 255.0, 243 / 255.0, 255 / 255.0))
+TrackColors = (
+    (211 / 255.0, 148 / 255.0, 255 / 255.0),
+    (249 / 255.0, 255 / 255.0, 93 / 255.0),
+    (79 / 255.0, 190 / 255.0, 76 / 255.0),
+    (93 / 255.0, 108 / 255.0, 239 / 255.0),
+    (255 / 255.0, 145 / 255.0, 66 / 255.0),
+    (255 / 255.0, 65 / 255.0, 199 / 255.0),
+    (67 / 255.0, 243 / 255.0, 255 / 255.0)
+)
+
 HEAL_TRACK = 0
 TRAP_TRACK = 1
 LURE_TRACK = 2
@@ -29,94 +32,30 @@ SOUND_TRACK = 3
 THROW_TRACK = 4
 SQUIRT_TRACK = 5
 DROP_TRACK = 6
+
 NPC_RESTOCK_GAGS = 7
 NPC_TOONS_HIT = 8
 NPC_COGS_MISS = 9
+
 MIN_TRACK_INDEX = 0
 MAX_TRACK_INDEX = 6
 MIN_LEVEL_INDEX = 0
 MAX_LEVEL_INDEX = 6
+
 MAX_UNPAID_LEVEL_INDEX = 4
 LAST_REGULAR_GAG_LEVEL = 5
 UBER_GAG_LEVEL_INDEX = 6
 NUM_GAG_TRACKS = 7
-PropTypeToTrackBonus = {AnimPropTypes.Hydrant: SQUIRT_TRACK,
- AnimPropTypes.Mailbox: THROW_TRACK,
- AnimPropTypes.Trashcan: HEAL_TRACK}
-Levels = [[0,
-  20,
-  200,
-  800,
-  2000,
-  6000,
-  10000],
- [0,
-  20,
-  100,
-  800,
-  2000,
-  6000,
-  10000],
- [0,
-  20,
-  100,
-  800,
-  2000,
-  6000,
-  10000],
- [0,
-  40,
-  200,
-  1000,
-  2500,
-  7500,
-  10000],
- [0,
-  10,
-  50,
-  400,
-  2000,
-  6000,
-  10000],
- [0,
-  10,
-  50,
-  400,
-  2000,
-  6000,
-  10000],
- [0,
-  20,
-  100,
-  500,
-  2000,
-  6000,
-  10000]]
-regMaxSkill = 10000
-UberSkill = 500
-MaxSkill = UberSkill + regMaxSkill
-UnpaidMaxSkills = [Levels[0][1] - 1,
- Levels[1][1] - 1,
- Levels[2][1] - 1,
- Levels[3][1] - 1,
- Levels[4][4] - 1,
- Levels[5][4] - 1,
- Levels[6][1] - 1]
-ExperienceCap = 10500
 
-def gagIsPaidOnly(track, level):
-    return Levels[track][level] > UnpaidMaxSkills[track]
+PropTypeToTrackBonus = {
+    AnimPropTypes.Hydrant: SQUIRT_TRACK,
+    AnimPropTypes.Mailbox: THROW_TRACK,
+    AnimPropTypes.Trashcan: HEAL_TRACK
+}
 
-
-def gagIsVelvetRoped(track, level):
-    if level > 0:
-        if track in [4, 5]:
-            if level > 3:
-                return True
-        else:
-            return True
-    return False
-
+Levels = [0, 20, 100, 500, 2000, 6000, 10000]
+MaxSkill = 10000
+ExperienceCap = 10000
 
 MaxToonAcc = 95
 StartingLevel = 0
@@ -169,54 +108,54 @@ CarryLimits = (((10,
    7,
    3,
    1)),
- ((5,
+ ((10,
    0,
-   0,
-   0,
-   0,
-   0,
-   0),
-  (7,
-   3,
    0,
    0,
    0,
    0,
    0),
   (10,
-   7,
-   3,
+   5,
+   0,
    0,
    0,
    0,
    0),
   (15,
    10,
+   5,
+   0,
+   0,
+   0,
+   0),
+  (20,
+   15,
+   10,
+   5,
+   0,
+   0,
+   0),
+  (25,
+   20,
+   15,
+   10,
+   3,
+   0,
+   0),
+  (30,
+   25,
+   20,
+   15,
    7,
    3,
-   0,
-   0,
    0),
-  (15,
+  (30,
+   25,
+   20,
    15,
-   10,
-   5,
+   7,
    3,
-   0,
-   0),
-  (20,
-   15,
-   15,
-   10,
-   5,
-   2,
-   0),
-  (20,
-   15,
-   15,
-   10,
-   5,
-   2,
    1)),
  ((10,
    0,
@@ -463,7 +402,9 @@ CarryLimits = (((10,
    7,
    3,
    1)))
-MaxProps = ((15, 40), (30, 60), (75, 80))
+
+MaxProps = ((20, 50), (40, 80), (110, 140))
+
 DLF_SKELECOG = 1
 DLF_FOREMAN = 2
 DLF_VP = 4
@@ -640,21 +581,22 @@ AvLureBonusAccuracy = (60,
  80,
  80,
  100)
+AvLureRounds = (2, 2, 3, 3, 4, 4, 5)
 AvTrackAccStrings = TTLocalizer.BattleGlobalAvTrackAccStrings
-AvPropDamage = ((((6, 8), (Levels[0][0], Levels[0][1])),
-  ((12, 15), (Levels[0][1], Levels[0][2])),
-  ((22, 26), (Levels[0][2], Levels[0][3])),
-  ((33, 39), (Levels[0][3], Levels[0][4])),
-  ((45, 50), (Levels[0][4], Levels[0][5])),
-  ((63, 78), (Levels[0][5], Levels[0][6])),
-  ((135, 135), (Levels[0][6], MaxSkill))),
- (((35, 35), (Levels[1][0], Levels[1][1])),
-  ((50, 50), (Levels[1][1], Levels[1][2])),
-  ((75, 75), (Levels[1][2], Levels[1][3])),
-  ((115, 115), (Levels[1][3], Levels[1][4])),
-  ((160, 160), (Levels[1][4], Levels[1][5])),
-  ((220, 220), (Levels[1][5], Levels[1][6])),
-  ((280, 280), (Levels[1][6], MaxSkill))),
+AvPropDamage = ((((6, 8), (Levels[0], Levels[1])),
+  ((12, 15), (Levels[1], Levels[2])),
+  ((22, 26), (Levels[2], Levels[3])),
+  ((33, 39), (Levels[3], Levels[4])),
+  ((45, 50), (Levels[4], Levels[5])),
+  ((63, 78), (Levels[5], Levels[6])),
+  ((135, 135), (Levels[6], MaxSkill))),
+ (((35, 35), (Levels[0], Levels[1])),
+  ((50, 50), (Levels[1], Levels[2])),
+  ((75, 75), (Levels[2], Levels[3])),
+  ((115, 115), (Levels[3], Levels[4])),
+  ((160, 160), (Levels[4], Levels[5])),
+  ((220, 220), (Levels[5], Levels[6])),
+  ((280, 280), (Levels[6], MaxSkill))),
  (((0, 0), (0, 0)),
   ((0, 0), (0, 0)),
   ((0, 0), (0, 0)),
@@ -662,34 +604,38 @@ AvPropDamage = ((((6, 8), (Levels[0][0], Levels[0][1])),
   ((0, 0), (0, 0)),
   ((0, 0), (0, 0)),
   ((0, 0), (0, 0))),
- (((5, 7), (Levels[3][0], Levels[3][1])),
-  ((9, 11), (Levels[3][1], Levels[3][2])),
-  ((14, 16), (Levels[3][2], Levels[3][3])),
-  ((19, 21), (Levels[3][3], Levels[3][4])),
-  ((26, 32), (Levels[3][4], Levels[3][5])),
-  ((35, 50), (Levels[3][5], Levels[3][6])),
-  ((65, 65), (Levels[3][6], MaxSkill))),
- (((13, 13), (Levels[4][0], Levels[4][1])),
-  ((20, 20), (Levels[4][1], Levels[4][2])),
-  ((35, 35), (Levels[4][2], Levels[4][3])),
-  ((50, 50), (Levels[4][3], Levels[4][4])),
-  ((90, 90), (Levels[4][4], Levels[4][5])),
-  ((130, 130), (Levels[4][5], Levels[4][6])),
-  ((170, 170), (Levels[4][6], MaxSkill))),
- (((6, 8), (Levels[5][0], Levels[5][1])),
-  ((10, 12), (Levels[5][1], Levels[5][2])),
-  ((18, 21), (Levels[5][2], Levels[5][3])),
-  ((27, 30), (Levels[5][3], Levels[5][4])),
-  ((45, 56), (Levels[5][4], Levels[5][5])),
-  ((60, 80), (Levels[5][5], Levels[5][6])),
-  ((115, 115), (Levels[5][6], MaxSkill))),
- (((18, 20), (Levels[6][0], Levels[6][1])),
-  ((30, 35), (Levels[6][1], Levels[6][2])),
-  ((45, 55), (Levels[6][2], Levels[6][3])),
-  ((65, 80), (Levels[6][3], Levels[6][4])),
-  ((90, 125), (Levels[6][4], Levels[6][5])),
-  ((145, 180), (Levels[6][5], Levels[6][6])),
-  ((220, 220), (Levels[6][6], MaxSkill))))
+ (((5, 7), (Levels[0], Levels[1])),
+  ((9, 11), (Levels[1], Levels[2])),
+  ((14, 16), (Levels[2], Levels[3])),
+  ((19, 21), (Levels[3], Levels[4])),
+  ((26, 32), (Levels[4], Levels[5])),
+  ((35, 50), (Levels[5], Levels[6])),
+  ((65, 65), (Levels[6], MaxSkill))),
+ (((13, 13), (Levels[0], Levels[1])),
+  ((20, 20), (Levels[1], Levels[2])),
+  ((35, 35), (Levels[2], Levels[3])),
+  ((50, 50), (Levels[3], Levels[4])),
+  ((90, 90), (Levels[4], Levels[5])),
+  ((130, 130), (Levels[5], Levels[6])),
+  ((170, 170), (Levels[6], MaxSkill))),
+ (((6, 8), (Levels[0], Levels[1])),
+  ((10, 12), (Levels[1], Levels[2])),
+  ((18, 21), (Levels[2], Levels[3])),
+  ((27, 30), (Levels[3], Levels[4])),
+  ((45, 56), (Levels[4], Levels[5])),
+  ((60, 80), (Levels[5], Levels[6])),
+  ((115, 115), (Levels[6], MaxSkill))),
+ (((18, 20), (Levels[0], Levels[1])),
+  ((30, 35), (Levels[1], Levels[2])),
+  ((45, 55), (Levels[2], Levels[3])),
+  ((65, 80), (Levels[3], Levels[4])),
+  ((90, 125), (Levels[4], Levels[5])),
+  ((145, 180), (Levels[5], Levels[6])),
+  ((220, 220), (Levels[6], MaxSkill))))
+
+TRAP_EXECUTIVE_BONUS = 0.3
+TRAP_HEALTHY_BONUS = 0.2
+
 ATK_SINGLE_TARGET = 0
 ATK_GROUP_TARGET = 1
 AvPropTargetCat = ((ATK_SINGLE_TARGET,
@@ -728,6 +674,17 @@ AvPropTarget = (0,
  3,
  3)
 
+def getTrapDamage(trapLevel, toon, suit = None, executive = None, healthy = None):
+    if suit:
+        executive = suit.isExecutive
+        healthy = suit.currHP >= suit.maxHP / 2
+    damage = getAvPropDamage(TRAP_TRACK, trapLevel, toon.experience.getExp(TRAP_TRACK))
+    if healthy:
+        damage += math.ceil(damage * TRAP_HEALTHY_BONUS)
+    if executive:
+        damage += math.ceil(damage * TRAP_EXECUTIVE_BONUS)
+    return int(damage)
+
 def getAvPropDamage(attackTrack, attackLevel, exp, organicBonus = False, propBonus = False, propAndOrganicBonusStack = False):
     minD = AvPropDamage[attackTrack][attackLevel][0][0]
     maxD = AvPropDamage[attackTrack][attackLevel][0][1]
@@ -738,14 +695,6 @@ def getAvPropDamage(attackTrack, attackLevel, exp, organicBonus = False, propBon
     damage = math.floor((expVal - minE) / expPerHp) + minD
     if damage <= 0:
         damage = minD
-    if propAndOrganicBonusStack:
-        originalDamage = damage
-        if organicBonus:
-            damage += getDamageBonus(originalDamage)
-        if propBonus:
-            damage += getDamageBonus(originalDamage)
-    elif organicBonus or propBonus:
-        damage += getDamageBonus(damage)
     return damage
 
 

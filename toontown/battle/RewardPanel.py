@@ -96,16 +96,13 @@ class RewardPanel(DirectFrame):
         return
 
     def getNextExpValue(self, curSkill, trackIndex):
-        retVal = ToontownBattleGlobals.UberSkill
-        for amount in ToontownBattleGlobals.Levels[trackIndex]:
+        retVal = ToontownBattleGlobals.MaxSkill
+        for amount in ToontownBattleGlobals.Levels:
             if curSkill < amount:
                 retVal = amount
                 return retVal
 
         return retVal
-
-    def getNextExpValueUber(self, curSkill, trackIndex):
-        return ToontownBattleGlobals.UberSkill
 
     def getNextMeritValue(self, curMerits, toon, dept):
         totalMerits = CogDisguiseGlobals.getTotalMerits(toon, dept)
@@ -230,17 +227,10 @@ class RewardPanel(DirectFrame):
             trackIncLabel.hide()
             if toon.hasTrackAccess(i):
                 trackBar.show()
-                if curExp >= ToontownBattleGlobals.UnpaidMaxSkills[i] and toon.getGameAccess() != OTPGlobals.AccessFull:
-                    nextExp = self.getNextExpValue(curExp, i)
-                    trackBar['range'] = nextExp
-                    trackBar['value'] = ToontownBattleGlobals.UnpaidMaxSkills[i]
-                    trackBar['text'] = TTLocalizer.InventoryGuestExp
-                elif curExp >= ToontownBattleGlobals.regMaxSkill:
-                    nextExp = self.getNextExpValueUber(curExp, i)
-                    trackBar['range'] = nextExp
-                    uberCurrExp = curExp - ToontownBattleGlobals.regMaxSkill
-                    trackBar['value'] = uberCurrExp
-                    trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'nextExp': ToontownBattleGlobals.MaxSkill - curExp}
+                if curExp >= ToontownBattleGlobals.MaxSkill:
+                    trackBar['range'] = 1
+                    trackBar['value'] = 1
+                    trackBar['text'] = TTLocalizer.InventoryMaxed
                 else:
                     nextExp = self.getNextExpValue(curExp, i)
                     trackBar['range'] = nextExp
@@ -255,17 +245,16 @@ class RewardPanel(DirectFrame):
         oldValue = trackBar['value']
         newValue = min(ToontownBattleGlobals.MaxSkill, newValue)
         nextExp = self.getNextExpValue(newValue, track)
-        if newValue >= ToontownBattleGlobals.UnpaidMaxSkills[track] and toon.getGameAccess() != OTPGlobals.AccessFull:
-            newValue = oldValue
-            trackBar['text'] = TTLocalizer.GuestLostExp
-        elif newValue >= ToontownBattleGlobals.regMaxSkill:
-            newValue = newValue - ToontownBattleGlobals.regMaxSkill
-            nextExp = self.getNextExpValueUber(newValue, track)
-            trackBar['text'] = TTLocalizer.InventoryUberTrackExp % {'nextExp': ToontownBattleGlobals.UberSkill - newValue}
+        if newValue >= ToontownBattleGlobals.MaxSkill:
+            newValue = newValue - ToontownBattleGlobals.MaxSkill
+            nextExp = ToontownBattleGlobals.MaxSkill
+            trackBar['text'] = TTLocalizer.InventoryMaxed
+            trackBar['range'] = 1
+            trackBar['value'] = 1
         else:
             trackBar['text'] = '%s/%s' % (newValue, nextExp)
-        trackBar['range'] = nextExp
-        trackBar['value'] = newValue
+            trackBar['range'] = nextExp
+            trackBar['value'] = newValue
         trackBar['barColor'] = (ToontownBattleGlobals.TrackColors[track][0],
          ToontownBattleGlobals.TrackColors[track][1],
          ToontownBattleGlobals.TrackColors[track][2],
@@ -319,7 +308,7 @@ class RewardPanel(DirectFrame):
         self.itemFrame.hide()
         self.missedItemFrame.hide()
         self.newGagFrame['text'] = TTLocalizer.RewardPanelUberGag % {'gagName': ToontownBattleGlobals.Tracks[track].capitalize(),
-         'exp': str(ToontownBattleGlobals.UberSkill),
+         'exp': str(ToontownBattleGlobals.MaxSkill),
          'avName': toon.getName()}
         self.congratsLeft['text'] = ''
         self.congratsRight['text'] = ''
@@ -447,11 +436,7 @@ class RewardPanel(DirectFrame):
             print (toon.doId, 'Reward Panel received an invalid hasUber from an uberList')
         tickDelay = 1.0 / 60
         intervalList = []
-        if origSkill + earnedSkill >= ToontownBattleGlobals.UnpaidMaxSkills[track] and toon.getGameAccess() != OTPGlobals.AccessFull:
-            lostExp = origSkill + earnedSkill - ToontownBattleGlobals.UnpaidMaxSkills[track]
-            intervalList.append(Func(self.showTrackIncLabel, track, lostExp, 1))
-        else:
-            intervalList.append(Func(self.showTrackIncLabel, track, earnedSkill))
+        intervalList.append(Func(self.showTrackIncLabel, track, earnedSkill))
         barTime = 0.5
         numTicks = int(math.ceil(barTime / tickDelay))
         for i in xrange(numTicks):
@@ -465,36 +450,13 @@ class RewardPanel(DirectFrame):
         nextExpValue = self.getNextExpValue(origSkill, track)
         finalGagFlag = 0
         while origSkill + earnedSkill >= nextExpValue and origSkill < nextExpValue and not finalGagFlag:
-            if newValue >= ToontownBattleGlobals.UnpaidMaxSkills[track] and toon.getGameAccess() != OTPGlobals.AccessFull:
-                pass
-            elif nextExpValue != ToontownBattleGlobals.MaxSkill:
-                intervalList += self.getNewGagIntervalList(toon, track, ToontownBattleGlobals.Levels[track].index(nextExpValue))
+            if nextExpValue != ToontownBattleGlobals.MaxSkill:
+                intervalList += self.getNewGagIntervalList(toon, track, ToontownBattleGlobals.Levels.index(nextExpValue))
             newNextExpValue = self.getNextExpValue(nextExpValue, track)
             if newNextExpValue == nextExpValue:
                 finalGagFlag = 1
             else:
                 nextExpValue = newNextExpValue
-
-        uberIndex = ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1
-        currentSkill = origSkill + earnedSkill
-        uberSkill = ToontownBattleGlobals.UberSkill + ToontownBattleGlobals.Levels[track][ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1]
-        if currentSkill >= uberSkill and not hasUber > 0:
-            intervalList += self.getUberGagIntervalList(toon, track, ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1)
-            intervalList.append(Wait(0.1))
-            skillDiff = currentSkill - ToontownBattleGlobals.Levels[track][ToontownBattleGlobals.LAST_REGULAR_GAG_LEVEL + 1]
-            barTime = math.log(skillDiff + 1)
-            numTicks = int(math.ceil(barTime / tickDelay))
-            displayedSkillDiff = skillDiff
-            if displayedSkillDiff > ToontownBattleGlobals.UberSkill:
-                displayedSkillDiff = ToontownBattleGlobals.UberSkill
-            intervalList.append(Func(self.showTrackIncLabel, track, -displayedSkillDiff))
-            for i in xrange(numTicks):
-                t = (i + 1) / float(numTicks)
-                newValue = int(currentSkill - t * skillDiff + 0.5)
-                intervalList.append(Func(self.incrementExp, track, newValue, toon))
-                intervalList.append(Wait(tickDelay * 0.5))
-
-            intervalList.append(Wait(0.1))
         return intervalList
 
     def getMeritIntervalList(self, toon, dept, origMerits, earnedMerits):
@@ -707,7 +669,7 @@ class RewardPanel(DirectFrame):
         for trackIndex in xrange(len(earnedExp)):
             if earnedExp[trackIndex] > 0 or origExp[trackIndex] >= ToontownBattleGlobals.MaxSkill:
                 track += self.getTrackIntervalList(toon, trackIndex, origExp[trackIndex], earnedExp[trackIndex], ToontownBattleGlobals.getUberFlagSafe(uberEntry, trackIndex))
-                maxExp = ToontownBattleGlobals.MaxSkill - ToontownBattleGlobals.UberSkill
+                maxExp = ToontownBattleGlobals.MaxSkill
                 if origExp[trackIndex] < maxExp and earnedExp[trackIndex] + origExp[trackIndex] >= maxExp:
                     endTracks[trackIndex] = 1
                     trackEnded = 1
