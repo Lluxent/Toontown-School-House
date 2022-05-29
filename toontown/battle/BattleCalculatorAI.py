@@ -529,6 +529,9 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 suit = self.battle.findSuit(suitId)
                 damage = getTrapDamage(trapLvl, toon, suit)
+                if self.toonHasCondition(attackerId, 'trapBoost'):
+                    damage *= (1.0 + self.getToonConditionModifier(attackerId, 'trapBoost') * 0.01)
+                    damage = math.ceil(damage)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -557,6 +560,9 @@ class BattleCalculatorAI:
                 toon = self.battle.getToon(attackerId)
                 suit = self.battle.findSuit(suitId)
                 damage = getTrapDamage(trapLvl, toon, suit)
+                if self.toonHasCondition(attackerId, 'trapBoost'):
+                    damage *= (1.0 + self.getToonConditionModifier(attackerId, 'trapBoost') * 0.01)
+                    damage = math.ceil(damage)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -724,15 +730,30 @@ class BattleCalculatorAI:
                         if suit.getActualLevel() > highestLevel:
                             highestLevel = suit.getActualLevel()
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack)) + math.ceil(highestLevel / 2.0)
+                    if self.toonHasCondition(toonId, 'soundBoost'):
+                        attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'soundBoost') * 0.01)
                 elif atkTrack == HEAL:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                    if self.toonHasCondition(toonId, 'healBoost'):
+                        attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'healBoost') * 0.01)
                     toon.toonUp(math.ceil(attackDamage / 2))
                 elif atkTrack == SQUIRT:
                     suit = self.battle.findSuit(targetId)
                     self.setSuitCondition(suit, 'soaked', 1, self.NumRoundsSoaked[attackLevel], 'alternateBoth')
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                    if self.toonHasCondition(toonId, 'squirtBoost'):
+                        attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'squirtBoost') * 0.01)
+                elif atkTrack == THROW:
+                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                    if self.toonHasCondition(toonId, 'throwBoost'):
+                        attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'throwBoost') * 0.01)
+                elif atkTrack == DROP:
+                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                    if self.toonHasCondition(toonId, 'dropBoost'):
+                        attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'dropBoost') * 0.01)
                 else:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                attackDamage = math.ceil(attackDamage)
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
@@ -1039,7 +1060,10 @@ class BattleCalculatorAI:
                         if self.notify.getDebug():
                             self.notify.debug('Applying drop hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))                        
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
-                        attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * ToontownBattleGlobals.LURE_KNOCKBACK_VALUE
+                        if self.toonHasCondition(attackerId, 'lureBoost'):  # TODO: make the lure bonus work if the lure was placed with bonus, not if the toon currently has the bonus
+                            attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * (ToontownBattleGlobals.LURE_KNOCKBACK_VALUE + self.getToonConditionModifier(attackerId, 'lureBoost') * 0.01)
+                        else:
+                            attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * ToontownBattleGlobals.LURE_KNOCKBACK_VALUE
                         if self.notify.getDebug():
                             self.notify.debug('Applying kb bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_KBBONUS_COL][tgtPos]) + ' to target ' + str(tgtPos))
                     else:
