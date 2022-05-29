@@ -1208,16 +1208,22 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
         self.battleCalc.calculateRound()
         
-        for toon in self.battleCalc.toonStatusConditions:
-            for condition in self.battleCalc.toonStatusConditions[toon]:
-                conditionStrings = []
-                conditionValues = []
-                conditionTurns = []
+        for toon in self.battleCalc.toonStatusConditions.keys():
+            conditionStrings = []
+            conditionValues = []
+            conditionTurns = []
 
+            for condition in self.battleCalc.toonStatusConditions[toon]:
                 conditionStrings.append(condition)
                 conditionValues.append(self.battleCalc.toonStatusConditions[toon][condition]['modifier'])
                 conditionTurns.append(self.battleCalc.toonStatusConditions[toon][condition]['turnsRemaining'])
-                self.sendUpdateToAvatarId(toon, 'setBattleConditions', [toon, conditionStrings, conditionValues, conditionTurns])
+            
+            if not self.battleCalc.toonStatusConditions[toon].keys():
+                del self.battleCalc.toonStatusConditions[toon]
+
+            self.sendUpdateToAvatarId(toon, 'setBattleConditions', [toon, conditionStrings, conditionValues, conditionTurns])
+
+        self.battleCalc.decrementConditionTurns()
 
         for t in self.activeToons:
             self.sendEarnedExperience(t)

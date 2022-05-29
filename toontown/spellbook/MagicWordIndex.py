@@ -422,6 +422,33 @@ class ToggleInstaKill(MagicWord):
         return "{} can {} insta-kill Cogs!".format(toon.getName(), "now" if toon.getInstaKill() else "no longer")
 
 
+class giveBattleCondition(MagicWord):
+    desc = "Gives user a battle condition."
+    aliases = ["bc"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("condition", str, True), ("value", int, True), ("turns", int, True)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        condition = args[0]
+        value = args[1]
+        turns = args[2]
+
+        battleId = toon.getBattleId()
+        if not battleId:
+            return "Cannot give conditions if not in a battle!"
+        
+        battle = self.air.doId2do.get(battleId)
+        if not battle:
+            return "{} is not a valid battle!".format(battleId)
+
+        battle.battleCalc.setToonCondition(toon.getDoId(), condition, value, turns)
+
+        if value == 0 or turns == 0:
+            return "Removed %s condition from Toon." % condition
+        else:
+            return "Gave the toon %s condition (%i time%s) for %i turns." % (condition, value, 's' if value > 1 else '', turns)
+
+
 class SkipMovie(MagicWord):
     desc = "Skips the current round of animations in a Cog battle."
     execLocation = MagicWordConfig.EXEC_LOC_SERVER

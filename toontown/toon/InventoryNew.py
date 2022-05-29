@@ -1,6 +1,7 @@
 from math import ceil
 from direct.gui.DirectGui import *
 from panda3d.core import *
+from toontown.battle.BattleBase import HEAL
 from toontown.toonbase import ToontownBattleGlobals
 from toontown.toonbase.ToontownBattleGlobals import *
 import InventoryBase
@@ -924,6 +925,10 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             else:
                 self.fireButton['state'] = DGG.DISABLED
                 self.fireButton['image_color'] = Vec4(0.4, 0.4, 0.4, 1)
+        if 'noFires' in base.localAvatar.battleConditions:
+            self.fireButton.hide()
+        if 'noSOS' in base.localAvatar.battleConditions:
+            self.sosButton.hide()
         for track in xrange(len(Tracks)):
             if self.toon.hasTrackAccess(track):
                 self.showTrack(track)
@@ -932,12 +937,28 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                     if self.itemIsUsable(track, level):
                         unpaid = not base.cr.isPaid()
                         button.show()
-                        if self.numItem(track, level) <= 0 or track == HEAL_TRACK and not self.heal or track == TRAP_TRACK and not self.trap or track == LURE_TRACK and not self.lure:
-                            self.makeUnpressable(button, track, level)
-                        elif self.itemIsCredit(track, level):
+                        if self.itemIsCredit(track, level):
                             self.makePressable(button, track, level)
                         else:
                             self.makeNoncreditPressable(button, track, level)
+
+                        if self.numItem(track, level) <= 0 or ('noGags' in base.localAvatar.battleConditions) or track == HEAL_TRACK and not self.heal or track == TRAP_TRACK and not self.trap or track == LURE_TRACK and not self.lure:
+                            self.makeUnpressable(button, track, level)
+                        if track == HEAL_TRACK and 'noToonUpGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == TRAP_TRACK and 'noTrapGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == LURE_TRACK and 'noLureGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == SOUND_TRACK and 'noSoundGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == THROW_TRACK and 'noThrowGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == SQUIRT_TRACK and 'noSquirtGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                        if track == DROP_TRACK and 'noDropGags' in base.localAvatar.battleConditions:
+                            self.makeUnpressable(button, track, level)
+                            
                     else:
                         button.hide()
 

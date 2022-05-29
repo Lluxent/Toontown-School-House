@@ -106,9 +106,10 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         self.activeIntervals = {}
 
     def setBattleConditions(self, toonId, conditionNames, conditionVals, conditionTurns):
-        for i in range(0, len(conditionNames)):
-            if toonId == base.localAvatar.doId:
-                base.localAvatar.battleConditions[conditionNames[i]] = [conditionVals[i], conditionTurns[i]]
+        if toonId == base.localAvatar.doId:
+            base.localAvatar.battleConditions = {}
+            for i in range(0, len(conditionNames)):
+                    base.localAvatar.battleConditions[conditionNames[i]] = [conditionVals[i], conditionTurns[i]]
 
     def clearInterval(self, name, finish = 0):
         if name in self.activeIntervals:
@@ -1060,7 +1061,6 @@ class DistributedBattleBase(DistributedNode.DistributedNode, BattleBase):
         if self.localToonActive():
             self.__enterLocalToonWaitForInput()
             self.startTimer(ts)
-        if self.needAdjustTownBattle == 1:
             self.__adjustTownBattle()
         return None
 

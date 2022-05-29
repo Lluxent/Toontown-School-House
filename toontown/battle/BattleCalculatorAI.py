@@ -103,6 +103,11 @@ class BattleCalculatorAI:
             # if not, make them an entry
             self.toonStatusConditions[toonId] = {}
 
+        # special handling to remove a condition
+        if modifier == 0 or turns == 0 and mode == 'none':
+            del self.toonStatusConditions[toonId][condition]
+            return
+
         # next, check if the toon has the condition already
         if condition not in self.toonStatusConditions[toonId]:
             # if not, add the condition, and we're done
@@ -174,6 +179,11 @@ class BattleCalculatorAI:
             # if not, make them an entry
             self.suitStatusConditions[suitId] = {}
 
+        # special handling to remove a condition
+        if modifier == 0 or turns == 0 and mode == 'none':
+            del self.suitStatusConditions[suitId][condition]
+            return
+
         # next, check if the suit has the condition already
         if condition not in self.suitStatusConditions[suitId]:
             # if not, add the condition, and we're done
@@ -217,23 +227,25 @@ class BattleCalculatorAI:
     def decrementConditionTurns(self):
         for toon in self.toonStatusConditions.keys():
             for condition in self.toonStatusConditions[toon].keys():
-                if self.toonStatusConditions[toon][condition]['turnsRemaining'] >= 0:
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] > 0:
                     self.notify.debug('decrementConditionTurns() - Decremented %s condition on toon %i (new turns: %i)' % (condition, toon, self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1))
                     self.toonStatusConditions[toon][condition]['turnsRemaining'] -= 1
 
-                if self.toonStatusConditions[toon][condition]['turnsRemaining'] == -1:
-                    self.notify.debug('decrementConditionTurns() - %s condition on toon %i have reached end, removing.' % (condition, toon))
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] == 0:
+                    self.notify.debug('decrementConditionTurns() - %s condition on toon %i have reached 0, removing.' % (condition, toon))
                     del self.toonStatusConditions[toon][condition]
 
         for suit in self.suitStatusConditions.keys():
             for condition in self.suitStatusConditions[suit].keys():
-                if self.suitStatusConditions[suit][condition]['turnsRemaining'] >= 0:
+                if self.suitStatusConditions[suit][condition]['turnsRemaining'] > 0:
                     self.notify.debug('decrementConditionTurns() - Decremented %s condition on suit %i (new turns: %i)' % (condition, suit.doId, self.suitStatusConditions[suit][condition]['turnsRemaining'] - 1))
                     self.suitStatusConditions[suit][condition]['turnsRemaining'] -= 1
 
-                if self.suitStatusConditions[suit][condition]['turnsRemaining'] == -1:
-                    self.notify.debug('decrementConditionTurns() - %s condition on suit %i have reached end, removing.' % (condition, suit.doId))
+                if self.suitStatusConditions[suit][condition]['turnsRemaining'] == 0:
+                    self.notify.debug('decrementConditionTurns() - %s condition on suit %i have reached 0, removing.' % (condition, suit.doId))
                     del self.suitStatusConditions[suit][condition]
+            if not self.suitStatusConditions[suit].keys():
+                del self.suitStatusConditions[suit]
                 
     def printToonConditions(self):
         self.notify.debug('printToonConditions() *********************************************')
@@ -242,7 +254,8 @@ class BattleCalculatorAI:
         for toon in self.toonStatusConditions:
             self.notify.debug('printToonConditions(): Toon %i has the following Conditions:' % toon)
             for condition in self.toonStatusConditions[toon]:
-                self.notify.debug('printToonConditions(): %s x %i, with %i turns remaining' % (condition, self.toonStatusConditions[toon][condition]['modifier'], self.toonStatusConditions[toon][condition]['turnsRemaining']))
+                self.notify.debug('printToonConditions(): %s x %i, with %i turn%s remaining' % (condition, self.toonStatusConditions[toon][condition]['modifier'], self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1, '' if self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1 == 1 else 's'))
+                self.notify.debug('printToonConditions(): %s' % str(self.toonStatusConditions.keys()))
         self.notify.debug('printToonConditions() *********************************************')
         self.notify.debug('printToonConditions(): Ending Turn Readout')
         self.notify.debug('printToonConditions() *********************************************')
@@ -254,7 +267,7 @@ class BattleCalculatorAI:
         for suit in self.suitStatusConditions:
             self.notify.debug('printSuitConditions(): Suit %i has the following Conditions:' % suit.doId)
             for condition in self.suitStatusConditions[suit]:
-                self.notify.debug('printSuitConditions(): %s x %i, with %i turns remaining' % (condition, self.suitStatusConditions[suit][condition]['modifier'], self.suitStatusConditions[suit][condition]['turnsRemaining']))
+                self.notify.debug('printSuitConditions(): %s x %i, with %i turn%s remaining' % (condition, self.suitStatusConditions[suit][condition]['modifier'], self.suitStatusConditions[suit][condition]['turnsRemaining'] - 1, '' if self.suitStatusConditions[suit][condition]['turnsRemaining'] - 1 == 1 else 's'))
         self.notify.debug('printSuitConditions() *********************************************')
         self.notify.debug('printSuitConditions(): Ending Turn Readout')
         self.notify.debug('printSuitConditions() *********************************************')
@@ -1658,7 +1671,6 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Toon skills gained after this round: ' + repr(self.toonSkillPtsGained))
             self.__printSuitAtkStats()
-            self.decrementConditionTurns()
             if self.toonStatusConditions:
                 self.printToonConditions()
             if self.suitStatusConditions:
