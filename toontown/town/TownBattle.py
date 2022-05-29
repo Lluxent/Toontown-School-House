@@ -190,6 +190,7 @@ class TownBattle(StateData.StateData):
         self.parentFSMState.removeChild(self.fsm)
         del self.parentFSMState
         base.localAvatar.inventory.setBattleCreditMultiplier(1)
+        base.localAvatar.battleConditions = {}
 
     def load(self):
         if self.isLoaded:

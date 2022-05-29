@@ -1461,6 +1461,7 @@ dclass DistributedBattleBase : DistributedObject {
   setChosenToonAttacks(uint32[], int16[], int16[], int32[]) broadcast ram;
   setBattleExperience(int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], int32, int16[], int16[], uint32[], int16[], int16[], int16[], int16[], uint32[], uint8[], int16[], uint32[]) required broadcast ram;
   denyLocalToonJoin();
+  setBattleConditions(int32, string[], int8[], int8[]);
   setBossBattle(uint8) required broadcast ram;
   setState(string, int16) required broadcast ram;
   faceOffDone() airecv clsend;

@@ -192,6 +192,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
         self.immortalMode = False
         self.unlimitedGags = False
         self.instaKill = False
+        self.battleConditions = {}
         self.accept('f10', self.openTeleportGUI)
         return
 
@@ -691,6 +692,7 @@ class DistributedToon(DistributedPlayer.DistributedPlayer, Toon.Toon, Distribute
     def died(self):
         messenger.send(self.uniqueName('died'))
         if self.isLocal():
+            self.battleConditions = {}
             target_sz = ZoneUtil.getSafeZoneId(self.defaultZone)
             place = self.cr.playGame.getPlace()
             if place and place.fsm:
