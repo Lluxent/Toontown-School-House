@@ -582,6 +582,8 @@ AvLureBonusAccuracy = (60,
  80,
  100)
 AvLureRounds = (2, 2, 3, 3, 4, 4, 5)
+AvSoakRounds = (2, 2, 3, 3, 4, 4, 5)
+AvSoakDefReduction = 15
 AvTrackAccStrings = TTLocalizer.BattleGlobalAvTrackAccStrings
 AvPropDamage = ((((6, 8), (Levels[0], Levels[1])),
   ((12, 15), (Levels[1], Levels[2])),

@@ -325,6 +325,12 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
             'damage': damage,
             'bonus': '\nBonus Combo %: 10%',
             'singleOrGroup': self.getSingleGroupStr(track, level)})
+        elif track == SQUIRT_TRACK:
+            self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
+            'damageString': self.getToonupDmgStr(track, level),
+            'damage': damage,
+            'bonus': '\nSoak Rounds: %i\nSoaked Dodge Rate: %i%%' % (ToontownBattleGlobals.AvSoakRounds[level], -ToontownBattleGlobals.AvSoakDefReduction),
+            'singleOrGroup': self.getSingleGroupStr(track, level)})
         else:
             self.detailDataLabel.configure(text=TTLocalizer.InventoryDetailData % {'accuracy': accString,
             'damageString': self.getToonupDmgStr(track, level),

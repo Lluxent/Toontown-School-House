@@ -22,6 +22,7 @@ class BattleCalculatorAI:
     AttackExpPerTrack = [
      0, 10, 20, 30, 40, 50, 60]
     NumRoundsLured = ToontownBattleGlobals.AvLureRounds
+    NumRoundsSoaked = ToontownBattleGlobals.AvSoakRounds
     TRAP_CONFLICT = -2
     APPLY_HEALTH_ADJUSTMENTS = 1
     TOONS_TAKE_NO_DAMAGE = 0
@@ -68,6 +69,8 @@ class BattleCalculatorAI:
         # the dictionary holds all four toons, so a possible dictionary could be
         # { 10000000: { 'corruption': {'modifier': 2, 'turnsRemaining': -1} } }
         self.toonStatusConditions = {}
+
+        self.suitStatusConditions = {}
 
     def toonHasCondition(self, toonId, condition):
         self.notify.debug('toonHasCondition() - checking for \'%s\' on toonId %i' % (condition, toonId))
@@ -130,19 +133,107 @@ class BattleCalculatorAI:
                 newModifier = modifier
                 newTurns = turns
 
+            if mode is 'alternateBoth':
+                if modifier > self.toonStatusConditions[toonId][condition]['modifier']:
+                    newModifier = self.toonStatusConditions[toonId][condition]
+                else:
+                    newModifier = modifier
+                newTurns = turns
+
             self.notify.debug('setToonCondition() - gave toon %i modifier %s with modifier %i with %i turns remaining' % (toonId, modifier, newModifier, newTurns))
             self.toonStatusConditions[toonId][condition] = {'modifier': newModifier, 'turnsRemaining': newTurns}
 
+    def suitHasCondition(self, suitId, condition):
+        self.notify.debug('suitHasCondition() - checking for \'%s\' on suitId %i' % (condition, suitId.doId))
+        if suitId not in self.suitStatusConditions:
+            self.notify.debug('suitHasCondition() - suit %i is not in the condition dictionary at all' % suitId.doId)
+            return False
+        
+        if condition in self.suitStatusConditions[suitId]:
+            self.notify.debug('suitHasCondition() - suit %i has the \'%s\' condition' % (suitId.doId, condition))
+            return True
+        else:
+            self.notify.debug('suitHasCondition() - suit %i is in the dictionary, but does not have the \'%s\' condition' % (suitId.doId, condition))
+            return False
+
+    def getSuitConditionModifier(self, suitId, condition):
+        if not self.suitHasCondition(suitId, condition):
+            self.notify.warning('getSuitConditionModifier() - method called, but suit %i did not have %s condition' % (suitId.doId, condition))
+            return 0
+        return self.suitStatusConditions[suitId][condition]['modifier']
+
+    def getSuitConditionTurns(self, suitId, condition):
+        if not self.suitHasCondition(suitId, condition):
+            self.notify.warning('getSuitConditionTurns() - method called, but suit %i did not have %s condition' % (suitId.doId, condition))
+            return 0
+        return self.suitStatusConditions[suitId][condition]['turnsRemaining']
+
+    def setSuitCondition(self, suitId, condition, modifier, turns, mode = 'none'):
+        # first, check if the suit is even in the dictionary
+        if suitId not in self.suitStatusConditions:
+            # if not, make them an entry
+            self.suitStatusConditions[suitId] = {}
+
+        # next, check if the suit has the condition already
+        if condition not in self.suitStatusConditions[suitId]:
+            # if not, add the condition, and we're done
+            self.suitStatusConditions[suitId][condition] = {'modifier': modifier, 'turnsRemaining': turns}
+            return
+        else:
+            # otherwise, increase the existing modifier appropriately
+            newModifier = 0 # the variable we will set the modifier to
+            newTurns = 0    # the variable we will set the turns to
+
+            # modifier APPENDED, turns SET, used to change a buff/debuff's timer, but keep its potency 
+            if mode is 'refreshTurns':
+                newModifier = self.getSuitConditionModifier(suitId, condition) + modifier
+                newTurns = turns
+
+            # modifer SET, turns APPENDED, used to modify a buff/debuff's potency, but change its duration
+            if mode is 'refreshModifier':
+                newModifier = modifier
+                newTurns = self.getSuitConditionTurns(suitId, condition) + turns
+            
+            # modifier APPENDED, turns APPENDED, used to change a buff/debuff's potency AND duration
+            if mode is 'refreshBoth':
+                newModifier = self.getSuitConditionModifier(suitId, condition) + modifier        
+                newTurns = self.getSuitConditionTurns(suitId, condition) + turns
+
+            # modifier SET, turns SET, used to explicitly set a modifier to a precise potency and duration
+            if mode is 'setBoth':
+                newModifier = modifier
+                newTurns = turns
+
+            if mode is 'alternateBoth':
+                if modifier > self.suitStatusConditions[suitId][condition]['modifier']:
+                    newModifier = self.suitStatusConditions[suitId][condition]
+                else:
+                    newModifier = modifier
+                newTurns = turns
+
+            self.notify.debug('setSuitCondition() - gave suit %i modifier %s with modifier %i with %i turns remaining' % (suitId.doId, modifier, newModifier, newTurns))
+            self.suitStatusConditions[suitId][condition] = {'modifier': newModifier, 'turnsRemaining': newTurns}
+
     def decrementConditionTurns(self):
-        for toon in self.toonStatusConditions:
-            for condition in self.toonStatusConditions[toon]:
-                if self.toonStatusConditions[toon][condition]['turnsRemaining'] > 0:
+        for toon in self.toonStatusConditions.keys():
+            for condition in self.toonStatusConditions[toon].keys():
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] >= 0:
                     self.notify.debug('decrementConditionTurns() - Decremented %s condition on toon %i (new turns: %i)' % (condition, toon, self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1))
                     self.toonStatusConditions[toon][condition]['turnsRemaining'] -= 1
 
-                if self.toonStatusConditions[toon][condition]['turnsRemaining'] == 0:
-                    self.notify.debug('decrementConditionTurns() - %s condition on toon %i have reached 0, removing.' % (condition, toon))
+                if self.toonStatusConditions[toon][condition]['turnsRemaining'] == -1:
+                    self.notify.debug('decrementConditionTurns() - %s condition on toon %i have reached end, removing.' % (condition, toon))
                     del self.toonStatusConditions[toon][condition]
+
+        for suit in self.suitStatusConditions.keys():
+            for condition in self.suitStatusConditions[suit].keys():
+                if self.suitStatusConditions[suit][condition]['turnsRemaining'] >= 0:
+                    self.notify.debug('decrementConditionTurns() - Decremented %s condition on suit %i (new turns: %i)' % (condition, suit.doId, self.suitStatusConditions[suit][condition]['turnsRemaining'] - 1))
+                    self.suitStatusConditions[suit][condition]['turnsRemaining'] -= 1
+
+                if self.suitStatusConditions[suit][condition]['turnsRemaining'] == -1:
+                    self.notify.debug('decrementConditionTurns() - %s condition on suit %i have reached end, removing.' % (condition, suit.doId))
+                    del self.suitStatusConditions[suit][condition]
                 
     def printToonConditions(self):
         self.notify.debug('printToonConditions() *********************************************')
@@ -155,6 +246,19 @@ class BattleCalculatorAI:
         self.notify.debug('printToonConditions() *********************************************')
         self.notify.debug('printToonConditions(): Ending Turn Readout')
         self.notify.debug('printToonConditions() *********************************************')
+
+    def printSuitConditions(self):
+        self.notify.debug('printSuitConditions() *********************************************')
+        self.notify.debug('printSuitConditions(): Beginning Turn Readout')
+        self.notify.debug('printSuitConditions() *********************************************')
+        for suit in self.suitStatusConditions:
+            self.notify.debug('printSuitConditions(): Suit %i has the following Conditions:' % suit.doId)
+            for condition in self.suitStatusConditions[suit]:
+                self.notify.debug('printSuitConditions(): %s x %i, with %i turns remaining' % (condition, self.suitStatusConditions[suit][condition]['modifier'], self.suitStatusConditions[suit][condition]['turnsRemaining']))
+        self.notify.debug('printSuitConditions() *********************************************')
+        self.notify.debug('printSuitConditions(): Ending Turn Readout')
+        self.notify.debug('printSuitConditions() *********************************************')
+
 
     def setSkillCreditMultiplier(self, mult):
         self.__skillCreditMultiplier = mult
@@ -322,6 +426,10 @@ class BattleCalculatorAI:
             suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][0]
         else:
             suitDef = SuitBattleGlobals.SuitAttributes[suit.dna.name]['def'][suit.getLevel()]
+
+        if self.suitHasCondition(suit, 'soaked'):
+            suitDef -= ToontownBattleGlobals.AvSoakDefReduction
+
         return -suitDef
 
     def __createToonTargetList(self, attackIndex):
@@ -606,6 +714,10 @@ class BattleCalculatorAI:
                 elif atkTrack == HEAL:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
                     toon.toonUp(math.ceil(attackDamage / 2))
+                elif atkTrack == SQUIRT:
+                    suit = self.battle.findSuit(targetId)
+                    self.setSuitCondition(suit, 'soaked', 1, self.NumRoundsSoaked[attackLevel], 'alternateBoth')
+                    attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
                 else:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
                 if not self.__combatantDead(targetId, toon=toonTarget):
@@ -1351,17 +1463,17 @@ class BattleCalculatorAI:
                     if theSuit.dna.name == 'ssb':
                         if attack[SUIT_ATK_COL] in [0, 2]:
                             self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s' % str(t))
-                            self.setToonCondition(t, 'corruption', 2, -1, 'refreshTurns')
+                            self.setToonCondition(t, 'corruption', 2, -2, 'refreshTurns')
                             if attack[SUIT_ATK_COL] == 0:
                                 self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s two additional times' % str(t))
-                                self.setToonCondition(t, 'corruption', 4, -1, 'refreshTurns')
+                                self.setToonCondition(t, 'corruption', 4, -2, 'refreshTurns')
                         else:
                             self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
                             self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
                             return
                     if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
                         self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s four times' % str(t))
-                        self.setToonCondition(t, 'corruption', 8, -1, 'refreshTurns')
+                        self.setToonCondition(t, 'corruption', 8, -2, 'refreshTurns')
                     if toonHp - attack[SUIT_HP_COL][position] <= 0:
                         if self.notify.getDebug():
                             self.notify.debug('Toon %d has died, removing' % t)
@@ -1546,8 +1658,11 @@ class BattleCalculatorAI:
         if self.notify.getDebug():
             self.notify.debug('Toon skills gained after this round: ' + repr(self.toonSkillPtsGained))
             self.__printSuitAtkStats()
+            self.decrementConditionTurns()
             if self.toonStatusConditions:
                 self.printToonConditions()
+            if self.suitStatusConditions:
+                self.printSuitConditions()
         return None
 
     def __calculateFiredCogs():
