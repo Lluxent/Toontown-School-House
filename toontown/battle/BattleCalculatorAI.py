@@ -532,6 +532,9 @@ class BattleCalculatorAI:
                 if self.toonHasCondition(attackerId, 'trapBoost'):
                     damage *= (1.0 + self.getToonConditionModifier(attackerId, 'trapBoost') * 0.01)
                     damage = math.ceil(damage)
+                if self.toonHasCondition(attackerId, 'allGagBoost'):
+                    damage *= (1.0 + self.getToonConditionModifier(attackerId, 'allGagBoost') * 0.01)
+                    damage = math.ceil(damage)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
                      trapLvl, attackerId, damage]
@@ -562,6 +565,9 @@ class BattleCalculatorAI:
                 damage = getTrapDamage(trapLvl, toon, suit)
                 if self.toonHasCondition(attackerId, 'trapBoost'):
                     damage *= (1.0 + self.getToonConditionModifier(attackerId, 'trapBoost') * 0.01)
+                    damage = math.ceil(damage)
+                if self.toonHasCondition(attackerId, 'allGagBoost'):
+                    damage *= (1.0 + self.getToonConditionModifier(attackerId, 'allGagBoost') * 0.01)
                     damage = math.ceil(damage)
                 if self.itemIsCredit(TRAP, trapLvl):
                     self.traps[suitId] = [
@@ -736,7 +742,6 @@ class BattleCalculatorAI:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
                     if self.toonHasCondition(toonId, 'healBoost'):
                         attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'healBoost') * 0.01)
-                    toon.toonUp(math.ceil(attackDamage / 2))
                 elif atkTrack == SQUIRT:
                     suit = self.battle.findSuit(targetId)
                     self.setSuitCondition(suit, 'soaked', 1, self.NumRoundsSoaked[attackLevel], 'alternateBoth')
@@ -753,7 +758,12 @@ class BattleCalculatorAI:
                         attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'dropBoost') * 0.01)
                 else:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
+                if self.toonHasCondition(toonId, 'allGagBoost'):
+                    attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'allGagBoost') * 0.01)
+                    attackDamage = math.ceil(attackDamage)
                 attackDamage = math.ceil(attackDamage)
+                if atkTrack == HEAL:
+                    toon.toonUp(math.ceil(attackDamage / 2))
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
@@ -1638,13 +1648,20 @@ class BattleCalculatorAI:
         toonsHit = 0
         cogsMiss = 0
         for special in specials:
-            npc_track = NPCToons.getNPCTrack(special[TOON_TGT_COL])
+            npc_track, npc_level, npc_hp = NPCToons.getNPCTrackLevelHp(special[TOON_TGT_COL])
             if npc_track == NPC_TOONS_HIT:
                 BattleCalculatorAI.toonsAlwaysHit = 1
                 toonsHit = 1
             elif npc_track == NPC_COGS_MISS:
                 BattleCalculatorAI.suitsAlwaysMiss = 1
                 cogsMiss = 1
+            elif npc_track == NPC_DAMAGE_BOOST:
+                lvToDict = ('healBoost', 'trapBoost', 'lureBoost', 'soundBoost', 'throwBoost', 'squirtBoost', 'dropBoost', 'allGagBoost')
+                for t in self.battle.activeToons:
+                    toon = self.battle.getToon(t)
+                    if toon != None:
+                        self.setToonCondition(toon.doId, lvToDict[npc_level], npc_hp, 3, 'alternateBoth')   # use alternate both because we want a better SOS card to replace a worse one
+
 
         if self.notify.getDebug():
             self.notify.debug('Toon attack order: ' + str(self.toonAtkOrder))

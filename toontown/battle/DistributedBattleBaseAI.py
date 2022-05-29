@@ -1206,8 +1206,10 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
             if self.toonAttacks[t][TOON_TRACK_COL] != NO_ATTACK:
                 self.addHelpfulToon(t)
 
+
         self.battleCalc.calculateRound()
-        
+
+        self.battleCalc.decrementConditionTurns()
         for toon in self.battleCalc.toonStatusConditions.keys():
             conditionStrings = []
             conditionValues = []
@@ -1223,7 +1225,6 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
             self.sendUpdateToAvatarId(toon, 'setBattleConditions', [toon, conditionStrings, conditionValues, conditionTurns])
 
-        self.battleCalc.decrementConditionTurns()
 
         for t in self.activeToons:
             self.sendEarnedExperience(t)

@@ -1153,11 +1153,12 @@ MovieHealLaughterHits2 = ('BWAH HAH HAH!', 'HO HO HO!', 'HA HA HA!')
 MovieSOSCallHelp = '%s HELP!'
 MovieSOSWhisperHelp = '%s needs help in battle!'
 MovieSOSObserverHelp = 'HELP!'
-MovieNPCSOSGreeting = 'Hi %s! Glad to help!'
+MovieNPCSOSGreeting = 'Hi, %s! Glad to help!' # FUCK THIS COMMA NEVER BEING HERE
 MovieNPCSOSGoodbye = 'See you later!'
 MovieNPCSOSToonsHit = 'Toons Always Hit!'
 MovieNPCSOSCogsMiss = 'Cogs Always Miss!'
 MovieNPCSOSRestockGags = 'Restocking %s gags!'
+MovieNPCSOSBoostGags = 'Boosting %s gags by %s%%!'
 MovieNPCSOSHeal = 'Heal'
 MovieNPCSOSTrap = 'Trap'
 MovieNPCSOSLure = 'Lure'
@@ -3944,7 +3945,7 @@ BattleGlobalTracks = ['toon-up',
  'throw',
  'squirt',
  'drop']
-BattleGlobalNPCTracks = ['restock', 'toons hit', 'cogs miss']
+BattleGlobalNPCTracks = ['restock', 'toons hit', 'cogs miss', 'boost']
 BattleGlobalAvPropStrings = (('Feather',
   'Megaphone',
   'Lipstick',

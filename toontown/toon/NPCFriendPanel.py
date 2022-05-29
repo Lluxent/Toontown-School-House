@@ -170,6 +170,11 @@ class NPCFriendCard(DirectFrame):
                     sosText += ' All'
                 else:
                     sosText += ' ' + self.sosTracks[level]
+            if track == ToontownBattleGlobals.NPC_DAMAGE_BOOST:
+                if level == 7:
+                    sosText += ' All'
+                else:
+                    sosText += ' ' + self.sosTracks[level]
             sosText = TextEncoder.upper(sosText)
             self.sosTypeInfo['text'] = sosText
             for i in xrange(self.maxRarity):

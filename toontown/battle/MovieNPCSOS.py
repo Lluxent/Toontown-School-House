@@ -26,10 +26,13 @@ def __toonsHit(attack, level, hp):
 def __restockGags(attack, level, hp):
     return __doRestockGags(attack, level, hp)
 
+def __damageBoost(attack, level, hp):
+    return __doDamageBoost(attack, level, hp)
 
 NPCSOSfn_dict = {ToontownBattleGlobals.NPC_COGS_MISS: __cogsMiss,
  ToontownBattleGlobals.NPC_TOONS_HIT: __toonsHit,
- ToontownBattleGlobals.NPC_RESTOCK_GAGS: __restockGags}
+ ToontownBattleGlobals.NPC_RESTOCK_GAGS: __restockGags,
+ ToontownBattleGlobals.NPC_DAMAGE_BOOST: __damageBoost}
 
 def doNPCSOSs(NPCSOSs):
     if len(NPCSOSs) == 0:
@@ -235,6 +238,27 @@ def __doRestockGags(attack, level, hp):
     pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSRestockGags % text, track.getDuration())
     return (track, pbpTrack)
 
+def __doDamageBoost(attack, level, hp):
+    track = __doSmooch(attack, hp)
+    pbpText = attack['playByPlayText']
+    if level == ToontownBattleGlobals.HEAL_TRACK:
+        text = TTLocalizer.MovieNPCSOSHeal
+    elif level == ToontownBattleGlobals.TRAP_TRACK:
+        text = TTLocalizer.MovieNPCSOSTrap
+    elif level == ToontownBattleGlobals.LURE_TRACK:
+        text = TTLocalizer.MovieNPCSOSLure
+    elif level == ToontownBattleGlobals.SOUND_TRACK:
+        text = TTLocalizer.MovieNPCSOSSound
+    elif level == ToontownBattleGlobals.THROW_TRACK:
+        text = TTLocalizer.MovieNPCSOSThrow
+    elif level == ToontownBattleGlobals.SQUIRT_TRACK:
+        text = TTLocalizer.MovieNPCSOSSquirt
+    elif level == ToontownBattleGlobals.DROP_TRACK:
+        text = TTLocalizer.MovieNPCSOSDrop
+    elif level == 7:
+        text = TTLocalizer.MovieNPCSOSAll
+    pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSBoostGags % (text, hp), track.getDuration())
+    return (track, pbpTrack)
 
 def doNPCTeleports(attacks):
     npcs = []
