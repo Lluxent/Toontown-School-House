@@ -11662,11 +11662,11 @@ HQnpcFriends = {
         720,
         5),
  3007: (ToontownBattleGlobals.TRAP_TRACK,
-        5,
+        4,
         500,
         4),
  1001: (ToontownBattleGlobals.TRAP_TRACK,
-        4,
+        3,
         360,
         3),
  3112: (ToontownBattleGlobals.LURE_TRACK,
@@ -11699,15 +11699,15 @@ HQnpcFriends = {
         5),
        # drop SOS cards
  1116: (ToontownBattleGlobals.DROP_TRACK, # bessie
-        6,
+        5,
         480,
         5),
  2311: (ToontownBattleGlobals.DROP_TRACK, # franz
-        5,
+        4,
         300,
         4),
  4140: (ToontownBattleGlobals.DROP_TRACK, # clumsy
-        4,
+        3,
         220,
         3),
  7778: (ToontownBattleGlobals.DROP_TRACK, # rain
