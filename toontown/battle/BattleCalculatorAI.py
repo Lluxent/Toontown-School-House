@@ -1647,7 +1647,7 @@ class BattleCalculatorAI:
         for atk in attacks:
             self.toonAtkOrder.append(atk[TOON_ID_COL])
 
-        for track in xrange(HEAL, DROP + 1):
+        for track in xrange(HEAL, SQUIRT + 1):
             attacks = findToonAttack(self.battle.activeToons, self.battle.toonAttacks, track)
             if track == TRAP:
                 sortedTraps = []
@@ -1662,6 +1662,16 @@ class BattleCalculatorAI:
                 attacks = sortedTraps
             for atk in attacks:
                 self.toonAtkOrder.append(atk[TOON_ID_COL])
+
+        attacks = findToonAttack(self.battle.activeToons, self.battle.toonAttacks, DROP)
+        for atk in attacks:
+            self.toonAtkOrder.append(atk[TOON_ID_COL])
+
+        attacks = findToonAttack(self.battle.activeToons, self.battle.toonAttacks, NPCSOS)
+        for atk in attacks:
+            if atk[TOON_ID_COL] in self.toonAtkOrder:
+                self.toonAtkOrder.remove(atk[TOON_ID_COL])
+            self.toonAtkOrder.append(atk[TOON_ID_COL])
 
         specials = findToonAttack(self.battle.activeToons, self.battle.toonAttacks, NPCSOS)
         toonsHit = 0

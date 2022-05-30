@@ -373,7 +373,12 @@ def __createSuitTrack(drop, delay, level, alreadyDodged, alreadyTeased, target, 
     if hp > 0:
         suitTrack = Sequence()
         showDamage = Func(suit.showHpText, -hp, openEnded=0)
-        updateHealthBar = Func(suit.updateHealthBar, hp)
+        value = hp
+        if kbbonus > 0:
+            value += kbbonus
+        if hpbonus > 0:
+            value += hpbonus
+        updateHealthBar = Func(suit.updateHealthBar, value)
         if majorObject:
             anim = 'flatten'
         else:
