@@ -49,7 +49,7 @@ def doSounds(sounds):
     for soundList in prevSounds:
         if len(soundList) > 0:
             mtrack.append(__doSoundsLevel(soundList, delay, hitCount, npcs))
-            delay += TOON_SOUND_DELAY
+            delay += TOON_SOUND_DELAY / 3
 
     soundTrack = Sequence(npcArrivals, mtrack, npcDepartures)
     targets = sounds[0]['target']
