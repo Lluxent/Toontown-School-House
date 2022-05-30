@@ -349,7 +349,12 @@ def __throwPie(throw, delay, hitCount, npcs):
     if hitSuit:
         suitResponseTrack = Sequence()
         showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
-        updateHealthBar = Func(suit.updateHealthBar, hp)
+        value = hp
+        if kbbonus > 0:
+            value += kbbonus
+        if hpbonus > 0:
+            value += hpbonus
+        updateHealthBar = Func(suit.updateHealthBar, value)
         sival = []
         if kbbonus > 0:
             suitPos, suitHpr = battle.getActorPosHpr(suit)
@@ -545,7 +550,12 @@ def __throwGroupPie(throw, delay, groupHitDict, npcs):
         if hitSuit:
             singleSuitResponseTrack = Sequence()
             showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=THROW_TRACK)
-            updateHealthBar = Func(suit.updateHealthBar, hp)
+            value = hp
+            if kbbonus > 0:
+                value += kbbonus
+            if hpbonus > 0:
+                value += hpbonus
+            updateHealthBar = Func(suit.updateHealthBar, value)
             sival = []
             if kbbonus > 0:
                 suitPos, suitHpr = battle.getActorPosHpr(suit)

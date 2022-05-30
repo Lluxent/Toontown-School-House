@@ -829,4 +829,5 @@ ValidStatusConditions = (
     'shadowInfluence',
     'turnsSinceSummon',
     'turnsSinceSummon2',
+    'lured',
 )

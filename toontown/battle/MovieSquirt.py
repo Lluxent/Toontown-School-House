@@ -190,7 +190,12 @@ def __getSuitTrack(suit, tContact, tDodge, hp, hpbonus, kbbonus, anim, died, lef
         else:
             sival = ActorInterval(suit, anim)
         showDamage = Func(suit.showHpText, -hp, openEnded=0, attackTrack=SQUIRT_TRACK)
-        updateHealthBar = Func(suit.updateHealthBar, hp)
+        value = hp
+        if kbbonus > 0:
+            value += kbbonus
+        if hpbonus > 0:
+            value += hpbonus
+        updateHealthBar = Func(suit.updateHealthBar, value)
         suitTrack.append(Wait(tContact))
         suitTrack.append(showDamage)
         suitTrack.append(updateHealthBar)

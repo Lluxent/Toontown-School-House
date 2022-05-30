@@ -276,7 +276,6 @@ class BattleCalculatorAI:
             self.notify.debug('printToonConditions(): Toon %i has the following Conditions:' % toon)
             for condition in self.toonStatusConditions[toon]:
                 self.notify.debug('printToonConditions(): %s x %i, with %i turn%s remaining' % (condition, self.toonStatusConditions[toon][condition]['modifier'], self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1, '' if self.toonStatusConditions[toon][condition]['turnsRemaining'] - 1 == 1 else 's'))
-                self.notify.debug('printToonConditions(): %s' % str(self.toonStatusConditions.keys()))
         self.notify.debug('printToonConditions() *********************************************')
         self.notify.debug('printToonConditions(): Ending Turn Readout')
         self.notify.debug('printToonConditions() *********************************************')
@@ -666,6 +665,12 @@ class BattleCalculatorAI:
                             if not self.__combatantDead(targetId, toon=toonTarget):
                                 validTargetAvail = 1
                             rounds = self.NumRoundsLured[atkLevel]
+                            lureKBValue = (ToontownBattleGlobals.LURE_KNOCKBACK_VALUE * 100)
+                            if self.toonHasCondition(toonId, 'lureBoost'):
+                                lureKBValue += self.getToonConditionModifier(toonId, 'lureBoost')
+                            if self.toonHasCondition(toonId, 'allGagBoost'):
+                                lureKBValue += self.getToonConditionModifier(toonId, 'allGagBoost')
+                            self.setSuitCondition(targetId, 'lured', lureKBValue, self.NumRoundsLured[atkLevel] + 1, 'setBoth')
                             wakeupChance = 100 - atkAcc * 2
                             npcLurer = attack[TOON_TRACK_COL] == NPCSOS
                             currLureId = self.__addLuredSuitInfo(targetId, -1, rounds, wakeupChance, toonId, atkLevel, lureId=currLureId, npc=npcLurer)
@@ -959,7 +964,6 @@ class BattleCalculatorAI:
                     else:
                         self.suitLeftBattle(targetId)
                         attack[SUIT_DIED_COL] = attack[SUIT_DIED_COL] | 1 << position
-                        print(targetId)
                         if targetId in self.suitStatusConditions:
                             del self.suitStatusConditions[targetId]
                         if self.notify.getDebug():
@@ -1094,10 +1098,12 @@ class BattleCalculatorAI:
                         if self.notify.getDebug():
                             self.notify.debug('Applying drop hp bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_HPBONUS_COL]))                        
                     elif len(attack[TOON_KBBONUS_COL]) > tgtPos:
-                        if self.toonHasCondition(attackerId, 'lureBoost'):  # TODO: make the lure bonus work if the lure was placed with bonus, not if the toon currently has the bonus
-                            attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * (ToontownBattleGlobals.LURE_KNOCKBACK_VALUE + self.getToonConditionModifier(attackerId, 'lureBoost') * 0.01)
-                        else:
-                            attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * ToontownBattleGlobals.LURE_KNOCKBACK_VALUE
+                        lureKBValue = 0
+                        suit = self.battle.activeSuits[tgtPos].doId
+                        if self.suitHasCondition(suit, 'lured'):
+                            lureKBValue = self.getSuitConditionModifier(suit, 'lured') * 0.01
+                            self.setSuitCondition(suit, 'lured', 0, 0, 'none')
+                        attack[TOON_KBBONUS_COL][tgtPos] = totalDmgs * lureKBValue
                         if self.notify.getDebug():
                             self.notify.debug('Applying kb bonus to track ' + str(attack[TOON_TRACK_COL]) + ' of ' + str(attack[TOON_KBBONUS_COL][tgtPos]) + ' to target ' + str(tgtPos))
                     else:
@@ -1669,7 +1675,6 @@ class BattleCalculatorAI:
                         self.setToonCondition(toon.doId, 'cannotMiss', 1, npc_rarity - 2, 'refreshTurnNoUndercut')   # use refreshTurnNoUndercut because we want better durations to replace worse ones, and we don't care about potency for this kind of SOS
             elif npc_track == NPC_COGS_MISS:
                 for cog in self.battle.activeSuits:
-                    print('trying...')
                     if cog != None:
                         self.setSuitCondition(cog.doId, 'alwaysMiss', 1, npc_rarity -2, 'refreshTurnNoUndercut')
             elif npc_track == NPC_DAMAGE_BOOST:
