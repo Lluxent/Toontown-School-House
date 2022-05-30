@@ -56,10 +56,7 @@ class BattleCalculatorAI:
         self.__skillCreditMultiplier = 1
         self.tutorialFlag = tutorialFlag
         self.trainTrapTriggered = False
-        self.TurnsElapsed = 0
-        self.TurnsSinceSummonWithOnlyOneCog = 0
-        self.TurnsSinceSummon = 0
-        self.numShadowsSummoned = 0
+        self.TurnsElapsed = 0   # used for just checking like, duration - could be good for later idfk lmao
 
         # a dictionary of each toon's status conditions
         # 
@@ -816,12 +813,9 @@ class BattleCalculatorAI:
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         result = 0
                         self.notify.debug('setting damage to 0, since drop on a lured suit')
-                    if self.battle.findSuit(targetId).dna.name in ['hst', 'ssb'] and self.numShadowsSummoned > 0:
-                        self.notify.debug('Shadow Count exceeds 1 (%i), processing attack damage' % self.numShadowsSummoned)
-                        self.notify.debug('Multiplying toon damage by %f' % (1 + (self.numShadowsSummoned * ToontownBattleGlobals.HUSTLER_BONUS_DMG_PER_SHADOW)))
-                        result *= (1 + (self.numShadowsSummoned * ToontownBattleGlobals.HUSTLER_BONUS_DMG_PER_SHADOW))
-                        
-                    
+                    if self.suitHasCondition(targetId, 'shadowInfluence'):
+                        self.notify.debug('toon doing extra damage to suit due to shadow influence')
+                        result *= (1 + (self.getSuitConditionModifier(targetId, 'shadowInfluence') * ToontownBattleGlobals.HUSTLER_BONUS_DMG_PER_SHADOW))
                     if self.notify.getDebug():
                         self.notify.debug('toon does ' + str(result) + ' damage to suit')
             else:
@@ -965,6 +959,9 @@ class BattleCalculatorAI:
                     else:
                         self.suitLeftBattle(targetId)
                         attack[SUIT_DIED_COL] = attack[SUIT_DIED_COL] | 1 << position
+                        print(targetId)
+                        if targetId in self.suitStatusConditions:
+                            del self.suitStatusConditions[targetId]
                         if self.notify.getDebug():
                             self.notify.debug('Suit' + str(targetId) + 'bravely expired in combat')
 
@@ -1519,50 +1516,34 @@ class BattleCalculatorAI:
         theSuit = self.battle.activeSuits[attackIndex]
         if self.APPLY_HEALTH_ADJUSTMENTS:
             for t in self.battle.activeToons:
-                if self.TurnsElapsed % 3 == 0 and theSuit.dna.name == 'cmb' and self.__suitCanAttack(theSuit.doId) and not len(self.battle.activeSuits) < 2:
-                    position = self.battle.activeToons.index(t)
-                    damageToDeal = (12 + (self.TurnsElapsed * 3))
-                    if damageToDeal <= 0:
-                        continue
-                    toonHp = self.__getToonHp(t)
-                    if toonHp - damageToDeal <= 0:
-                        if self.notify.getDebug():
-                            self.notify.debug('Toon %d has died, removing' % t)
-                        self.toonLeftBattle(t)
-                        attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << position
+                position = self.battle.activeToons.index(t)
+                if attack[SUIT_HP_COL][position] <= 0:
+                    continue
+                toonHp = self.__getToonHp(t)
+                if theSuit.dna.name == 'ssb':
+                    if attack[SUIT_ATK_COL] in [0, 2]:
+                        self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s' % str(t))
+                        self.setToonCondition(t, 'corruption', 2, -2, 'refreshTurns')
+                        if attack[SUIT_ATK_COL] == 0:
+                            self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s two additional times' % str(t))
+                            self.setToonCondition(t, 'corruption', 4, -2, 'refreshTurns')
+                    else:
+                        self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
+                        self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
+                        return
+                if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
+                    self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s four times' % str(t))
+                    self.setToonCondition(t, 'corruption', 8, -2, 'refreshTurns')
+                if toonHp - attack[SUIT_HP_COL][position] <= 0:
                     if self.notify.getDebug():
-                        self.notify.debug('Toon ' + str(t) + ' takes ' + str(damageToDeal) + ' damage')
-                    self.toonHPAdjusts[t] -= damageToDeal
-                    self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
-                else:
-                    position = self.battle.activeToons.index(t)
-                    if attack[SUIT_HP_COL][position] <= 0:
-                        continue
-                    toonHp = self.__getToonHp(t)
-                    if theSuit.dna.name == 'ssb':
-                        if attack[SUIT_ATK_COL] in [0, 2]:
-                            self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s' % str(t))
-                            self.setToonCondition(t, 'corruption', 2, -2, 'refreshTurns')
-                            if attack[SUIT_ATK_COL] == 0:
-                                self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s two additional times' % str(t))
-                                self.setToonCondition(t, 'corruption', 4, -2, 'refreshTurns')
-                        else:
-                            self.notify.debug('__applySuitAttackDamages - We are a shadow, but we did not use corruption, not corrupting.')
-                            self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
-                            return
-                    if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
-                        self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s four times' % str(t))
-                        self.setToonCondition(t, 'corruption', 8, -2, 'refreshTurns')
-                    if toonHp - attack[SUIT_HP_COL][position] <= 0:
-                        if self.notify.getDebug():
-                            self.notify.debug('Toon %d has died, removing' % t)
-                        self.toonLeftBattle(t)
-                        attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << position
-                    if self.notify.getDebug():
-                        self.notify.debug('Toon ' + str(t) + ' takes ' + str(attack[SUIT_HP_COL][position]) + ' damage')
-                        
-                    self.toonHPAdjusts[t] -= attack[SUIT_HP_COL][position]
-                    self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
+                        self.notify.debug('Toon %d has died, removing' % t)
+                    self.toonLeftBattle(t)
+                    attack[TOON_DIED_COL] = attack[TOON_DIED_COL] | 1 << position
+                if self.notify.getDebug():
+                    self.notify.debug('Toon ' + str(t) + ' takes ' + str(attack[SUIT_HP_COL][position]) + ' damage')
+                    
+                self.toonHPAdjusts[t] -= attack[SUIT_HP_COL][position]
+                self.notify.debug('Toon ' + str(t) + ' now has ' + str(self.__getToonHp(t)) + ' health')
 
     def __suitCanAttack(self, suitId):
         if self.__combatantDead(suitId, toon=0) or self.__suitIsLured(suitId) or self.__combatantJustRevived(suitId):
@@ -1733,10 +1714,15 @@ class BattleCalculatorAI:
             if suit.isGenerated():
                 suit.b_setHP(suit.getHP())
 
+        hstShadowLv = 0
         for suit in self.battle.activeSuits:
             if not hasattr(suit, 'dna'):
                 self.notify.warning('a removed suit is in this battle!')
                 return None
+            if suit.dna.name == 'hst':
+                hstShadowLv = self.getSuitConditionModifier(suit.doId, 'shadowInfluence')
+            if suit.dna.name == 'ssb':
+                self.setSuitCondition(suit.doId, 'shadowInfluence', hstShadowLv, -1, 'refreshTurns')
 
         self.__calculateToonAttacks()
         self.__updateLureTimeouts()
@@ -1809,11 +1795,13 @@ class BattleCalculatorAI:
     def getLuredSuits(self):
         self.TurnsElapsed += 1
         self.notify.debug('Current Elapsed Turns: ' + str(self.TurnsElapsed))
-        if len(self.battle.activeSuits) <= 2:
-            self.TurnsSinceSummonWithOnlyOneCog += 1
-        self.TurnsSinceSummon += 1
-        self.notify.debug('Current Elapsed Turns Since Summon (Any): ' + str(self.TurnsSinceSummon))
-        self.notify.debug('Current Elapsed Turns Since Summon (With One Cog): ' + str(self.TurnsSinceSummonWithOnlyOneCog))
+        
+        for suit in self.battle.activeSuits:
+            if suit.dna.name == 'hst':
+                if len(self.battle.activeSuits) <= 2:
+                    self.setSuitCondition(suit.doId, 'turnsSinceSummon2', 1, -1, 'refreshTurns')
+                self.setSuitCondition(suit.doId, 'turnsSinceSummon', 1, -1, 'refreshTurns')
+
         luredSuits = self.currentlyLuredSuits.keys()
         self.notify.debug('Lured suits reported to battle: ' + repr(luredSuits))
         return luredSuits
@@ -1993,27 +1981,6 @@ class BattleCalculatorAI:
                             boss = do
                             break
 
-            if (len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2) and boss is not None:
-                if self.TurnsSinceSummonWithOnlyOneCog > 2:
-                    self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
-                else:
-                    boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)
-                    self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
-                self.TurnsSinceSummonWithOnlyOneCog = 0
-
-                boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)  
-                boss.appendSuitsToBattle(boss.battleNumber, 'cmb', None)
-                self.TurnsSinceSummon = 0
-                return 4
-            elif self.TurnsElapsed % 3 == 0:
-                self.notify.debug("TURN IS MULTIPLE OF 3 (and we have suits), INCReASE THE POWAHHHHHHHHHHHH!!!!!!!!!!!!!!!!!!!!!!!")
-                return 5
-            elif 4 > len(self.currentlyLuredSuits) >= 2:
-                self.notify.debug("THERE ARE TWO OR MORE LURED SUITS, and we are not using court fees, SO UNLURE THOSE MFS")
-                for suit in self.currentlyLuredSuits.keys(): # this wouldn't work in python 3 :)
-                    self.__removeLured(suit)
-                return 6
-
         if theSuit.dna.name == 'hst':
             from toontown.suit.DistributedSellbotBossMiniAI import DistributedSellbotBossMiniAI
 
@@ -2025,37 +1992,35 @@ class BattleCalculatorAI:
                             boss = do
                             break
 
-            if self.TurnsSinceSummon > 3:
-                self.TurnsSinceSummon = 0
-                self.TurnsSinceSummonWithOnlyOneCog = 0
+            if self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon') > 3:
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 0, -1, 'setBoth')
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon2', 0, -1, 'setBoth')
                 return 7
 
-            if self.TurnsSinceSummon > 2 and random.randint(0, 99) < 60:
-                self.TurnsSinceSummon = 0
-                self.TurnsSinceSummonWithOnlyOneCog = 0
+            if self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon') > 2 and random.randint(0, 99) < 60:
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 0, -1, 'setBoth')
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon2', 0, -1, 'setBoth')
                 if boss is None:
                     return 6
                 for i in range(0, 4 - len(self.battle.activeSuits)):
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
-                    self.numShadowsSummoned += 1
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.getSuitConditionModifier(theSuit.doId, 'shadowInfluence'))
+                    self.setSuitCondition(theSuit.doId, 'shadowInfluence', 1, -1, 'refreshTurns')
                 return 6
 
-            if (len(self.battle.activeSuits) < 2 or self.TurnsSinceSummonWithOnlyOneCog > 2) and boss is not None:
-                if self.TurnsSinceSummonWithOnlyOneCog > 2:
+            if (len(self.battle.activeSuits) < 2 or self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon2') > 2) and boss is not None:
+                if self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon2') > 2:
                     self.notify.debug("THIS MF TOON BEEN STALLING!!!!!!!, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
                 else:
                     self.notify.debug("Less than 2 Cogs, SUMMON MORE!!!!!!!!!!!!!!!!!!!!!!!")
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.numShadowsSummoned)
-                    self.numShadowsSummoned += 1
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst2', self.getSuitConditionModifier(theSuit.doId, 'shadowInfluence'))
                     self.setSuitCondition(theSuit.doId, 'shadowInfluence', 1, -1, 'refreshTurns')
                 theSuit.setHP(theSuit.currHP + 2500)    
-                self.TurnsSinceSummonWithOnlyOneCog = 0
-                self.TurnsSinceSummon = 0
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 0, -1, 'setBoth')
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon2', 0, -1, 'setBoth')
                 for i in range(2):
                     r = random.randint(1, 2)
-                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r, None if r == 1 else self.numShadowsSummoned)
+                    boss.appendSuitsToBattle(boss.battleNumber, 'hst%i' % r, None if r == 1 else self.getSuitConditionModifier(theSuit.doId, 'shadowInfluence'))
                     if r == 2:
-                        self.numShadowsSummoned += 1
                         self.setSuitCondition(theSuit.doId, 'shadowInfluence', 1, -1, 'refreshTurns')
                 return 5
 

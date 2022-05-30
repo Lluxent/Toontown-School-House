@@ -827,4 +827,6 @@ ValidStatusConditions = (
     # battle specific
     'corruption',
     'shadowInfluence',
+    'turnsSinceSummon',
+    'turnsSinceSummon2',
 )
