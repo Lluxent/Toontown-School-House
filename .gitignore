@@ -21,5 +21,4 @@ errorCode
 venv
 win32/.vscode/tasks.json
 *.code-workspace
-phase_3/
 *Backup.bam
