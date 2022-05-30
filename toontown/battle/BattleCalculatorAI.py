@@ -142,9 +142,9 @@ class BattleCalculatorAI:
 
             if mode is 'alternateBoth':
                 if modifier > self.toonStatusConditions[toonId][condition]['modifier']:
-                    newModifier = self.toonStatusConditions[toonId][condition]
-                else:
                     newModifier = modifier
+                else:
+                    newModifier = self.toonStatusConditions[toonId][condition]['modifier']
                 newTurns = turns
 
             if mode is 'refreshTurnNoUndercut':
@@ -230,9 +230,9 @@ class BattleCalculatorAI:
 
             if mode is 'alternateBoth':
                 if modifier > self.suitStatusConditions[suitId][condition]['modifier']:
-                    newModifier = self.suitStatusConditions[suitId][condition]
-                else:
                     newModifier = modifier
+                else:
+                    newModifier = self.suitStatusConditions[suitId][condition]['modifier']
                 newTurns = turns
 
             if mode is 'refreshTurnNoUndercut':
@@ -1315,7 +1315,7 @@ class BattleCalculatorAI:
                 continue
             attack = self.battle.toonAttacks[toonId]
             atkTrack = self.__getActualTrack(attack)
-            if atkTrack != NO_ATTACK and atkTrack != SOS and atkTrack != NPCSOS:
+            if atkTrack != NO_ATTACK and atkTrack != SOS and atkTrack != NPCSOS and atkTrack not in (NPC_DAMAGE_BOOST, NPC_RESTOCK_GAGS, NPC_COGS_MISS, NPC_TOONS_HIT):
                 if self.notify.getDebug():
                     self.notify.debug('Calculating attack for toon: %d' % toonId)
                 if self.SUITS_UNLURED_IMMEDIATELY:

@@ -11714,10 +11714,102 @@ HQnpcFriends = {
         1,
         20,
         0),    
- 7777: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
+ 2102: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
         7,
-        10,
+        35,   # sheriff sherry
         5), 
+ 5313: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
+        7,
+        25,   # coach zucchini
+        4), 
+ 20000: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
+        7,
+        15,   # tutorial tom
+        3), 
+ 9230: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost drop!
+        ToontownBattleGlobals.DROP_TRACK,
+        30,   # tex
+        5), 
+ 1304: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost drop!
+        ToontownBattleGlobals.DROP_TRACK,
+        20,   # svetlana
+        4), 
+ 1204: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost drop!
+        ToontownBattleGlobals.DROP_TRACK,
+        10,   # rocky shores
+        3), 
+ 5012: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost throw!
+        ToontownBattleGlobals.THROW_TRACK,
+        35,   # pierce
+        5), 
+ 4108: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost throw!
+        ToontownBattleGlobals.THROW_TRACK,
+        25,   # cleff
+        4), 
+ 2316: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost throw!
+        ToontownBattleGlobals.THROW_TRACK,
+        15,   # cindy sprinkles
+        3), 
+ 3231: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost squirt!
+        ToontownBattleGlobals.SQUIRT_TRACK,
+        40,   # choppy
+        5), 
+ 5223: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost squirt!
+        ToontownBattleGlobals.SQUIRT_TRACK,
+        30,   # wet will
+        4), 
+ 5218: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost squirt!
+        ToontownBattleGlobals.SQUIRT_TRACK,
+        20,   # rocky raspberry
+        3), 
+ 4139: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost sound!
+        ToontownBattleGlobals.SOUND_TRACK,
+        40,   # harmony swell
+        5), 
+ 4134: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost sound!
+        ToontownBattleGlobals.SOUND_TRACK,
+        30,   # disco dave
+        4), 
+ 4301: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost sound!
+        ToontownBattleGlobals.SOUND_TRACK,
+        20,   # yuki
+        3), 
+ 9123: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost lure!
+        ToontownBattleGlobals.LURE_TRACK,
+        50,   # teddy blair
+        5), 
+ 9109: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost lure!
+        ToontownBattleGlobals.LURE_TRACK,
+        35,   # dreamy daphne
+        4), 
+ 3309: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost lure!
+        ToontownBattleGlobals.LURE_TRACK,
+        15,   # bootsy
+        3), 
+ 9224: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost trap!
+        ToontownBattleGlobals.TRAP_TRACK,
+        100,  # sandy sandman
+        5), 
+ 5319: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost trap!
+        ToontownBattleGlobals.TRAP_TRACK,
+        75,   # rose
+        4), 
+ 5305: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost trap!
+        ToontownBattleGlobals.TRAP_TRACK,
+        50,   # crystal
+        3), 
+ 2219: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost TU!
+        ToontownBattleGlobals.HEAL_TRACK,
+        200,  # chef knucklehead
+        5), 
+ 2302: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost TU!
+        ToontownBattleGlobals.HEAL_TRACK,
+        125,  # professor wiggle
+        4), 
+ 2135: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost TU!
+        ToontownBattleGlobals.HEAL_TRACK,
+        75,   # mary
+        3), 
  3137: (ToontownBattleGlobals.NPC_COGS_MISS,
         2,
         0,
