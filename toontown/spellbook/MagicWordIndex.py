@@ -441,13 +441,69 @@ class giveBattleCondition(MagicWord):
         if not battle:
             return "{} is not a valid battle!".format(battleId)
 
-        battle.battleCalc.setToonCondition(toon.getDoId(), condition, value, turns)
+        if condition not in ToontownBattleGlobals.ValidStatusConditions:
+            return "%s is not a valid condition!" % condition
+
+        battle.battleCalc.setToonCondition(toon.getDoId(), condition, value, turns, 'setBoth')
 
         if value == 0 or turns == 0:
             return "Removed %s condition from Toon." % condition
         else:
-            return "Gave the toon %s condition (%i time%s) for %i turns." % (condition, value, 's' if value > 1 else '', turns)
+            return "Gave the toon %s condition (%i time%s) for %i turns." % (condition, value, 's' if value != 1 else '', turns)
 
+class suitBattleCondition(MagicWord):
+    desc = "Gives all suits in battle a battle condition."
+    aliases = ["sbc"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+    arguments = [("condition", str, True), ("value", int, True), ("turns", int, True), ("index", int, False, -1)]
+
+    def handleWord(self, invoker, avId, toon, *args):
+        condition = args[0]
+        value = args[1]
+        turns = args[2]
+        suitIndex = args[3]
+
+        battleId = toon.getBattleId()
+        if not battleId:
+            return "Cannot give conditions if not in a battle!"
+        
+        battle = self.air.doId2do.get(battleId)
+        if not battle:
+            return "{} is not a valid battle!".format(battleId)
+        
+        if condition not in ToontownBattleGlobals.ValidStatusConditions:
+            return "%s is not a valid condition!" % condition
+
+        currIndex = 0
+        for suit in battle.activeSuits:
+            battle.battleCalc.setSuitCondition(suit.getDoId(), condition, value, turns, 'setBoth')
+            if currIndex == suitIndex:
+                if value == 0 or turns == 0:
+                    return "Removed %s condition from Suit at index %i." % (condition, suitIndex)
+                else:
+                    return "Gave the %s condition to Suit at index %i (%i time%s) for %i turns." % (condition, suitIndex, value, 's' if value != 1 else '', turns)
+            else:
+                currIndex += 1
+        if value == 0 or turns == 0:
+            return "Removed the %s condition from all suits." % (condition)
+        else:
+            return "Gave the %s condition to all suits (%i time%s) for %i turns." % (condition, value, 's' if value != 1 else '', turns)
+
+class displaySuitBattleConditions(MagicWord):
+    desc = "Display current battle's suit's active battle conditions."
+    aliases = ["conditions"]
+    execLocation = MagicWordConfig.EXEC_LOC_SERVER
+
+    def handleWord(self, invoker, avId, toon, *args):
+        battleId = toon.getBattleId()
+        if not battleId:
+            return "Cannot give conditions if not in a battle!"
+        
+        battle = self.air.doId2do.get(battleId)
+        if not battle:
+            return "{} is not a valid battle!".format(battleId)
+
+        return str(battle.battleCalc.suitStatusConditions)
 
 class SkipMovie(MagicWord):
     desc = "Skips the current round of animations in a Cog battle."

@@ -117,7 +117,6 @@ def __throwBouncePoint(startPoint, endPoint):
 
 def doSuitAttack(attack):
     notify.debug('building suit attack in doSuitAttack: %s' % attack['name'])
-    print('building suit attack in doSuitAttack: %s' % attack['name'])
     name = attack['id']
     if name == AUDIT:
         suitTrack = doAudit(attack)

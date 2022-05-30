@@ -951,8 +951,6 @@ class Suit(Avatar.Avatar):
     def updateHealthBar(self, hp, forceUpdate = 0):
         self.currHP -= hp
         health = float(self.currHP) / float(self.maxHP)
-        print('UpdateHealthBar MHP %i HP %i' % (self.maxHP, self.currHP))
-        print('UpdateHealthBar - health is %f' % health)
         if health > 1.5:
             condition = 7
         elif health > 1.0:
@@ -969,7 +967,6 @@ class Suit(Avatar.Avatar):
             condition = 4
         else:
             condition = 5
-        print('UpdateHealthBar - condition is %i' % condition)
         if self.healthCondition != condition or forceUpdate:
             if condition == 4:
                 blinkTask = Task.loop(Task(self.__blinkRed), Task.pause(0.75), Task(self.__blinkGray), Task.pause(0.1))

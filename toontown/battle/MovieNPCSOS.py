@@ -203,14 +203,14 @@ def __doSmooch(attack, hp = 0):
 def __doToonsHit(attack, level, hp):
     track = __doSprinkle(attack, 'toons', hp)
     pbpText = attack['playByPlayText']
-    pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSToonsHit, track.getDuration())
+    pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSToonsHit % (level, '' if level == 1 else 's'), track.getDuration())
     return (track, pbpTrack)
 
 
 def __doCogsMiss(attack, level, hp):
     track = __doSprinkle(attack, 'suits', hp)
     pbpText = attack['playByPlayText']
-    pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSCogsMiss, track.getDuration())
+    pbpTrack = pbpText.getShowInterval(TTLocalizer.MovieNPCSOSCogsMiss % (level, '' if level == 1 else 's'), track.getDuration())
     return (track, pbpTrack)
 
 
