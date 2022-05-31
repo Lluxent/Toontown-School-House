@@ -11714,9 +11714,9 @@ HQnpcFriends = {
         1,
         20,
         0),    
- 2102: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
+ 2201: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
         7,
-        35,   # sheriff sherry
+        35,   # postmaster pete
         5), 
  5313: (ToontownBattleGlobals.NPC_DAMAGE_BOOST, # boost all!
         7,

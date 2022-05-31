@@ -815,13 +815,23 @@ ValidStatusConditions = (
     'alwaysDodge',
     # toon specific
     'allGagBoost',
+    'noGags',
     'healBoost',
+    'noToonUpGags',
     'trapBoost',
+    'noTrapGags',
     'lureBoost',
+    'noLureGags',
     'soundBoost',
+    'noSoundGags',
     'throwBoost',
+    'noThrowGags',
     'squirtBoost',
+    'noSquirtGags',
     'dropBoost',
+    'noDropGags',
+    'noFires',
+    'noSOS',
     # cog specific
     'soaked',
     # battle specific
