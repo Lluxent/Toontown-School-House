@@ -809,10 +809,12 @@ HUSTLER_COALESCENCE_HEAL_BASE = 100
 HUSTLER_BONUS_DMG_PER_SHADOW = 0.0725
 
 ValidStatusConditions = (
-    'cannotMiss',
-    'alwaysMiss',
-    'cannotDodge',
-    'alwaysDodge',
+    'cannotMiss',   # set acc. rate to 100%
+    'alwaysMiss',   # set acc. rate to 0%
+    'cannotDodge',  # set dodge rate to 0%
+    'alwaysDodge',  # set dodge rate to 100%
+    # both types, special conditions
+    'dodgy',    # modify dodge rate by %
     # toon specific
     'allGagBoost',
     'noGags',
@@ -833,11 +835,11 @@ ValidStatusConditions = (
     'noFires',
     'noSOS',
     # cog specific
-    'soaked',
-    # battle specific
-    'corruption',
-    'shadowInfluence',
-    'turnsSinceSummon',
-    'turnsSinceSummon2',
+    'soaked',   # decreases afflicted targets' dodge rates by 15%
     'lured',
+    # battle specific
+    'corruption',   # increases damage taken from attacks (toons only)
+    'shadowInfluence',  # increases damage recieved from attacks (cogs only)
+    'turnsSinceSummon',     # internal counter used for bosses
+    'turnsSinceSummon2',    # internal counter used for bosses
 )

@@ -433,13 +433,19 @@ class BattleCalculatorAI:
                 return (0, 0)
         if acc > MaxToonAcc:
             acc = MaxToonAcc
+
+        if self.suitHasCondition(currTarget.getDoId(), 'dodgy'):
+            self.notify.debug('Original accuracy target: %i' % acc)
+            acc *= abs(self.getSuitConditionModifier(currTarget.getDoId(), 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
+            self.notify.debug('Toon attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % ((abs(self.getSuitConditionModifier(currTarget.getDoId(), 'dodgy') - 100.0) / 100.0), acc))
+
         if randChoice < acc:
             if debug:
-                self.notify.debug('HIT: Toon attack rolled' + str(randChoice) + 'to hit with an accuracy of' + str(acc))
+                self.notify.debug('HIT: Toon attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc))
             attack[TOON_ACCBONUS_COL] = 0
         else:
             if debug:
-                self.notify.debug('MISS: Toon attack rolled' + str(randChoice) + 'to hit with an accuracy of' + str(acc))
+                self.notify.debug('MISS: Toon attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc))
             attack[TOON_ACCBONUS_COL] = 1
         return (not attack[TOON_ACCBONUS_COL], atkAccResult)
 
@@ -1405,6 +1411,8 @@ class BattleCalculatorAI:
                 return 0
         theSuit = self.battle.activeSuits[attackIndex]
         atkType = self.battle.suitAttacks[attackIndex][SUIT_ATK_COL]
+        atkIndex = self.battle.suitAttacks[attackIndex][SUIT_TGT_COL]
+        atkTarget = int(self.battle.activeToons[atkIndex])
         atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
         atkAcc = atkInfo['acc']
         #suitAcc = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['acc'][theSuit.getLevel()]
@@ -1415,8 +1423,11 @@ class BattleCalculatorAI:
             return 0
         
         randChoice = random.randint(0, 99)
-        if self.notify.getDebug():
-            self.notify.debug('Suit attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc) + ' (attackAcc: ' + str(atkAcc) + ' suitAcc: N\\A')
+        if self.toonHasCondition(atkTarget, 'dodgy'):
+            self.notify.debug('Original accuracy target: %i' % acc)
+            acc *= abs(self.getToonConditionModifier(atkTarget, 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
+            self.notify.debug('Suit attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % (abs(self.getToonConditionModifier(atkTarget, 'dodgy') - 100.0) / 100.0, acc))
+        self.notify.debug('Suit attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc) + ' (attackAcc: ' + str(atkAcc) + ' suitAcc: N/A)')
         if randChoice < acc:
             return 1
         return 0
