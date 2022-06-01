@@ -143,7 +143,7 @@ def SuitShadowHPDict(minLevel, maxLevel):
         t.append(SuitShadowHealth(lv))
     return tuple(t)
 
-SpecialCogDict = ('cmb','ssb','hst')
+SpecialCogDict = ('cmb','ssb','hst','ren')
 
 # re-formatted by me :)
 SuitAttributes = {
@@ -1094,6 +1094,39 @@ SuitAttributes = {
             (0,),
             (0,),
             (0,))
+        )
+    },
+    'ren': {
+        'name':         TTLocalizer.SuitRenegade,
+        'singularname': TTLocalizer.SuitRenegadeS,
+        'pluralname':   TTLocalizer.SuitRenegadeP,
+        'level':    45,
+        'hp':   (4250,),
+        'def':  (65,),
+        'freq': (0,),
+        'acc':  (0,),
+        'attacks':
+        (
+            ('GlowerPower',
+            (48,),
+            (95,),
+            (20,)),
+            ('RazzleDazzle',
+            (43,),
+            (95,),
+            (25,)),
+            ('PickPocket',
+            (36,),
+            (95,),
+            (25,)),
+            ('ParadigmShift',
+            (38,),
+            (90,),
+            (15,)),
+            ('PowerTrip',
+            (34,),
+            (90,),
+            (15,)),
         )
     },
 }

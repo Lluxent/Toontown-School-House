@@ -494,6 +494,10 @@ def doDefault(attack):
         attack['name'] = 'PowerTrip'
         attack['animName'] = 'magic3'
         return doPowerTrip(attack)
+    elif suitName == 'ren':
+        attack['id'] = GLOWER_POWER
+        attack['name'] = 'GlowerPower'
+        attack['animName'] = 'glower'
     else:
         self.notify.error('doDefault() - unsupported suit type: %s' % suitName)
     return None

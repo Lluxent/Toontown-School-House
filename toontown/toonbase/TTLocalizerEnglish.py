@@ -1254,7 +1254,10 @@ SuitShadowP = 'Shadows'
 SuitHustler = 'Hustler'
 SuitHustlerS = 'a Hustler'
 SuitHustlerP = 'Hustlers'
-
+# bossbot miniboss
+SuitRenegade = 'Renegade'
+SuitRenegadeS = 'a Renegade'
+SuitRenegadeP = 'Renegades'
 SuitFlunkyS = 'a Flunky'
 SuitPencilPusherS = 'a Pencil Pusher'
 SuitYesmanS = 'a Yesman'

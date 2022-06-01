@@ -173,6 +173,13 @@ hst = (
     ('cigar-smoke', 'cigar-smoke', 5),
     ('summon', 'summon', 5)
 )
+ren = (
+    ('pickpocket','pickpocket', 5),
+    ('glower','glower', 5),
+    ('smile','smile', 5),
+    ('magic2','magic2', 5),
+    ('magic1','magic1', 5),
+)
 
 if not base.config.GetBool('want-new-cogs', 0):
     ModelDict = {'a': ('/models/char/suitA-', 4),
@@ -562,6 +569,15 @@ class Suit(Avatar.Avatar):
             self.generateBody()
             self.generateHead('yesman')
             self.setHeight(10.0)
+        elif dna.name == 'ren':
+            self.scale = 6.0 / aSize
+            self.handColor = VBase4(0.4, 0.26, 0.13, 1.0)
+            self.generateBody()
+            self.headColor = VBase4(0.5, 0.5, 0.5, 1.0)
+            self.generateBowlerHat()
+            self.headColor = VBase4(1.0, 1.0, 1.0, 1.0)
+            self.generateHead('legaleagle')
+            self.setHeight(7.2)
         elif dna.name == 'sc':
             self.scale = 3.6 / cSize
             self.handColor = SuitDNA.moneyPolyColor
@@ -870,6 +886,29 @@ class Suit(Avatar.Avatar):
                 headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
             if self.headTexture:
                 headTex = loader.loadTexture('phase_' + str(phase) + '/maps/' + self.headTexture)
+                headTex.setMinfilter(Texture.FTLinearMipmapLinear)
+                headTex.setMagfilter(Texture.FTLinear)
+                headPart.setTexture(headTex, 1)
+            if self.headColor:
+                headPart.setColor(self.headColor)
+            self.headParts.append(headPart)
+
+        headModel.removeNode()
+
+    def generateBowlerHat(self):
+        headModel = loader.loadModel('phase_4/models/accessories/tt_m_chr_avt_acc_hat_bowler')
+        headReferences = headModel.findAllMatches('**/tt_m_chr_avt_acc_hat_bowler')
+        for i in xrange(0, headReferences.getNumPaths()):
+            if base.config.GetBool('want-new-cogs', 0):
+                headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'to_head')
+                if not headPart:
+                    headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
+            else:
+                headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
+                headPart.setScale(LVecBase3(0.5, 0.5, 0.375))
+                headPart.setPos(LVecBase3(0, 0, 0.75))
+            if self.headTexture:
+                headTex = loader.loadTexture('phase_4/maps/tt_t_chr_avt_acc_hat_bowler.jpg')
                 headTex.setMinfilter(Texture.FTLinearMipmapLinear)
                 headTex.setMagfilter(Texture.FTLinear)
                 headPart.setTexture(headTex, 1)

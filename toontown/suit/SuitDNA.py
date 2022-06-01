@@ -41,7 +41,8 @@ suitHeadTypes = ['f',
  'mh',
  'cmb',
  'ssb',
- 'hst']
+ 'hst',
+ 'ren']
 suitATypes = ['ym',
  'hh',
  'tbc',
@@ -57,7 +58,8 @@ suitATypes = ['ym',
  'm',
  'mh',
  'cmb',
- 'hst']
+ 'hst',
+ 'ren']
 suitBTypes = ['p',
  'ds',
  'b',
@@ -129,6 +131,8 @@ def getSuitDept(name):
         return suitDepts[2]
     elif name == 'ssb' or name == 'hst':
         return suitDepts[3]
+    elif name == 'ren':
+        return suitDepts[0]
     else:
         print 'Unknown dept for suit name: ', name
         return None
