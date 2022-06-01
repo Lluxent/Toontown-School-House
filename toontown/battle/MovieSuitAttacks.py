@@ -270,6 +270,16 @@ def doSuitAttack(attack):
         suitTrack = doShadowWave(attack)
     elif name == COALESCENCE:
         suitTrack = doCoalescence(attack)
+    elif name == HAYMAKER:
+        suitTrack = doHaymaker(attack)
+    elif name == DETONATE:
+        suitTrack = doDetonate(attack, 1)
+    elif name == DETONATE_2:
+        suitTrack = doDetonate(attack, 2)
+    elif name == DETONATE_3:
+        suitTrack = doDetonate(attack, 3)
+    elif name == CRACK_UP:
+        suitTrack = doCrackUp(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1629,6 +1639,53 @@ def doBookKeeping(attack):
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
     return Parallel(suitTrack, soundTrack)
+
+def doCrackUp(attack):
+    manager = attack['suit']
+    battle = attack['battle']
+    dmg = attack['target'][0]['hp']
+    
+    suitTracks = Parallel()
+    for suit in battle.suits:
+        suitTrack = Sequence()
+        suit.setHealthForMe(int(suit.currHP + dmg))
+        suitTrack.append(Wait(2))
+        suitTrack.append(Func(suit.showHpText, dmg))
+        suitTrack.append(Func(suit.updateHealthBar, 0))
+        suitTrack.append(Parallel(Sequence(Wait(0.85), Func(suit.showHpText, "+30% Dodgy", 10)), Func(suit.setChatAbsolute, 'Thank you.', CFSpeech | CFTimeout), Sequence(Wait(2.5), Func(suit.clearChat))))
+        suitTracks.append(suitTrack)
+    
+    mgrTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(manager, 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=manager))
+    healSound = Sequence(Wait(2.0), SoundInterval(globalBattleSoundCache.getSound('LB_toonup.ogg'), node = manager))
+    return Parallel(mgrTrack, soundTrack, suitTracks, healSound)
+
+def doHaymaker(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    tauntIndex = attack['taunt']
+    toon = attack['target']['toon']
+    taunt = getAttackTaunt(attack['name'], tauntIndex)
+    suitTrack = Sequence(Func(suit.setChatAbsolute, taunt, CFSpeech | CFTimeout), ActorInterval(suit, attack['animName'], duration=3.0), ActorInterval(suit, 'sanction'), Func(suit.clearChat), ActorInterval(suit, 'neutral'))
+    
+    soundTrack1 = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bells.ogg'), node=suit))
+    soundTrack2 = Sequence(Wait(3.4), SoundInterval(globalBattleSoundCache.getSound('SA_haymaker.ogg'), node=suit))
+    soundTrack = Parallel(soundTrack1, soundTrack2)
+    toonTrack = getToonTrack(attack, 3.4, ['conked'], 1.9, ['sidestep'])
+    notifyTrack = Sequence(Wait(3.4 + 0.75), Func(toon.showHpText, "DISABLED!", 10))
+    return Parallel(suitTrack, soundTrack, toonTrack, notifyTrack)
+
+def doDetonate(attack, ind):
+    manager = attack['suit']
+    battle = attack['battle']
+    toons = attack['target']
+    targetSuit = battle.activeSuits[ind]
+
+    managerTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(manager, 'neutral'))
+    suitTrack = Sequence(Wait(1.0), Func(targetSuit.showHpText, "DETONATE!", 10), ActorInterval(targetSuit, 'soak', duration = 1.25), Sequence(MovieUtil.createSuitDeathTrack(targetSuit, None, battle, [], False)))
+    toonTrack = getToonTracks(attack, 7.35, ['cringe'], 2.0, ['neutral'])
+    soundTrack = Sequence(Wait(1.1), SoundInterval(globalBattleSoundCache.getSound('SA_detonate.ogg'), node=targetSuit))
+    return Parallel(managerTrack, suitTrack, toonTrack, soundTrack)
 
 def doCompoundingInterest(attack):
     suit = attack['suit']

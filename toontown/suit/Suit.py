@@ -179,6 +179,9 @@ ren = (
     ('smile','smile', 5),
     ('magic2','magic2', 5),
     ('magic1','magic1', 5),
+    ('effort','effort', 5),
+    ('sanction', 'sanction', 5),
+    ('snap', 'snap', 5)
 )
 
 if not base.config.GetBool('want-new-cogs', 0):
@@ -1124,6 +1127,10 @@ class Suit(Avatar.Avatar):
                 nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': TTLocalizer.SuitShadow,
                 'dept': self.getStyleDept(),
                 'level': 10}
+            elif self.dna.name == 'ren':
+                nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': TTLocalizer.SuitRenegade,
+                'dept': self.getStyleDept(),
+                'level': self.getActualLevel()}
             else:
                 nameInfo = TTLocalizer.SuitBaseNameWithLevelMgr % {'name': self._name,
                 'dept': self.getStyleDept(),

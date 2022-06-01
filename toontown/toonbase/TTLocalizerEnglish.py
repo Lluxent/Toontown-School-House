@@ -1324,7 +1324,7 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave', 'Coalescence', 'GroupCorruption')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave', 'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
@@ -1334,7 +1334,12 @@ SuitCheatDescription = {
   'ShadowMarketing': 'The %s makes a deal with the shadows...' % SuitHustler,
   'Recarmdra': '%s sacrifies its own health for an ally!' % SuitShadow,
   'ShadowWave': 'The %s siphons your Laff through the Shadows!' % SuitHustler,
-  'Coalescence': 'Your Laff has been reduced to 1!'
+  'Coalescence': 'Your Laff has been reduced to 1!',
+  'Haymaker': 'The %s deals a devastating blow! Cannot act!' % SuitRenegade,
+  'Detonate': 'The Cog is set to explode! Take cover!',
+  'Detonate2': 'The Cog is set to explode! Take cover!',
+  'Detonate3': 'The Cog is set to explode! Take cover!',
+  'CrackUp': 'Healing all Cogs!',
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1412,6 +1417,11 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Recarmdra': 'Recarmdra!',
  'ShadowWave': 'Shadow Wave!',
  'Coalescence': 'Coalescence!',
+ 'Haymaker': 'Haymaker!',
+ 'Detonate': 'Fire in the Hole!',
+ 'Detonate2': 'Fire in the Hole!',
+ 'Detonate3': 'Fire in the Hole!',
+ 'CrackUp': 'Crack-Up!',
 }
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1466,6 +1476,24 @@ SuitAttackTaunts = {
     'You wear my shadows now!',
     'No light shelters you from the dark.',
     'My shadow seeks you, Toon.'
+  ],
+  'Haymaker': [
+    'Patience is everything, Toon.',
+    'Good things come to those who wait.',
+    'This one\'s for YOU.',
+    'The best defense is a great offense.'
+  ],
+  'Detonate': [
+    'This one\'ll set you running for the hills.'
+  ],
+  'Detonate2': [
+    'This one\'ll set you running for the hills.'
+  ],
+  'Detonate3': [
+    'This one\'ll set you running for the hills.'
+  ],  
+  'CrackUp': [
+    'fuck it'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
@@ -8545,6 +8573,7 @@ BossbotRTMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\
 GolfAreaAttackTaunt = 'Fore!'
 OvertimeAttackTaunts = ["It's time to reorganize.", "Now let's downsize."]
 ElevatorBossBotBoss = 'C.E.O Battle'
+ElevatorRenegade = 'Vs. Renegade'
 ElevatorBossBotCourse0 = 'The Front Three'
 ElevatorBossBotCourse1 = 'The Middle Six'
 ElevatorBossBotCourse2 = 'The Back Nine'

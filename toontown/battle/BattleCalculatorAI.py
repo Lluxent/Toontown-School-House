@@ -1492,6 +1492,25 @@ class BattleCalculatorAI:
                         managerTarget = suit
                         break
                 managerTarget.setHP(managerTarget.getHP() + attack[SUIT_HP_COL][targetIndex])
+            elif atkInfo['name'] == 'Haymaker':
+                attack[SUIT_HP_COL][targetIndex] = floor(toon.getHp() * 0.667) + 1
+                self.setToonCondition(toon.doId, 'noGags', 1, 2, 'setBoth')
+                self.setToonCondition(toon.doId, 'noSOS', 1, 2, 'setBoth')
+                self.setToonCondition(toon.doId, 'noFires', 1, 2, 'setBoth')
+            elif atkInfo['name'] in ('Detonate', 'Detonate2', 'Detonate3'):
+                if atkInfo['name'] == 'Detonate':
+                    targetSuit = self.battle.activeSuits[1]
+                elif atkInfo['name'] == 'Detonate2':
+                    targetSuit = self.battle.activeSuits[2]
+                elif atkInfo['name'] == 'Detonate3':
+                    targetSuit = self.battle.activeSuits[3]
+                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.currHP / 9.0)
+                targetSuit.setHP(0)
+                self.suitLeftBattle(targetSuit.getDoId())
+                if targetSuit.getDoId() in self.suitStatusConditions:
+                    del self.suitStatusConditions[targetSuit.getDoId()]
+            elif atkInfo['name'] == 'CrackUp':
+                attack[SUIT_HP_COL][targetIndex] = 250
             else:
                 if atkInfo['name'] == 'Coalescence':
                     if toon.getHp() == 1:
@@ -1511,6 +1530,10 @@ class BattleCalculatorAI:
                 else:
                     self.notify.debug('__calcSuitAtkHp - Target is not corrupt, not doing any bonus here')
                     attack[SUIT_HP_COL][targetIndex] = result
+
+                if theSuit.getHP() > theSuit.getMaxHp() * 1.5:    # overcharged logic, if >150% HP, attacks do 1.5x
+                    self.notify.debug('__calcSuitAtkHp - Self is overcharged, dealing 1.5x')
+                    attack[SUIT_HP_COL][targetIndex] *= 1.5
 
     def __getToonHp(self, toonDoId):
         handle = self.battle.getToon(toonDoId)
@@ -1551,6 +1574,11 @@ class BattleCalculatorAI:
                 if theSuit.dna.name == 'hst' and attack[SUIT_ATK_COL] == 6:
                     self.notify.debug('__applySuitAttackDamages - applying corruption on toon %s four times' % str(t))
                     self.setToonCondition(t, 'corruption', 8, -2, 'refreshTurns')
+
+                if theSuit.dna.name == 'ren' and attack[SUIT_ATK_COL] == 9:
+                    self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
+                    return
+                
                 if toonHp - attack[SUIT_HP_COL][position] <= 0:
                     if self.notify.getDebug():
                         self.notify.debug('Toon %d has died, removing' % t)
@@ -2076,6 +2104,60 @@ class BattleCalculatorAI:
                 return 1
             self.notify.debug('Roll failed, choosing Corruption')
             self.notify.debug('****************************************************')
+
+        if theSuit.dna.name == 'ren':
+            from toontown.suit.DistributedRenegadeMinibossAI import DistributedRenegadeMinibossAI
+            boss = None
+            for do in simbase.air.doId2do.values():
+                if isinstance(do, DistributedRenegadeMinibossAI):
+                    for toon in self.battle.activeToons:
+                        if toon in do.involvedToons:
+                            boss = do
+                            break
+
+            # every turn there IS NOT four cogs, increment counter
+            if len(self.battle.activeSuits) < 4:
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 1, -1, 'refreshTurns')
+            
+            # when there's been 2 turns in a row with no summon, summon cogs so we have 4, except one extra time, during the first turn
+            # the turn we summon this way, force haymaker as an attack
+            if self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon') > 1 or self.TurnsElapsed < 1:
+                for i in range(4 - len(self.battle.activeSuits)):
+                    boss.appendSuitsToBattle(boss.battleNumber, 'ren', None)
+                self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 0, -1, 'setBoth')
+                return 5
+            
+            # when dodgy (aka after healing), try to sacrifice the largest HP cog in the field, dealing damage to toons based on its HP
+            # doesn't try to sacrifice itself, ofc lmao
+            if self.suitHasCondition(theSuit.doId, 'dodgy'):
+                index = -1
+                tgIndex = -1
+                targetSuit = None
+                for suit in self.battle.activeSuits:
+                    index += 1
+                    if suit.dna.name == 'ren' or suit.currHP <= 0:
+                        continue
+                    
+                    if not targetSuit:
+                        targetSuit = suit
+                        tgIndex = index
+                    
+                    if suit.currHP > targetSuit.currHP:
+                        targetSuit = suit
+                        tgIndex = index
+
+                return tgIndex + 5
+            else:
+                # heal all cogs by 250, unlure them, and give them 30% dodgy for 3 turns, sheesh!
+                for suit in self.battle.activeSuits:
+                    if suit.currHP <= 0:
+                        continue
+
+                    suit.setHP(suit.currHP + 250)
+                    self.setSuitCondition(suit.doId, 'dodgy', 30, 3, 'setBoth')
+                for suit in self.currentlyLuredSuits.keys():
+                    self.__removeLured(suit)
+                return 9
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']
         atk = SuitBattleGlobals.pickSuitAttack(attacks, theSuit.getLevel())

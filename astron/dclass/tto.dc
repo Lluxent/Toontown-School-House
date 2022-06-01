@@ -296,6 +296,8 @@ from toontown.safezone import DistributedGolfKart/AI
 from toontown.safezone import DistributedPicnicBasket/AI
 from toontown.distributed import DistributedTimer/AI
 from toontown.suit import DistributedBossbotBoss/AI
+from toontown.suit import DistributedRenegadeMiniboss/AI
+from toontown.building import DistributedRenegadeElevator/AI
 from toontown.coghq import DistributedCogKart/AI
 from toontown.coghq import DistributedCountryClub/AI
 from toontown.coghq import DistributedCountryClubRoom/AI
@@ -2593,6 +2595,9 @@ dclass DistributedCJElevator : DistributedBossElevator {
 dclass DistributedBBElevator : DistributedBossElevator {
 };
 
+dclass DistributedRenegadeElevator : DistributedBossElevator {
+};
+
 dclass DistributedBoardingParty : DistributedObject {
   postGroupInfo(uint32, uint32[], uint32[], uint32[]) broadcast;
   informDestinationInfo(uint8) clsend airecv;
@@ -3499,6 +3504,26 @@ dclass DistributedPicnicBasket : DistributedObject {
 };
 
 dclass DistributedBossbotBoss : DistributedBossCog {
+  setState(string) broadcast ram;
+  setBattleDifficulty(uint8) broadcast ram;
+  requestGetFood(int8, int8, uint32) airecv clsend;
+  toonGotFood(uint32, int8, int8, uint32) broadcast;
+  requestServeFood(int8, int8) airecv clsend;
+  toonServeFood(uint32, int8, int8) broadcast;
+  hitBoss(uint8) airecv clsend;
+  hitToon(uint32) airecv clsend;
+  ballHitBoss(uint8) airecv clsend;
+  setBossDamage(uint16, uint8, int16) broadcast ram;
+  setSpeedDamage(uint16, uint8, int16) broadcast ram;
+  reachedTable(uint8) airecv clsend;
+  hitTable(uint8) airecv clsend;
+  awayFromTable(uint8) airecv clsend;
+  toonGotHealed(uint32) broadcast;
+  requestGetToonup(int8, int8, uint32) airecv clsend;
+  toonGotToonup(uint32, int8, int8, uint32) broadcast;
+};
+
+dclass DistributedRenegadeMiniboss : DistributedBossCog {
   setState(string) broadcast ram;
   setBattleDifficulty(uint8) broadcast ram;
   requestGetFood(int8, int8, uint32) airecv clsend;

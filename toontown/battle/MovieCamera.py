@@ -352,6 +352,8 @@ def chooseSuitShot(attack, attackDuration):
     battle = attack['battle']
     camTrack = Sequence()
 
+    print(attack)
+
     def defaultCamera(attack = attack, attackDuration = attackDuration, openShotDuration = 3.5, target = target):
         if attack['group'] == ATK_TGT_GROUP:
             return randomGroupAttackCam(attack['suit'], target, attack['battle'], attackDuration, openShotDuration)
@@ -487,7 +489,7 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.2))
     elif name == WRITE_OFF:
         camTrack.append(defaultCamera())
-    elif name == JURY_NOTICE or name == BOOK_KEEPING or name == SHADOW_MARKETING or name == COALESCENCE:
+    elif name == JURY_NOTICE or name == BOOK_KEEPING or name == SHADOW_MARKETING or name == COALESCENCE or name == CRACK_UP:
         camTrack.append(managerCamera(openShotDuration=6.0))
     elif name == RECARMDRA:
         camTrack.append(managerCamera(openShotDuration=7.0))        
@@ -495,6 +497,10 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=2.9))
     elif name == GROUP_CORRUPTION:
         camTrack.append(defaultCamera(openShotDuration=1.1))
+    elif name == HAYMAKER:
+        camTrack.append(defaultCamera(openShotDuration=3.75))
+    elif name in (DETONATE, DETONATE_2, DETONATE_3):
+        camTrack.append(suitCameraShakeShot(suit, attackDuration, 0))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())

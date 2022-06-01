@@ -643,12 +643,15 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
 
     def __removeSuit(self, suit):
         self.notify.debug('__removeSuit(%d)' % suit.doId)
-        self.suits.remove(suit)
-        self.activeSuits.remove(suit)
-        if self.luredSuits.count(suit) == 1:
+        if suit in self.suits:
+            self.suits.remove(suit)
+        if suit in self.activeSuits:
+            self.activeSuits.remove(suit)
+        if self.luredSuits.count(suit) == 1 and suit in self.luredSuits:
             self.luredSuits.remove(suit)
         self.suitGone = 1
-        del suit.battleTrap
+        if hasattr(suit, 'battleTrap'):
+            del suit.battleTrap
 
     def __removeToon(self, toonId, userAborted = 0):
         self.notify.debug('__removeToon(%d)' % toonId)
@@ -1580,6 +1583,10 @@ class DistributedBattleBaseAI(DistributedObjectAI.DistributedObjectAI, BattleBas
                     suit.battleTrap = level
 
             needUpdate = 1
+
+        for suit in self.activeSuits:
+            if suit.getHP() <= 0:
+                deadSuits.append(suit)
 
         for suit in deadSuits:
             self.notify.debug('removing dead suit: %d' % suit.doId)

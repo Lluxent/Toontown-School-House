@@ -187,14 +187,18 @@ class SuitPlannerInteriorAI:
     def genSuitsForEmptyPlanner(self, specialCode):
         suitHandles = {}
         activeSuits = []
+        reserveSuits = []
         if specialCode == 'cmb':
             miniboss = self.__genSuitObject(self.zoneId, 9, 'm', 50, 0)
             activeSuits.append(miniboss)
         elif specialCode == 'hst':
             miniboss = self.__genSuitObject(self.zoneId, 11, 's', 35, 0)
             activeSuits.append(miniboss)
+        elif specialCode == 'ren':
+            miniboss = self.__genSuitObject(self.zoneId, 12, 'c', 45, 1)
+            activeSuits.append(miniboss)
         suitHandles['activeSuits'] = activeSuits
-        suitHandles['reserveSuits'] = []
+        suitHandles['reserveSuits'] = reserveSuits
         return suitHandles
 
     def genReserveSuits(self, specialCode, arg = None):
@@ -213,7 +217,10 @@ class SuitPlannerInteriorAI:
             suit = self.__genSuitObject(self.zoneId, 10, 's', arg, 0)
             suit.setLevel(arg)
             reserveSuits.append(suit)       
-
+        if specialCode == 'ren':
+            # generate random bossbot from lv 12 to 20
+            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'c', random.randint(12, 20), 0)
+            reserveSuits.append(suit)
         suitHandles['reserveSuits'] = reserveSuits
         return suitHandles
 

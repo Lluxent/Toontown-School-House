@@ -202,6 +202,12 @@ class DistributedAvatar(DistributedActor, Avatar):
                     b = 0.93
                     a = 1.0
                     scale = 0.9
+                elif bonus == 10:
+                    r = 1.0
+                    g = 1.0
+                    b = 1.0
+                    a = 1.0
+                    scale = 0.7
                 elif number < 0:
                     r = 0.9
                     g = 0

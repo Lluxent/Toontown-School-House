@@ -429,6 +429,11 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
         self.reserveSuits.append(suitHandles['reserveSuits'][0])
         return
 
+    def generateNewReserves(self, battleNumber, command, args):
+        cogs = self.invokeReservesPlanner(battleNumber, command, args)
+        reserveSuits = cogs['reserveSuits']
+        return {'reserveSuits': reserveSuits} 
+
     def makeBattle(self, bossCogPosHpr, battlePosHpr, roundCallback, finishCallback, battleNumber, battleSide):
         battle = DistributedBattleMinibossAI.DistributedBattleMinibossAI(self.air, self, roundCallback, finishCallback, battleSide)
         self.setBattlePos(battle, bossCogPosHpr, battlePosHpr)
@@ -509,7 +514,8 @@ class DistributedMinibossAI(DistributedAvatarAI.DistributedAvatarAI):
             totalMaxHp += suit.maxHP
 
         for suit in deadSuits:
-            activeSuits.remove(suit)
+            if suit in activeSuits:
+                activeSuits.remove(suit)
 
         joinedReserves = []
         if len(self.reserveSuits) > 0 and len(activeSuits) < 4:

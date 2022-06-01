@@ -1101,7 +1101,7 @@ SuitAttributes = {
         'singularname': TTLocalizer.SuitRenegadeS,
         'pluralname':   TTLocalizer.SuitRenegadeP,
         'level':    45,
-        'hp':   (4250,),
+        'hp':   (8500,),
         'def':  (65,),
         'freq': (0,),
         'acc':  (0,),
@@ -1127,6 +1127,26 @@ SuitAttributes = {
             (34,),
             (90,),
             (15,)),
+            ('Haymaker',
+            (0,),
+            (0,),
+            (0,)),
+            ('Detonate',
+            (0,),
+            (0,),
+            (0,)),
+            ('Detonate2',
+            (0,),
+            (0,),
+            (0,)),
+            ('Detonate3',
+            (0,),
+            (0,),
+            (0,)),
+            ('CrackUp',
+            (0,),
+            (98,),
+            (0,)),            
         )
     },
 }
@@ -1209,7 +1229,12 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Recarmdra':   ('effort', ATK_TGT_GROUP),
  'ShadowMarketing': ('summon', ATK_TGT_GROUP),
  'ShadowWave': ('summon', ATK_TGT_GROUP),
- 'Coalescence': ('summon', ATK_TGT_GROUP)
+ 'Coalescence': ('summon', ATK_TGT_GROUP),
+ 'Haymaker': ('effort', ATK_TGT_SINGLE),
+ 'Detonate': ('effort', ATK_TGT_GROUP),
+ 'Detonate2': ('effort', ATK_TGT_GROUP),
+ 'Detonate3': ('effort', ATK_TGT_GROUP),
+ 'CrackUp': ('snap', ATK_TGT_GROUP),
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1287,6 +1312,11 @@ RECARMDRA = SuitAttacks.keys().index('Recarmdra')
 SHADOW_WAVE = SuitAttacks.keys().index('ShadowWave')
 COALESCENCE = SuitAttacks.keys().index('Coalescence')
 GROUP_CORRUPTION = SuitAttacks.keys().index('GroupCorruption')
+HAYMAKER = SuitAttacks.keys().index('Haymaker')
+DETONATE = SuitAttacks.keys().index('Detonate')
+DETONATE_2 = SuitAttacks.keys().index('Detonate2')
+DETONATE_3 = SuitAttacks.keys().index('Detonate3')
+CRACK_UP = SuitAttacks.keys().index('CrackUp')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:
