@@ -1336,12 +1336,12 @@ SuitCheatDescription = {
   'Recarmdra': '%s sacrifies its own health for an ally!' % SuitShadow,
   'ShadowWave': 'The %s siphons your Laff through the Shadows!' % SuitHustler,
   'Coalescence': 'Your Laff has been reduced to 1!',
-  'Haymaker': 'The %s deals a devastating blow! Cannot act!' % SuitRenegade,
+  'Haymaker': 'The %s deals a crippling blow! Cannot act!' % SuitRenegade,
   'Detonate': 'The Cog is set to explode! Take cover!',
   'Detonate2': 'The Cog is set to explode! Take cover!',
   'Detonate3': 'The Cog is set to explode! Take cover!',
-  'CrackUp': 'Healing all Cogs!',
-  'Flashbang': 'The %s tosses a flashbang, blinding you!' % SuitRenegade
+  'CrackUp': 'The %s boosts the power of all Cogs!' % SuitRenegade,
+  'Flashbang': 'The %s flashes! Gag selections reduced!' % SuitRenegade
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1481,26 +1481,46 @@ SuitAttackTaunts = {
     'My shadow seeks you, Toon.'
   ],
   'Haymaker': [
-    'Patience is everything, Toon.',
-    'Good things come to those who wait.',
+    'Y\'all\'ll soon be nothing to nobody.',
+    'You\'re over head and ears, Toon.',
     'This one\'s for YOU.',
-    'The best defense is a great offense.'
+    'I\'ve got a hankering for a fight, and y\'all\'re in for it.',
+    'This one\'s not just playing for the gallery, Toon.'
   ],
   'Detonate': [
-    'This one\'ll set you running for the hills.'
+    'This one\'ll set you running for the hills.',
+    'This one\'ll get you three ways from Sunday.',
+    'Meet my widow-maker.',
+    'Bringing the fight to you full-chisel, Toon.',
+    'Exflunticated!'
   ],
   'Detonate2': [
-    'This one\'ll set you running for the hills.'
+    'This one\'ll set you running for the hills.',
+    'This one\'ll get you three ways from Sunday.',
+    'Meet my widow-maker.',
+    'Bringing the fight to you full-chisel, Toon.',
+    'Exflunticated!'
   ],
   'Detonate3': [
-    'This one\'ll set you running for the hills.'
+    'This one\'ll set you running for the hills.',
+    'This one\'ll get you three ways from Sunday.',
+    'Meet my widow-maker.',
+    'Bringing the fight to you full-chisel, Toon.',
+    'Exflunticated!'
   ],  
   'CrackUp': [
-    'fuck it'
+    'I\'ve no time for your balderdash, Toon.',
+    'I\'m cashing you in, dead or alive.',
+    'Raising sand ain\'t nothing but nothing.',
+    'Time to have us a rip-roaring great time, ain\'t it?',
+    'Lock, stock, and barrel.'
   ],
   'Flashbang': [
     'Think fast!',
-    'Don\'t look straight into the light, lest you be blinded.'
+    'Kicking up a row!',
+    'Let\'s see how you do without your talking-iron, Toon.',
+    'No mercy for the tenderfoot.',
+    'There you ain\'t.'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
@@ -8580,17 +8600,17 @@ BossbotRTMaxed = '\x07I see that you have a level %s Cog Suit. Very impressive!\
 GolfAreaAttackTaunt = 'Fore!'
 OvertimeAttackTaunts = ["It's time to reorganize.", "Now let's downsize."]
 ElevatorBossBotBoss = 'C.E.O Battle'
-ElevatorRenegade = 'Vs. Renegade'
+ElevatorRenegade = 'Vs. %s' % SuitRenegade
 ElevatorBossBotCourse0 = 'The Front Three'
 ElevatorBossBotCourse1 = 'The Middle Six'
 ElevatorBossBotCourse2 = 'The Back Nine'
 ElevatorCashBotBoss = 'C.F.O Battle'
-ElevatorCashBotMiniBoss = 'THE FUCK BATTLE'
+ElevatorCashBotMiniBoss = 'Vs. %s' % SuitCMB
 ElevatorCashBotMint0 = 'Coin Mint'
 ElevatorCashBotMint1 = 'Dollar Mint'
 ElevatorCashBotMint2 = 'Bullion Mint'
 ElevatorSellBotBoss = 'Senior V.P Battle'
-ElevatorSellBotMiniBoss = 'THE FUCK BATTLE'
+ElevatorSellBotMiniBoss = 'Vs. %s' % SuitHustler
 ElevatorSellBotFactory0 = 'Front Entrance'
 ElevatorSellBotFactory1 = 'Side Entrance'
 ElevatorLawBotBoss = 'Chief Justice Battle'

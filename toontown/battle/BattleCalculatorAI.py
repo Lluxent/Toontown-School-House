@@ -1495,6 +1495,7 @@ class BattleCalculatorAI:
                 attack[SUIT_HP_COL][targetIndex] = floor(toon.getHp() * (0.667 if theSuit.getSkeleRevives() == 1 else 0.85)) + 1
                 self.setToonCondition(toon.doId, 'noGags', 1, 2, 'setBoth')
                 self.setToonCondition(toon.doId, 'noSOS', 1, 2, 'setBoth')
+                self.setToonCondition(toon.doId, 'noFires', 1, 2, 'setBoth')
                 return
             elif atkInfo['name'] in ('Detonate', 'Detonate2', 'Detonate3'):
                 if atkInfo['name'] == 'Detonate':

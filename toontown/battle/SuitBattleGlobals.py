@@ -1101,8 +1101,8 @@ SuitAttributes = {
         'singularname': TTLocalizer.SuitRenegadeS,
         'pluralname':   TTLocalizer.SuitRenegadeP,
         'level':    45,
-        'hp':   (8500,),
-        'def':  (65,),
+        'hp':   (6500,),
+        'def':  (50,),
         'freq': (0,),
         'acc':  (0,),
         'attacks':
