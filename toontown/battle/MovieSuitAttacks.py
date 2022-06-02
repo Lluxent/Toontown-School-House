@@ -280,6 +280,8 @@ def doSuitAttack(attack):
         suitTrack = doDetonate(attack, 3)
     elif name == CRACK_UP:
         suitTrack = doCrackUp(attack)
+    elif name == FLASHBANG:
+        suitTrack = doFlashbang(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1639,6 +1641,23 @@ def doBookKeeping(attack):
     suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
     return Parallel(suitTrack, soundTrack)
+
+def doFlashbang(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    suitTrack = Sequence(getSuitAnimTrack(attack), ActorInterval(attack['suit'], 'neutral'))
+    soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=suit))
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.05, (1, 1, 0, 1)), LerpColorScaleInterval(render, 1, (oldcolor)))
+    toonTrack = getToonTracks(attack, 0.95, ['cringe'], 1.1, ['neutral'])
+    statusTrack = Parallel()
+    targets = attack['target']
+
+    for t in targets:
+        toon = t['toon']
+        statusTrack.append(Sequence(Wait(0.95 + 0.75), Func(toon.showHpText, "FLASHED!", 10)))
+
+    return Parallel(suitTrack, soundTrack, lightingTrack, toonTrack, statusTrack)
 
 def doCrackUp(attack):
     manager = attack['suit']

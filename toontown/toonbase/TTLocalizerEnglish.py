@@ -1324,7 +1324,8 @@ SuitLegalEagleP = 'Legal Eagles'
 SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
-SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave', 'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp')
+SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave',
+ 'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp', 'Flashbang')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
@@ -1340,6 +1341,7 @@ SuitCheatDescription = {
   'Detonate2': 'The Cog is set to explode! Take cover!',
   'Detonate3': 'The Cog is set to explode! Take cover!',
   'CrackUp': 'Healing all Cogs!',
+  'Flashbang': 'The %s tosses a flashbang, blinding you!' % SuitRenegade
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1422,6 +1424,7 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Detonate2': 'Fire in the Hole!',
  'Detonate3': 'Fire in the Hole!',
  'CrackUp': 'Crack-Up!',
+ 'Flashbang': 'Flashbang!',
 }
 SuitAttackTaunts = {
   'Audit': ["I believe your books don't balance.",
@@ -1494,6 +1497,10 @@ SuitAttackTaunts = {
   ],  
   'CrackUp': [
     'fuck it'
+  ],
+  'Flashbang': [
+    'Think fast!',
+    'Don\'t look straight into the light, lest you be blinded.'
   ],
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',

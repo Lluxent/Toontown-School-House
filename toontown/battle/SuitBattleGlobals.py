@@ -1146,7 +1146,11 @@ SuitAttributes = {
             ('CrackUp',
             (0,),
             (98,),
-            (0,)),            
+            (0,)),   
+            ('Flashbang',
+            (42,),
+            (100,),
+            (0,)), 
         )
     },
 }
@@ -1235,6 +1239,7 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Detonate2': ('effort', ATK_TGT_GROUP),
  'Detonate3': ('effort', ATK_TGT_GROUP),
  'CrackUp': ('snap', ATK_TGT_GROUP),
+ 'Flashbang': ('snap', ATK_TGT_GROUP)
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1317,6 +1322,7 @@ DETONATE = SuitAttacks.keys().index('Detonate')
 DETONATE_2 = SuitAttacks.keys().index('Detonate2')
 DETONATE_3 = SuitAttacks.keys().index('Detonate3')
 CRACK_UP = SuitAttacks.keys().index('CrackUp')
+FLASHBANG = SuitAttacks.keys().index('Flashbang')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

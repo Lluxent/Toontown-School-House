@@ -434,12 +434,10 @@ class BattleCalculatorAI:
         if acc > MaxToonAcc:
             acc = MaxToonAcc
 
-        if not currTarget:
-            currTarget = atkTargets[0]
-        if self.suitHasCondition(currTarget.getDoId(), 'dodgy'):
+        if self.suitHasCondition(attack[TOON_TGT_COL], 'dodgy'):
             self.notify.debug('Original accuracy target: %i' % acc)
-            acc *= abs(self.getSuitConditionModifier(currTarget.getDoId(), 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
-            self.notify.debug('Toon attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % ((abs(self.getSuitConditionModifier(currTarget.getDoId(), 'dodgy') - 100.0) / 100.0), acc))
+            acc *= abs(self.getSuitConditionModifier(attack[TOON_TGT_COL], 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
+            self.notify.debug('Toon attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % ((abs(self.getSuitConditionModifier(attack[TOON_TGT_COL], 'dodgy') - 100.0) / 100.0), acc))
 
         if randChoice < acc:
             if debug:
@@ -1493,10 +1491,11 @@ class BattleCalculatorAI:
                         break
                 managerTarget.setHP(managerTarget.getHP() + attack[SUIT_HP_COL][targetIndex])
             elif atkInfo['name'] == 'Haymaker':
-                attack[SUIT_HP_COL][targetIndex] = floor(toon.getHp() * 0.667) + 1
+                
+                attack[SUIT_HP_COL][targetIndex] = floor(toon.getHp() * (0.667 if theSuit.getSkeleRevives() == 1 else 0.85)) + 1
                 self.setToonCondition(toon.doId, 'noGags', 1, 2, 'setBoth')
                 self.setToonCondition(toon.doId, 'noSOS', 1, 2, 'setBoth')
-                self.setToonCondition(toon.doId, 'noFires', 1, 2, 'setBoth')
+                return
             elif atkInfo['name'] in ('Detonate', 'Detonate2', 'Detonate3'):
                 if atkInfo['name'] == 'Detonate':
                     targetSuit = self.battle.activeSuits[1]
@@ -1504,7 +1503,8 @@ class BattleCalculatorAI:
                     targetSuit = self.battle.activeSuits[2]
                 elif atkInfo['name'] == 'Detonate3':
                     targetSuit = self.battle.activeSuits[3]
-                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / 9.0)
+                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / (10.0 if theSuit.getSkeleRevives() == 1 else 7.5))
+                return
             elif atkInfo['name'] == 'CrackUp':
                 attack[SUIT_HP_COL][targetIndex] = 250
             elif atkInfo['name'] == 'Coalescence':
@@ -2121,6 +2121,8 @@ class BattleCalculatorAI:
                             boss = do
                             break
 
+            isFinalForm = (theSuit.getSkeleRevives() == 0)
+
             # every turn there IS NOT four cogs, increment counter
             if len(self.battle.activeSuits) < 4:
                 self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 1, -1, 'refreshTurns')
@@ -2129,30 +2131,39 @@ class BattleCalculatorAI:
             # the turn we summon this way, force haymaker as an attack
             if self.getSuitConditionModifier(theSuit.doId, 'turnsSinceSummon') > 1 or self.TurnsElapsed < 1:
                 for i in range(4 - len(self.battle.activeSuits)):
-                    boss.appendSuitsToBattle(boss.battleNumber, 'ren', None)
+                    boss.appendSuitsToBattle(boss.battleNumber, 'ren', isFinalForm)
                 self.setSuitCondition(theSuit.doId, 'turnsSinceSummon', 0, -1, 'setBoth')
                 return 5
             
             # when dodgy (aka after healing), try to sacrifice the largest HP cog in the field, dealing damage to toons based on its HP
             # doesn't try to sacrifice itself, ofc lmao
             if self.suitHasCondition(theSuit.doId, 'dodgy'):
-                index = -1
-                tgIndex = -1
-                targetSuit = None
-                for suit in self.battle.activeSuits:
-                    index += 1
-                    if suit.dna.name == 'ren' or suit.currHP <= 0:
-                        continue
-                    
-                    if not targetSuit:
-                        targetSuit = suit
-                        tgIndex = index
-                    
-                    if suit.currHP > targetSuit.currHP:
-                        targetSuit = suit
-                        tgIndex = index
+                if random.randint(0, 99) > 50:
+                    for toon in self.battle.activeToons:
+                        for i in range(4 if isFinalForm else 3):
+                            self.setToonCondition(int(toon), random.choice(['noToonUpGags','noTrapGags','noLureGags','noThrowGags','noSoundGags','noSquirtGags','noDropGags']), 1, 3, 'setBoth')
+                    return 10
+                else:
+                    index = -1
+                    tgIndex = -1
+                    targetSuit = None
+                    for suit in self.battle.activeSuits:
+                        index += 1
+                        if suit.dna.name == 'ren' or suit.currHP <= 0:
+                            continue
+                        
+                        if not targetSuit:
+                            targetSuit = suit
+                            tgIndex = index
+                        
+                        if suit.currHP > targetSuit.currHP:
+                            targetSuit = suit
+                            tgIndex = index
 
-                return tgIndex + 5
+                    for suit in self.currentlyLuredSuits.keys():
+                        self.__removeLured(suit)
+
+                    return tgIndex + 5
             else:
                 # heal all cogs by 250, unlure them, and give them 30% dodgy for 3 turns, sheesh!
                 for suit in self.battle.activeSuits:

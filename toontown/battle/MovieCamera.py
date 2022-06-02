@@ -501,6 +501,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=3.75))
     elif name in (DETONATE, DETONATE_2, DETONATE_3):
         camTrack.append(suitCameraShakeShot(suit, attackDuration, 0))
+    elif name == FLASHBANG:
+        camTrack.append(defaultCamera(openShotDuration=1.25))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())

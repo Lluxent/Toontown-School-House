@@ -218,9 +218,14 @@ class SuitPlannerInteriorAI:
             suit.setLevel(arg)
             reserveSuits.append(suit)       
         if specialCode == 'ren':
-            # generate random bossbot from lv 12 to 20
-            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'c', random.randint(12, 20), 0)
-            reserveSuits.append(suit)
+            if not arg:
+                # generate random bossbot from lv 12 to 20
+                suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'c', random.randint(12, 20), 0)
+                reserveSuits.append(suit)
+            else:
+                # generate tbc from lv 16 to 22
+                suit = self.__genSuitObject(self.zoneId, 8, 'c', random.randint(16, 22), 0)
+                reserveSuits.append(suit)
         suitHandles['reserveSuits'] = reserveSuits
         return suitHandles
 
