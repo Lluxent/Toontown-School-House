@@ -192,6 +192,9 @@ class DistributedSuitBaseAI(DistributedAvatarAI.DistributedAvatarAI, SuitBase.Su
     def setHP(self, hp):
         self.currHP = hp
 
+    def getMaxHP(self):
+        return self.maxHP
+
     def setMaxHp(self, maxHp):
         self.maxHP = maxHp
 

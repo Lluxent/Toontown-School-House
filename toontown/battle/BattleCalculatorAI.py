@@ -434,6 +434,8 @@ class BattleCalculatorAI:
         if acc > MaxToonAcc:
             acc = MaxToonAcc
 
+        if not currTarget:
+            currTarget = atkTargets[0]
         if self.suitHasCondition(currTarget.getDoId(), 'dodgy'):
             self.notify.debug('Original accuracy target: %i' % acc)
             acc *= abs(self.getSuitConditionModifier(currTarget.getDoId(), 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
@@ -1403,7 +1405,7 @@ class BattleCalculatorAI:
         self.notify.debug('Suit randomly attacking toon ' + str(self.battle.activeToons[chosen]))
         return chosen
 
-    def __suitAtkHit(self, attackIndex):
+    def __suitAtkHit(self, attackIndex, toon):
         if self.suitsAlwaysHit:
             return 1
         else:
@@ -1411,8 +1413,6 @@ class BattleCalculatorAI:
                 return 0
         theSuit = self.battle.activeSuits[attackIndex]
         atkType = self.battle.suitAttacks[attackIndex][SUIT_ATK_COL]
-        atkIndex = self.battle.suitAttacks[attackIndex][SUIT_TGT_COL]
-        atkTarget = int(self.battle.activeToons[atkIndex])
         atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
         atkAcc = atkInfo['acc']
         #suitAcc = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['acc'][theSuit.getLevel()]
@@ -1423,10 +1423,10 @@ class BattleCalculatorAI:
             return 0
         
         randChoice = random.randint(0, 99)
-        if self.toonHasCondition(atkTarget, 'dodgy'):
+        if self.toonHasCondition(toon, 'dodgy'):
             self.notify.debug('Original accuracy target: %i' % acc)
-            acc *= abs(self.getToonConditionModifier(atkTarget, 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
-            self.notify.debug('Suit attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % (abs(self.getToonConditionModifier(atkTarget, 'dodgy') - 100.0) / 100.0, acc))
+            acc *= abs(self.getToonConditionModifier(toon, 'dodgy') - 100.0) / 100.0    # 100% dodgy is 0x chance to hit, 50% dodgy is 50% from base acc., and -50% dodgy is 150% chance to hit from base, -100% is 2x
+            self.notify.debug('Suit attack target has dodgy, modifying accuracy by %fx, new accuracy target is %f' % (abs(self.getToonConditionModifier(toon, 'dodgy') - 100.0) / 100.0, acc))
         self.notify.debug('Suit attack rolled ' + str(randChoice) + ' to hit with an accuracy of ' + str(acc) + ' (attackAcc: ' + str(atkAcc) + ' suitAcc: N/A)')
         if randChoice < acc:
             return 1
@@ -1462,8 +1462,8 @@ class BattleCalculatorAI:
     def __calcSuitAtkHp(self, attackIndex):
         targetList = self.__createSuitTargetList(attackIndex)
         attack = self.battle.suitAttacks[attackIndex]
-        for currTarget in xrange(len(targetList)):
-            toonId = targetList[currTarget]
+        for currTarget in targetList:
+            toonId = currTarget
             toon = self.battle.getToon(toonId)
             result = 0
             theSuit = self.battle.findSuit(attack[SUIT_ID_COL])
@@ -1473,7 +1473,7 @@ class BattleCalculatorAI:
                 result = 1
             elif self.toonHasCondition(toon.doId, 'alwaysDodge'):
                 result = 0
-            elif self.__suitAtkHit(attackIndex) or self.toonHasCondition(toon.doId, 'cannotDodge'):
+            elif self.__suitAtkHit(attackIndex, toon.doId) or self.toonHasCondition(toon.doId, 'cannotDodge'):
                 result = atkInfo['hp']
                 if theSuit.getExecutive():
                     result = int(result * ToontownBattleGlobals.EXECUTIVE_DMG_MULT)
@@ -1504,36 +1504,34 @@ class BattleCalculatorAI:
                     targetSuit = self.battle.activeSuits[2]
                 elif atkInfo['name'] == 'Detonate3':
                     targetSuit = self.battle.activeSuits[3]
-                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.currHP / 9.0)
-                targetSuit.setHP(0)
-                self.suitLeftBattle(targetSuit.getDoId())
-                if targetSuit.getDoId() in self.suitStatusConditions:
-                    del self.suitStatusConditions[targetSuit.getDoId()]
+                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / 9.0)
             elif atkInfo['name'] == 'CrackUp':
                 attack[SUIT_HP_COL][targetIndex] = 250
-            else:
-                if atkInfo['name'] == 'Coalescence':
-                    if toon.getHp() == 1:
-                        attack[SUIT_HP_COL][targetIndex] = 1
-                    else:
-                        attack[SUIT_HP_COL][targetIndex] = toon.getHp() - 1
-                    theSuit.setHP(int(theSuit.currHP + ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP))    
-                elif atkInfo['suitName'] == 'hst' and atkInfo['name'] == 'ShadowWave':
-                    if self.toonHasCondition(toonId, 'corruption'):
-                        attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.getToonConditionModifier(toonId, 'corruption') / 4.0) * 7)
-                    else:
-                        attack[SUIT_HP_COL][targetIndex] = 7
-                    theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
-                elif self.toonHasCondition(toonId, 'corruption') and result > 0:
-                    self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.getToonConditionModifier(toonId, 'corruption'))
-                    attack[SUIT_HP_COL][targetIndex] = result + self.getToonConditionModifier(toonId, 'corruption')
+            elif atkInfo['name'] == 'Coalescence':
+                if toon.getHp() == 1:
+                    attack[SUIT_HP_COL][targetIndex] = 1
                 else:
-                    self.notify.debug('__calcSuitAtkHp - Target is not corrupt, not doing any bonus here')
-                    attack[SUIT_HP_COL][targetIndex] = result
+                    attack[SUIT_HP_COL][targetIndex] = toon.getHp() - 1
+                theSuit.setHP(int(theSuit.currHP + ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP))    
+            elif atkInfo['suitName'] == 'hst' and atkInfo['name'] == 'ShadowWave':
+                if self.toonHasCondition(toon.doId, 'corruption'):
+                    attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.getToonConditionModifier(toon.doId, 'corruption') / 4.0) * 7)
+                else:
+                    attack[SUIT_HP_COL][targetIndex] = 7
+                theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
+            elif self.toonHasCondition(toon.doId, 'corruption') and result > 0:
+                self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.getToonConditionModifier(toon.doId, 'corruption'))
+                attack[SUIT_HP_COL][targetIndex] = result + self.getToonConditionModifier(toon.doId, 'corruption')
+            else:
+                self.notify.debug('__calcSuitAtkHp - Target is not corrupt, not doing any bonus here')
+                attack[SUIT_HP_COL][targetIndex] = result
 
-                if theSuit.getHP() > theSuit.getMaxHp() * 1.5:    # overcharged logic, if >150% HP, attacks do 1.5x
-                    self.notify.debug('__calcSuitAtkHp - Self is overcharged, dealing 1.5x')
-                    attack[SUIT_HP_COL][targetIndex] *= 1.5
+            if theSuit.getHP() > (theSuit.getMaxHP() * 1.5):    # overcharged logic, if >150% HP, attacks do 1.5x
+                self.notify.debug('currHP: %s | maxHP: %s' % (theSuit.getHP(), theSuit.getMaxHp()))
+                self.notify.debug('__calcSuitAtkHp - Self is overcharged, dealing 1.5x')
+                attack[SUIT_HP_COL][targetIndex] *= 1.5
+
+            self.notify.debug('__calcSuitAtkHp - result is %s for index %i' % (str(attack[SUIT_HP_COL][targetIndex]), targetIndex))
 
     def __getToonHp(self, toonDoId):
         handle = self.battle.getToon(toonDoId)
@@ -1579,6 +1577,14 @@ class BattleCalculatorAI:
                     self.toonHPAdjusts[t] -= 0  # toons take no damage from this cheat
                     return
                 
+                if theSuit.dna.name == 'ren' and attack[SUIT_ATK_COL] in (6, 7, 8):
+                    targetSuit = self.battle.activeSuits[attack[SUIT_ATK_COL] - 5]
+                    self.notify.debug('__applySuitAttackDamages - doing suit kill method for detonation cheat %i' % targetSuit.getDoId())
+                    targetSuit.setHP(0)
+                    self.suitLeftBattle(targetSuit.getDoId())
+                    if targetSuit.getDoId() in self.suitStatusConditions:
+                        del self.suitStatusConditions[targetSuit.getDoId()]
+
                 if toonHp - attack[SUIT_HP_COL][position] <= 0:
                     if self.notify.getDebug():
                         self.notify.debug('Toon %d has died, removing' % t)
