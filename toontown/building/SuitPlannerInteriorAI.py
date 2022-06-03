@@ -204,13 +204,22 @@ class SuitPlannerInteriorAI:
     def genReserveSuits(self, specialCode, arg = None):
         suitHandles = {}
         reserveSuits = []
-        if specialCode == 'cmb':
-            # generate random cashbot from lv 12 to 20
-            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'm', random.randint(12, 20), 0)
-            reserveSuits.append(suit)
+
+        def suitKindFromLevel(level):
+            if 6 <= level < 12:
+                return random.randint(6, 7)
+            elif 12 <= level <= 15:
+                return random.randint(6, 8)
+            else:
+                return 8
+
         if specialCode == 'hst1':
             # generate random sellbot from lv 12 to 20
-            suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 's', random.randint(12, 20), 0)
+
+            suitLevel = random.randint(12, 20)
+            suitKind = suitKindFromLevel(suitLevel)
+
+            suit = self.__genSuitObject(self.zoneId, suitKind, 's', suitLevel, 0)
             reserveSuits.append(suit)            
         elif specialCode == 'hst2':
             # generate shadow
@@ -220,7 +229,11 @@ class SuitPlannerInteriorAI:
         if specialCode == 'ren':
             if not arg:
                 # generate random bossbot from lv 12 to 20
-                suit = self.__genSuitObject(self.zoneId, random.randint(6,8), 'c', random.randint(12, 20), 0)
+
+                suitLevel = random.randint(12, 20)
+                suitKind = suitKindFromLevel(suitLevel)
+
+                suit = self.__genSuitObject(self.zoneId, suitKind, 'c', suitLevel, 0)
                 reserveSuits.append(suit)
             else:
                 # generate tbc from lv 16 to 22

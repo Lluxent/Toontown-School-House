@@ -1496,7 +1496,7 @@ class BattleCalculatorAI:
                 self.setToonCondition(toon.doId, 'noGags', 1, 2, 'setBoth')
                 self.setToonCondition(toon.doId, 'noSOS', 1, 2, 'setBoth')
                 self.setToonCondition(toon.doId, 'noFires', 1, 2, 'setBoth')
-                return
+                continue
             elif atkInfo['name'] in ('Detonate', 'Detonate2', 'Detonate3'):
                 if atkInfo['name'] == 'Detonate':
                     targetSuit = self.battle.activeSuits[1]
@@ -1505,21 +1505,24 @@ class BattleCalculatorAI:
                 elif atkInfo['name'] == 'Detonate3':
                     targetSuit = self.battle.activeSuits[3]
                 attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / (10.0 if theSuit.getSkeleRevives() == 1 else 7.5))
-                return
+                continue
             elif atkInfo['name'] == 'CrackUp':
                 attack[SUIT_HP_COL][targetIndex] = 250
+                continue
             elif atkInfo['name'] == 'Coalescence':
                 if toon.getHp() == 1:
                     attack[SUIT_HP_COL][targetIndex] = 1
                 else:
                     attack[SUIT_HP_COL][targetIndex] = toon.getHp() - 1
-                theSuit.setHP(int(theSuit.currHP + ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP))    
+                theSuit.setHP(int(theSuit.currHP + ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_BASE + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_COALESCENCE_HEAL_AMP))  
+                continue  
             elif atkInfo['suitName'] == 'hst' and atkInfo['name'] == 'ShadowWave':
                 if self.toonHasCondition(toon.doId, 'corruption'):
                     attack[SUIT_HP_COL][targetIndex] = 7 + int(floor(self.getToonConditionModifier(toon.doId, 'corruption') / 4.0) * 7)
                 else:
                     attack[SUIT_HP_COL][targetIndex] = 7
                 theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
+                continue
             elif self.toonHasCondition(toon.doId, 'corruption') and result > 0:
                 self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.getToonConditionModifier(toon.doId, 'corruption'))
                 attack[SUIT_HP_COL][targetIndex] = result + self.getToonConditionModifier(toon.doId, 'corruption')
