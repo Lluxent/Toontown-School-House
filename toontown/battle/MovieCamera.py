@@ -360,6 +360,9 @@ def chooseSuitShot(attack, attackDuration):
         else:
             return randomAttackCam(attack['suit'], target['toon'], attack['battle'], attackDuration, openShotDuration, 'suit')
 
+    def fromBehindCamera(attack = attack, attackDuration = attackDuration, openShotDuration = 3.5, target = target):
+        return fromBehindGroupCam(attack['suit'], target, attack['battle'], attackDuration, openShotDuration)
+
     def managerCamera(attack = attack, attackDuration = attackDuration, openShotDuration = 3.5, target = target):
         return randomManagerCheatCam(attack['suit'], target, attack['battle'], attackDuration, openShotDuration)
 
@@ -503,6 +506,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(suitCameraShakeShot(suit, attackDuration, 0))
     elif name == FLASHBANG:
         camTrack.append(defaultCamera(openShotDuration=1.25))
+    elif name == QUICKDRAW:
+        camTrack.append(fromBehindCamera())
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())
@@ -860,6 +865,14 @@ def randomGroupAttackCam(suit, targets, battle, attackDuration, openShotDuration
     closeShot = randomToonGroupShot(targets, suit, closeShotDuration, battle)
     return Sequence(openShot, closeShot)
 
+def fromBehindGroupCam(suit, targets, battle, attackDuration, openShotDuration):
+    if openShotDuration > attackDuration:
+        openShotDuration = attackDuration
+    closeShotDuration = attackDuration - openShotDuration
+    openShot = fromForwardGroupShot(targets, suit, openShotDuration, battle)
+    closeShot = fromBehindGroupShot(targets, suit, closeShotDuration, battle)
+    return Sequence(openShot, closeShot)
+
 def randomManagerCheatCam(suit, targets, battle, attackDuration, openShotDuration):
     if openShotDuration > attackDuration:
         openShotDuration = attackDuration
@@ -958,6 +971,27 @@ def randomToonGroupShot(toons, suit, duration, battle):
     focalPoint = Point3(0, -4, avgHeight)
     return focusShot(x, y, z, duration, focalPoint)
 
+def fromBehindGroupShot(toons, suit, duration, battle):
+    sum = 0
+    for t in toons:
+        toon = t['toon']
+        height = toon.getHeight()
+        sum = sum + height
+
+    avgHeight = sum / len(toons) * 0.75
+    focalPoint = Point3(0, -4, avgHeight)
+    return focusShot(0, 2, avgHeight * 2, duration, focalPoint)
+
+def fromForwardGroupShot(toons, suit, duration, battle):
+    sum = 0
+    for t in toons:
+        toon = t['toon']
+        height = toon.getHeight()
+        sum = sum + height
+
+    avgHeight = sum / len(toons) * 0.75
+    focalPoint = Point3(0, 0, avgHeight)
+    return focusShot(random.choice([40, -40]), 0, avgHeight * 1.5, duration, focalPoint)
 
 def chooseFireShot(throws, suitThrowsDict, attackDuration):
     openShot = chooseFireOpenShot(throws, suitThrowsDict, attackDuration)

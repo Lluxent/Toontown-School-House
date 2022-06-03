@@ -796,9 +796,7 @@ class BattleCalculatorAI:
                 if self.toonHasCondition(toonId, 'allGagBoost'):
                     attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'allGagBoost') * 0.01)
                     attackDamage = math.ceil(attackDamage)
-                attackDamage = math.ceil(attackDamage)
-                if atkTrack == HEAL:
-                    toon.toonUp(math.ceil(attackDamage / 2))
+                attackDamage = math.ceil(attackDamage)                       
                 if not self.__combatantDead(targetId, toon=toonTarget):
                     if self.__suitIsLured(targetId) and atkTrack == DROP:
                         self.notify.debug('not setting validTargetAvail, since drop on a lured suit')
@@ -840,6 +838,8 @@ class BattleCalculatorAI:
                 targetIndex = targets.index(targetList[currTarget])
                 if atkTrack == HEAL:
                     result = result / len(targetList)
+                    toon = self.battle.getToon(toonId)
+                    toon.toonUp(math.ceil((attackDamage / 2) / len(targetList)))
                     if self.notify.getDebug():
                         self.notify.debug('Splitting heal among ' + str(len(targetList)) + ' targets')
                 if targetId in self.successfulLures and atkTrack == LURE:
@@ -1497,6 +1497,11 @@ class BattleCalculatorAI:
                 self.setToonCondition(toon.doId, 'noSOS', 1, 2, 'setBoth')
                 self.setToonCondition(toon.doId, 'noFires', 1, 2, 'setBoth')
                 continue
+            elif atkInfo['name'] == 'Quickdraw':
+                value = random.randint(floor(toon.getHp() * 0.3), floor(toon.getHp() * 0.8)) + 1
+                self.setToonCondition(toon.doId, 'allGagBoost', -floor(value * 0.67), 2, 'setBoth')
+                attack[SUIT_HP_COL][targetIndex] = value
+                continue
             elif atkInfo['name'] in ('Detonate', 'Detonate2', 'Detonate3'):
                 if atkInfo['name'] == 'Detonate':
                     targetSuit = self.battle.activeSuits[1]
@@ -1504,7 +1509,7 @@ class BattleCalculatorAI:
                     targetSuit = self.battle.activeSuits[2]
                 elif atkInfo['name'] == 'Detonate3':
                     targetSuit = self.battle.activeSuits[3]
-                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / (10.0 if theSuit.getSkeleRevives() == 1 else 7.5))
+                attack[SUIT_HP_COL][targetIndex] = floor(targetSuit.getHP() / (10.0 if theSuit.getSkeleRevives() == 1 else 6.66))
                 continue
             elif atkInfo['name'] == 'CrackUp':
                 attack[SUIT_HP_COL][targetIndex] = 250
@@ -2142,10 +2147,13 @@ class BattleCalculatorAI:
             # when dodgy (aka after healing), try to sacrifice the largest HP cog in the field, dealing damage to toons based on its HP
             # doesn't try to sacrifice itself, ofc lmao
             if self.suitHasCondition(theSuit.doId, 'dodgy'):
-                if random.randint(0, 99) > 50:
+                if random.randint(0, 99) > 50:  # half of the time, do this cheat instead, summon cogs up to 4, and remove 3 or 4 tracks, based on phase
                     for toon in self.battle.activeToons:
-                        for i in range(4 if isFinalForm else 3):
-                            self.setToonCondition(int(toon), random.choice(['noToonUpGags','noTrapGags','noLureGags','noThrowGags','noSoundGags','noSquirtGags','noDropGags']), 1, 3, 'setBoth')
+                        toRemove = random.sample(['noToonUpGags','noTrapGags','noLureGags','noThrowGags','noSoundGags','noSquirtGags','noDropGags'], k=(4 if isFinalForm else 3))
+                        for i in toRemove:
+                            self.setToonCondition(int(toon), i, 1, 3, 'setBoth')
+                    for i in range(4 - len(self.battle.activeSuits)):
+                        boss.appendSuitsToBattle(boss.battleNumber, 'ren', isFinalForm)
                     return 10
                 else:
                     index = -1
@@ -2167,9 +2175,14 @@ class BattleCalculatorAI:
                     for suit in self.currentlyLuredSuits.keys():
                         self.__removeLured(suit)
 
+                    if tgIndex == -1:   # if we tried to sacrifice a suit, and no suits existed, do this attack instead
+                        for i in range(3):
+                            boss.appendSuitsToBattle(boss.battleNumber, 'ren', isFinalForm or i == 2)
+                        return 11
+
                     return tgIndex + 5
             else:
-                # heal all cogs by 250, unlure them, and give them 30% dodgy for 3 turns, sheesh!
+                # heal all cogs by 250, unlure them, and give them 30% dodgy for 3 turns, sheesh! also summon up to 4
                 for suit in self.battle.activeSuits:
                     if suit.currHP <= 0:
                         continue
@@ -2178,6 +2191,8 @@ class BattleCalculatorAI:
                     self.setSuitCondition(suit.doId, 'dodgy', 30, 3, 'setBoth')
                 for suit in self.currentlyLuredSuits.keys():
                     self.__removeLured(suit)
+                for i in range(4 - len(self.battle.activeSuits)):
+                    boss.appendSuitsToBattle(boss.battleNumber, 'ren', isFinalForm)
                 return 9
 
         attacks = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['attacks']

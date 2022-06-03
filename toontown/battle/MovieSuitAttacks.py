@@ -282,6 +282,8 @@ def doSuitAttack(attack):
         suitTrack = doCrackUp(attack)
     elif name == FLASHBANG:
         suitTrack = doFlashbang(attack)
+    elif name == QUICKDRAW:
+        suitTrack = doQuickdraw(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -1678,6 +1680,23 @@ def doCrackUp(attack):
     soundTrack = Sequence(SoundInterval(globalBattleSoundCache.getSound('SA_bash.ogg'), node=manager))
     healSound = Sequence(Wait(2.0), SoundInterval(globalBattleSoundCache.getSound('LB_toonup.ogg'), node = manager))
     return Parallel(mgrTrack, soundTrack, suitTracks, healSound)
+
+def doQuickdraw(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    tauntIndex = attack['taunt']
+    taunt = getAttackTaunt(attack['name'], tauntIndex)
+    suitTrack = Sequence(Func(suit.setChatAbsolute, taunt, CFSpeech | CFTimeout), ActorInterval(suit, 'effort', playRate=0.25, duration=3.0), ActorInterval(suit, 'sanction'), Func(suit.clearChat), ActorInterval(suit, 'neutral'))
+
+    soundTrack = Parallel()
+    soundTrack.append(SoundInterval(globalBattleSoundCache.getSound('SA_quickdraw_sfx.ogg'), node=suit))
+    soundTrack.append(Sequence(Wait(3.5), SoundInterval(globalBattleSoundCache.getSound('SA_quickdraw_shot.ogg'), node=suit)))
+    soundTrack.append(Sequence(Wait(3.5), SoundInterval(globalBattleSoundCache.getSound('SA_quickdraw_bullet.ogg'), node=suit)))
+    toonTrack = getToonTracks(attack, 3.5, ['slip-forward'], 3.5, 'jump')
+
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(LerpColorScaleInterval(render, 3.5, (0.5, 0, 0, 1)), LerpColorScaleInterval(render, 0.5, (oldcolor)))
+    return Parallel(suitTrack, soundTrack, toonTrack, lightingTrack)
 
 def doHaymaker(attack):
     suit = attack['suit']
