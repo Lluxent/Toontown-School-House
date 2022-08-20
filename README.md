@@ -5,13 +5,12 @@ The build may have some bugs in it, but I'll address those as I come to them. Ad
 
 If you'd like to reach out to discuss this project, or want to playtest it with me, reach me on Discord at luna#4811.
 
-# Patch Notes
+## Patch Notes
 ### 0.0.1.0
 - Added Panda3D dependencies to the source code! No need for that pesky installer anymore.
 - This release marks the start of official GitHub releases! Additionally, the backend workflow for the source is much cleaner for myself to read now, so it should be cleaner overall.
 
-# Credits
-Credits:
+## Credits
 * [The Toontown School House Project](https://https://github.com/Toontown-Open-Source-Initiative/Toontown-School-House)
 * [The Toontown Offline Team](https://ttoffline.com)
 * [Astron](https://github.com/Astron/Astron)
