@@ -52,3 +52,5 @@ merge-lod-bundles false
 early-event-sphere true
 server-data-folder backups/
 isclient-check false
+
+load-display pandagl

@@ -2,13 +2,13 @@
 # specific to developer instances of Toontown Online.
 
 # Window settings
-window-title Toontown Online [DEV]
+window-title jumtown online
 
 # Notify settings
 console-output true
 
 # Server settings
-server-version shadoo
+server-version shadoo-0.1.0.0
 
 # Developer settings
 want-dev false

@@ -1,16 +1,14 @@
-# Dependencies
-## Panda3D for TTSH Builds
-This source code requires a customized version of Panda3D to run.
+# Introduction
+Hello! This project is a dedication of my time and effort towards Corporate Clash. A lot of the features within this build of School House are reimagined, or inspired by, those mechanics present in Corporate Clash. Serving to help me practice Python programming, and understanding Toontown on a technical level, this source of Toontown has some new miniboss fights, all original, made by me!
 
-[Panda3D SDK for Windows (64-bit)](https://drive.google.com/file/d/1i-7C_uAfzZSaArzFh80NMD3Dg5FD2Tdt/view?usp=sharing)
+The build may have some bugs in it, but I'll address those as I come to them. Additionally, this build of School House doesn't need the Panda3D dependencies other sources do, as I have included them in the source files here. 
 
-## Libuv.dll
-This source code requires libuv.dll in the astron folder to run. Here are links to the 32 bit dll and 64 bit dll.
+If you'd like to reach out to discuss this project, or want to playtest it with me, reach me on Discord at luna#4811.
 
-[Libuv.dll (32-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339222682664973/libuv.dll)
-
-
-[Libuv.dll (64-bit)](https://cdn.discordapp.com/attachments/638485243560460309/640339153346887696/libuv.dll)
+# Patch Notes
+### 0.0.1.0
+- Added Panda3D dependencies to the source code! No need for that pesky installer anymore.
+- This release marks the start of official GitHub releases! Additionally, the backend workflow for the source is much cleaner for myself to read now, so it should be cleaner overall.
 
 # Credits
 Credits:
