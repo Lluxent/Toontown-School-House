@@ -1014,15 +1014,18 @@ class InventoryNew(InventoryBase.InventoryBase, DirectFrame):
                 self.fireButton['image_color'] = Vec4(0.4, 0.4, 0.4, 1)
         if 'noFires' in base.localAvatar.battleConditions:
             self.fireButton.hide()
+        else:
+            self.fireButton.show()
         if 'noSOS' in base.localAvatar.battleConditions:
             self.sosButton.hide()
+        else:
+            self.sosButton.show()
         for track in xrange(len(Tracks)):
             if self.toon.hasTrackAccess(track):
                 self.showTrack(track)
                 for level in xrange(len(Levels)):
                     button = self.buttons[track][level]
                     if self.itemIsUsable(track, level):
-                        unpaid = not base.cr.isPaid()
                         button.show()
                         if self.itemIsCredit(track, level):
                             self.makePressable(button, track, level)
