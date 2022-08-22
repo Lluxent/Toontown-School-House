@@ -1529,6 +1529,10 @@ class BattleCalculatorAI:
                     attack[SUIT_HP_COL][targetIndex] = 7
                 theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.HUSTLER_SHADOW_WAVE_HEAL_AMP))
                 continue
+            elif atkInfo['name'] == 'SpectralThief':
+                attack[SUIT_HP_COL][targetIndex] = 42
+                theSuit.setHP(int(theSuit.currHP + attack[SUIT_HP_COL][targetIndex] * ToontownBattleGlobals.TRICKSTER_SPECTRAL_THIEF_HEAL_MULT))
+                continue
             elif self.toonHasCondition(toon.doId, 'corruption') and result > 0:
                 self.notify.debug('__calcSuitAtkHp - Target is Corrupt, dealing %i bonus damage' % self.getToonConditionModifier(toon.doId, 'corruption'))
                 attack[SUIT_HP_COL][targetIndex] = result + self.getToonConditionModifier(toon.doId, 'corruption')

@@ -185,6 +185,7 @@ ren = (
 )
 trk = (
     ('magic2', 'magic2', 5),
+    ('magic3', 'magic3', 5),
     ('snap', 'snap', 5),
 )
 

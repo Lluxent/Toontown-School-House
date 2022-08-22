@@ -510,6 +510,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(fromBehindCamera())
     elif name == FLAME_COLUMN:
         camTrack.append(defaultCamera(openShotDuration=1.0))
+    elif name == SPECTRAL_THIEF:
+        camTrack.append(suitCameraShakeShot(suit, attackDuration, 0))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())

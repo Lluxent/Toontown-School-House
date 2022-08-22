@@ -1331,7 +1331,7 @@ SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
 SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave',
  'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp', 'Flashbang', 'Quickdraw',
- 'FlameColumn')
+ 'FlameColumn', 'SpectralThief')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
@@ -1350,7 +1350,8 @@ SuitCheatDescription = {
   'Flashbang': 'The %s flashes! Gag selections reduced!' % SuitRenegade,
   'Quickdraw': 'The %s challenges you to a showdown!' % SuitRenegade,
 
-  'FlameColumn': 'A magical flame reduces your offensive power!'
+  'FlameColumn': 'A magical flame reduces your offensive power!',
+  'SpectralThief': 'The incantation drains your Laff!'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1436,7 +1437,8 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Flashbang': 'Flashbang!',
  'Quickdraw': 'Deadeye!',
 
- 'FlameColumn': 'Mystical Fire!'
+ 'FlameColumn': 'Mystical Fire!',
+ 'SpectralThief': 'Spectral Thief!',
 }
 SuitAttackTaunts = {
   'JuryNotice': ["The party\'s over here, boys.",
@@ -1537,6 +1539,13 @@ SuitAttackTaunts = {
     'An incantation of incineration!',
     'The skies set you aflame!',
     'A celestial inferno!'
+  ],
+  'SpectralThief': [
+    'More life for me.',
+    'Give it up.',
+    'Your life is mine.',
+    'I\'ll take that if you\'re not using it.',
+    'Oblivion\'s power infuses.'
   ],
   'Audit': ["I believe your books don't balance.",
            "Looks like you're in the red.",

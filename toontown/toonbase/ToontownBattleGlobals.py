@@ -808,6 +808,8 @@ HUSTLER_COALESCENCE_HEAL_AMP = 5
 HUSTLER_COALESCENCE_HEAL_BASE = 100
 HUSTLER_BONUS_DMG_PER_SHADOW = 0.0725
 
+TRICKSTER_SPECTRAL_THIEF_HEAL_MULT = 20
+
 ValidStatusConditions = (
     'cannotMiss',   # set acc. rate to 100%
     'alwaysMiss',   # set acc. rate to 0%
