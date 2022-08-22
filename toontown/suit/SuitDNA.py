@@ -42,7 +42,8 @@ suitHeadTypes = ['f',
  'cmb',
  'ssb',
  'hst',
- 'ren']
+ 'ren',
+ 'trk']
 suitATypes = ['ym',
  'hh',
  'tbc',
@@ -59,7 +60,8 @@ suitATypes = ['ym',
  'mh',
  'cmb',
  'hst',
- 'ren']
+ 'ren',
+ 'trk']
 suitBTypes = ['p',
  'ds',
  'b',
@@ -127,6 +129,8 @@ def getSuitDept(name):
         return suitDepts[2]
     elif index < suitsPerDept * 4:
         return suitDepts[3]
+    elif name == 'trk':
+        return suitDepts[1]
     elif name == 'cmb':
         return suitDepts[2]
     elif name == 'ssb' or name == 'hst':

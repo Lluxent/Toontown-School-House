@@ -284,6 +284,8 @@ def doSuitAttack(attack):
         suitTrack = doFlashbang(attack)
     elif name == QUICKDRAW:
         suitTrack = doQuickdraw(attack)
+    elif name == FLAME_COLUMN:
+        suitTrack = doFlameColumn(attack)
     else:
         notify.warning('unknown attack: %d substituting Finger Wag' % name)
         suitTrack = doDefault(attack)
@@ -512,6 +514,12 @@ def doDefault(attack):
         attack['id'] = GLOWER_POWER
         attack['name'] = 'GlowerPower'
         attack['animName'] = 'glower'
+        return doGlowerPower(attack)
+    elif suitName == 'trk':
+        attack['id'] = PARADIGM_SHIFT
+        attack['name'] = 'ParadigmShift'
+        attack['animName'] = 'magic2'
+        return doParadigmShift(attack)
     else:
         self.notify.error('doDefault() - unsupported suit type: %s' % suitName)
     return None
@@ -3330,6 +3338,80 @@ def doWatercooler(attack):
     soundTrack = Sequence(Wait(1.1), SoundInterval(globalBattleSoundCache.getSound('SA_watercooler_appear_only.ogg'), node=suit, duration=1.4722), Wait(0.4), SoundInterval(globalBattleSoundCache.getSound('SA_watercooler_spray_only.ogg'), node=suit, duration=2.313))
     return Parallel(suitTrack, toonTrack, propTrack, soundTrack, splashTrack)
 
+
+def doFlameColumn(attack):
+    suit = attack['suit']
+    battle = attack['battle']
+    target = attack['target']
+    toon = target['toon']
+    dmg = target['hp']
+    BattleParticles.loadParticles()
+    baseFlameEffect = BattleParticles.createParticleEffect(file='firedBaseFlame')
+    flameEffect = BattleParticles.createParticleEffect('FiredFlame')
+    flecksEffect = BattleParticles.createParticleEffect('SpriteFiredFlecks')
+    BattleParticles.setEffectTexture(baseFlameEffect, 'fire')
+    BattleParticles.setEffectTexture(flameEffect, 'fire')
+    BattleParticles.setEffectTexture(flecksEffect, 'roll-o-dex', color=Vec4(0.8, 0.8, 0.8, 1))
+    baseFlameEffect.setScale(1.7)
+    flameEffect.setScale(1.7)
+    flecksEffect.setScale(1.7)
+    suitTrack = getSuitTrack(attack)
+    suitTrack.append(ActorInterval(attack['suit'], 'neutral', loop = 1, duration = 5.0))
+    baseFlameTrack = getPartTrack(baseFlameEffect, 1.0, 5, [baseFlameEffect, toon, 0])
+    flameTrack = getPartTrack(flameEffect, 1.0, 5, [flameEffect, toon, 0])
+    flecksTrack = getPartTrack(flecksEffect, 1.8, 4, [flecksEffect, toon, 0])
+
+    def changeColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.setColorScale, Vec4(0.5, 0, 0, 1)))
+
+        return track
+
+    def resetColor(parts):
+        track = Parallel()
+        for partNum in xrange(0, parts.getNumPaths()):
+            nextPart = parts.getPath(partNum)
+            track.append(Func(nextPart.clearColorScale))
+
+        return track
+
+    headParts = toon.getHeadParts()
+    torsoParts = toon.getTorsoParts()
+    legsParts = toon.getLegsParts()
+    colorTrack = Sequence()
+    colorTrack.append(Wait(2.0))
+    colorTrack.append(Func(battle.movie.needRestoreColor))
+    colorTrack.append(changeColor(headParts))
+    colorTrack.append(changeColor(torsoParts))
+    colorTrack.append(changeColor(legsParts))
+    colorTrack.append(Wait(4.5))
+    colorTrack.append(resetColor(headParts))
+    colorTrack.append(resetColor(torsoParts))
+    colorTrack.append(resetColor(legsParts))
+    colorTrack.append(Func(battle.movie.clearRestoreColor))
+    damageAnims = []
+    damageAnims.append(['cringe',
+     0.01,
+     0.7,
+     0.62])
+    damageAnims.append(['slip-forward',
+     1e-05,
+     0.4,
+     1.2])
+    damageAnims.extend(getSplicedLerpAnims('slip-forward', 0.31, 3.2, startTime=1.2))
+    toonTrack = getToonTrack(attack, damageDelay=1.5, splicedDamageAnims=damageAnims, dodgeDelay=0.3, dodgeAnimNames=['sidestep'])
+    snap = getSoundTrack('SA_bash.ogg', node = suit)
+    fire = getSoundTrack('SA_hot_air.ogg', delay = 1.0, node = suit)
+    cast = getSoundTrack('SA_trickster_flame_cast.ogg', delay = 0.7, node = suit)
+    remnant = getSoundTrack('SA_trickster_flame_remnant.ogg', delay = 2.0, node = suit)
+
+    oldcolor = render.getColorScale()
+    lightingTrack = Sequence(Wait(1), LerpColorScaleInterval(render, 0.5, (1.0,0.2,0.2, 1)), Wait(3.5), LerpColorScaleInterval(render, 1, (oldcolor)))
+    soundTrack = Parallel(snap, fire, cast, remnant)
+    notifyTrack = Sequence(Wait(1.5 + 0.75), Func(toon.showHpText, "BURNED!", 10))
+    return Parallel(notifyTrack, suitTrack, baseFlameTrack, flameTrack, flecksTrack, toonTrack, colorTrack, soundTrack, lightingTrack)
 
 def doFired(attack):
     suit = attack['suit']

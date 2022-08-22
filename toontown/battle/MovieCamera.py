@@ -508,6 +508,8 @@ def chooseSuitShot(attack, attackDuration):
         camTrack.append(defaultCamera(openShotDuration=1.25))
     elif name == QUICKDRAW:
         camTrack.append(fromBehindCamera())
+    elif name == FLAME_COLUMN:
+        camTrack.append(defaultCamera(openShotDuration=1.0))
     else:
         notify.warning('unknown attack id in chooseSuitShot: %d using default cam' % name)
         camTrack.append(defaultCamera())
@@ -515,11 +517,11 @@ def chooseSuitShot(attack, attackDuration):
     displayName = TTLocalizer.SuitAttackNames[attack['name']]
     if attack['name'] in TTLocalizer.SuitCheatNames:
         pbpDc = PlayByPlayText.PlayByPlayText()
-        pbpDesc = pbpDc.getShowIntervalDesc(TTLocalizer.SuitCheatDescription[attack['name']], 3.5)
-        pbpTrack = pbpText.getShowIntervalCheat(displayName, 3.5)
+        pbpDesc = pbpDc.getShowIntervalDesc(TTLocalizer.SuitCheatDescription[attack['name']], camTrack.getDuration() - 0.5)
+        pbpTrack = pbpText.getShowIntervalCheat(displayName, camTrack.getDuration() - 0.5)
         return Parallel(camTrack, pbpTrack, pbpDesc)
     else:
-        pbpTrack = pbpText.getShowInterval(displayName, 3.5)
+        pbpTrack = pbpText.getShowInterval(displayName, camTrack.getDuration() - 0.5)
         return Parallel(camTrack, pbpTrack)
     
 

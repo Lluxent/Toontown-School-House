@@ -143,7 +143,7 @@ def SuitShadowHPDict(minLevel, maxLevel):
         t.append(SuitShadowHealth(lv))
     return tuple(t)
 
-SpecialCogDict = ('cmb','ssb','hst','ren')
+SpecialCogDict = ('cmb','ssb','hst','ren','trk')
 
 # re-formatted by me :)
 SuitAttributes = {
@@ -1157,6 +1157,23 @@ SuitAttributes = {
             (0,)),
         )
     },
+    'trk': {
+        'name':         TTLocalizer.SuitMagician,
+        'singularname': TTLocalizer.SuitMagicianS,
+        'pluralname':   TTLocalizer.SuitMagicianP,
+        'level':    50,
+        'hp':   (5000,),
+        'def':  (50,),
+        'freq': (0,),
+        'acc':  (0,),
+        'attacks':
+        (
+            ('FlameColumn',
+            (40,),
+            (100,),
+            (100,)),
+        )
+    },
 }
 
 ATK_TGT_UNKNOWN = 1
@@ -1244,7 +1261,9 @@ SuitAttacks = {'Audit': ('phone', ATK_TGT_SINGLE),
  'Detonate3': ('effort', ATK_TGT_GROUP),
  'CrackUp': ('snap', ATK_TGT_GROUP),
  'Flashbang': ('snap', ATK_TGT_GROUP),
- 'Quickdraw': ('sanction', ATK_TGT_GROUP)
+ 'Quickdraw': ('sanction', ATK_TGT_GROUP),
+
+    'FlameColumn': ('snap', ATK_TGT_SINGLE),
 }
 AUDIT = SuitAttacks.keys().index('Audit')
 BITE = SuitAttacks.keys().index('Bite')
@@ -1329,6 +1348,8 @@ DETONATE_3 = SuitAttacks.keys().index('Detonate3')
 CRACK_UP = SuitAttacks.keys().index('CrackUp')
 FLASHBANG = SuitAttacks.keys().index('Flashbang')
 QUICKDRAW = SuitAttacks.keys().index('Quickdraw')
+
+FLAME_COLUMN = SuitAttacks.keys().index('FlameColumn')
 
 def getFaceoffTaunt(suitName, doId):
     if suitName in SuitFaceoffTaunts:

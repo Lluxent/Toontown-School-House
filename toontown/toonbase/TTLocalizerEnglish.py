@@ -1258,6 +1258,11 @@ SuitHustlerP = 'Hustlers'
 SuitRenegade = 'Renegade'
 SuitRenegadeS = 'a Renegade'
 SuitRenegadeP = 'Renegades'
+# magical miniboss
+SuitMagician = 'Trickster'
+SuitMagicianS = 'a Trickster'
+SuitMagicianP = 'Tricksters'
+
 SuitFlunkyS = 'a Flunky'
 SuitPencilPusherS = 'a Pencil Pusher'
 SuitYesmanS = 'a Yesman'
@@ -1325,7 +1330,8 @@ SuitBigWigP = 'Big Wigs'
 SuitFaceoffDefaultTaunts = ['Boo!']
 SuitAttackDefaultTaunts = ['Take that!', 'Take a memo on this!']
 SuitCheatNames = ('JuryNotice', 'CompoundingInterest', 'BookKeeping', 'Corruption', 'ShadowMarketing', 'Recarmdra', 'ShadowWave',
- 'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp', 'Flashbang', 'Quickdraw')
+ 'Coalescence', 'GroupCorruption', 'Haymaker', 'Detonate', 'Detonate2', 'Detonate3', 'CrackUp', 'Flashbang', 'Quickdraw',
+ 'FlameColumn')
 SuitCheatDescription = {
   'JuryNotice': 'The %s calls Cogs to his side!' % SuitCMB,
   'CompoundingInterest': 'The interest fees are racking up!',
@@ -1343,6 +1349,8 @@ SuitCheatDescription = {
   'CrackUp': 'The %s boosts the power of all Cogs!' % SuitRenegade,
   'Flashbang': 'The %s flashes! Gag selections reduced!' % SuitRenegade,
   'Quickdraw': 'The %s challenges you to a showdown!' % SuitRenegade,
+
+  'FlameColumn': 'A magical flame reduces your offensive power!'
 }
 SuitAttackNames = {'Audit': 'Audit!',
  'Bite': 'Bite!',
@@ -1426,19 +1434,11 @@ SuitAttackNames = {'Audit': 'Audit!',
  'Detonate3': 'Fire in the Hole!',
  'CrackUp': 'Crack-Up!',
  'Flashbang': 'Flashbang!',
- 'Quickdraw': 'Deadeye!'
+ 'Quickdraw': 'Deadeye!',
+
+ 'FlameColumn': 'Mystical Fire!'
 }
 SuitAttackTaunts = {
-  'Audit': ["I believe your books don't balance.",
-           "Looks like you're in the red.",
-           'Let me help you with your books.',
-           'Your debit column is much too high.',
-           "Let's check your assets.",
-           'This will put you in debt.',
-           "Let's take a close look at what you owe.",
-           'This should drain your account.',
-           'Time for you to account for your expenses.',
-           "I've found an error in your books."],
   'JuryNotice': ["The party\'s over here, boys.",
            "Don\'t get ahead of yourself.",
            'You might want to think about some life insurance, Toon.',
@@ -1531,6 +1531,23 @@ SuitAttackTaunts = {
     'It\'s how you show up at the showdown that counts, Toon.',
     'Are you tough enough, Toon?'
   ],
+  'FlameColumn': [
+    'Clearly you don\'t own an air fryer.',
+    'Witness true sorcery!',
+    'An incantation of incineration!',
+    'The skies set you aflame!',
+    'A celestial inferno!'
+  ],
+  'Audit': ["I believe your books don't balance.",
+           "Looks like you're in the red.",
+           'Let me help you with your books.',
+           'Your debit column is much too high.',
+           "Let's check your assets.",
+           'This will put you in debt.',
+           "Let's take a close look at what you owe.",
+           'This should drain your account.',
+           'Time for you to account for your expenses.',
+           "I've found an error in your books."],  
  'Bite': ['Would you like a bite?',
           'Try a bite of this!',
           "You're biting off more than you can chew.",

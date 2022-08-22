@@ -793,7 +793,7 @@ class BattleCalculatorAI:
                         attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'dropBoost') * 0.01)
                 else:
                     attackDamage = getAvPropDamage(attackTrack, attackLevel, toon.experience.getExp(attackTrack))
-                if self.toonHasCondition(toonId, 'allGagBoost'):
+                if self.toonHasCondition(toonId, 'allGagBoost') and atkTrack is not FIRE:
                     attackDamage *= (1.0 + self.getToonConditionModifier(toonId, 'allGagBoost') * 0.01)
                     attackDamage = math.ceil(attackDamage)
                 attackDamage = math.ceil(attackDamage)                       
@@ -1413,10 +1413,11 @@ class BattleCalculatorAI:
         atkType = self.battle.suitAttacks[attackIndex][SUIT_ATK_COL]
         atkInfo = SuitBattleGlobals.getSuitAttack(theSuit.dna.name, theSuit.getLevel(), atkType)
         atkAcc = atkInfo['acc']
-        #suitAcc = SuitBattleGlobals.SuitAttributes[theSuit.dna.name]['acc'][theSuit.getLevel()]
         acc = atkAcc
-        if self.suitHasCondition(theSuit.doId, 'cannotMiss'):
+        # if affected by 'cannotMiss' or an attack has perfect accuracy, don't even roll for a check
+        if self.suitHasCondition(theSuit.doId, 'cannotMiss') or atkAcc == 100:
             return 1
+        # likewise for 'alwaysMiss'
         if self.suitHasCondition(theSuit.doId, 'alwaysMiss'):
             return 0
         
@@ -1593,6 +1594,11 @@ class BattleCalculatorAI:
                     self.suitLeftBattle(targetSuit.getDoId())
                     if targetSuit.getDoId() in self.suitStatusConditions:
                         del self.suitStatusConditions[targetSuit.getDoId()]
+
+                # The Trickster
+                if theSuit.dna.name == 'trk' and attack[SUIT_ATK_COL] == 0:
+                    # FlameColumn - Burns the target, reducing damage output by 75%.
+                    self.setToonCondition(t, 'allGagBoost', -75, 3, 'setBoth')
 
                 if toonHp - attack[SUIT_HP_COL][position] <= 0:
                     if self.notify.getDebug():

@@ -183,6 +183,10 @@ ren = (
     ('sanction', 'sanction', 5),
     ('snap', 'snap', 5)
 )
+trk = (
+    ('magic2', 'magic2', 5),
+    ('snap', 'snap', 5),
+)
 
 if not base.config.GetBool('want-new-cogs', 0):
     ModelDict = {'a': ('/models/char/suitA-', 4),
@@ -675,6 +679,12 @@ class Suit(Avatar.Avatar):
             self.headTexture = 'mingler.jpg'
             self.generateHead('twoface')
             self.setHeight(7.61)
+        elif dna.name == 'trk':
+            self.scale = 5.75 / aSize
+            self.handColor = VBase4(0.95, 0.95, 0.95, 1.0)
+            self.generateBody()
+            self.generateTopHat()
+            self.setHeight(7)
         elif dna.name == 'mh':
             self.scale = 7.0 / aSize
             self.handColor = SuitDNA.salesPolyColor
@@ -912,6 +922,29 @@ class Suit(Avatar.Avatar):
                 headPart.setPos(LVecBase3(0, 0, 0.75))
             if self.headTexture:
                 headTex = loader.loadTexture('phase_4/maps/tt_t_chr_avt_acc_hat_bowler.jpg')
+                headTex.setMinfilter(Texture.FTLinearMipmapLinear)
+                headTex.setMagfilter(Texture.FTLinear)
+                headPart.setTexture(headTex, 1)
+            if self.headColor:
+                headPart.setColor(self.headColor)
+            self.headParts.append(headPart)
+
+        headModel.removeNode()
+
+    def generateTopHat(self):
+        headModel = loader.loadModel('phase_4/models/accessories/tt_m_chr_avt_acc_hat_topHat')
+        headReferences = headModel.findAllMatches('**/topHat')
+        for i in xrange(0, headReferences.getNumPaths()):
+            if base.config.GetBool('want-new-cogs', 0):
+                headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'to_head')
+                if not headPart:
+                    headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
+            else:
+                headPart = self.instance(headReferences.getPath(i), 'modelRoot', 'joint_head')
+                headPart.setScale(LVecBase3(0.5, 0.5, 0.375))
+                headPart.setPos(LVecBase3(0, 0, 0.75))
+            if self.headTexture:
+                headTex = loader.loadTexture('phase_4/maps/tt_t_chr_avt_acc_hat_topHatBlack.jpg')
                 headTex.setMinfilter(Texture.FTLinearMipmapLinear)
                 headTex.setMagfilter(Texture.FTLinear)
                 headPart.setTexture(headTex, 1)

@@ -69,18 +69,18 @@ class TownBattleSuitPanel(DirectFrame):
 
     def setLevelText(self):
         t = 'Level ' + str(self.cog.getActualLevel())
-        if self.cog.getExecutive() or self.cog.isExecutive or self.cog.isManager or self.cog.getManager():
-            if self.cog.getExecutive() or self.cog.isExecutive:    
-                self['image_color'] = Vec4(0.4, 0.4, 0.4, 1.0)
-                t += TTLocalizer.ExecutivePostFix
-            else:
-                self['image_color'] = Vec4(0.7, 0.4, 0.4, 1.0)
-                t += TTLocalizer.ManagerPostFix
         if self.cog.getSkeleRevives() > 0:
             self['image_color'] = Vec4(0.7, 0.7, 0.7, 0.8)
             t += TTLocalizer.SkeleRevivePostFix
         else:
             self['image_color'] = Vec4(0.7, 0.7, 0.7, 0.8)
+        if self.cog.getExecutive() or self.cog.getManager():
+            if self.cog.getExecutive():    
+                self['image_color'] = Vec4(0.4, 0.4, 0.4, 1.0)
+                t += TTLocalizer.ExecutivePostFix
+            else:
+                self['image_color'] = Vec4(0.7, 0.4, 0.4, 1.0)
+                t += TTLocalizer.ManagerPostFix
         self.healthText['text'] = t
 
     def updateHealthBar(self):
